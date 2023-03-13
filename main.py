@@ -12,6 +12,12 @@ from passlib.handlers.sha2_crypt import sha512_crypt as crypto
 from pydantic import BaseModel
 from rich import inspect, print
 from rich.console import Console
+from Database import Models
+from Database.Connexion import engine
+import uvicorn
+
+Models.Base.metadata.create_all(bind=engine)
+
 
 console = Console()
 
@@ -49,7 +55,7 @@ def get_user(username: str) -> User:
 class Settings:
     SECRET_KEY: str = "secret-key"
     ALGORITHM = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES = 1  # in mins
+    ACCESS_TOKEN_EXPIRE_MINUTES = 30  # in mins
     COOKIE_NAME = "access_token"
 
 
@@ -281,3 +287,6 @@ def login_get():
     response = RedirectResponse(url="/")
     response.delete_cookie(settings.COOKIE_NAME)
     return response
+
+if __name__ == '__main__':
+    uvicorn.run(app, host="127.0.0.1", port=9000)
