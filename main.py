@@ -27,6 +27,7 @@ console = Console()
 # --------------------------------------------------------------------------
 class User(BaseModel):
     username: str
+    name: str
     hashed_password: str
 
 
@@ -37,8 +38,8 @@ class DataBase(BaseModel):
 
 DB = DataBase(
     user=[
-        User(username="user1@gmail.com", hashed_password=crypto.hash("12345")),
-        User(username="user2@gmail.com", hashed_password=crypto.hash("12345")),
+        User(username="user1@gmail.com",name="Bonitech1", hashed_password=crypto.hash("12345")),
+        User(username="user2@gmail.com",name="Bonitech2", hashed_password=crypto.hash("12345")),
     ]
 )
 
