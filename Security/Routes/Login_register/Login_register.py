@@ -1,52 +1,42 @@
-import datetime as dt
 from typing import Dict, List, Optional
-
-from fastapi import Depends, FastAPI, HTTPException, Request, Response, status
-from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
+from fastapi import Depends, FastAPI, HTTPException, Request, Response, status, APIRouter
 from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi.security import OAuth2, OAuth2PasswordRequestForm
-from fastapi.security.utils import get_authorization_scheme_param
+from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.templating import Jinja2Templates
-from jose import JWTError, jwt
-from passlib.handlers.sha2_crypt import sha512_crypt as crypto
-from pydantic import BaseModel
-from rich import inspect, print
-from rich.console import Console
-from Database import Models
-from Database.Connexion import engine
-import uvicorn
+from Security.Controllers import LoginController
+from Security.Settings import Settings
+from Security.DTO.User import User
 
-
-app = FastAPI()
+route = APIRouter(prefix='')
 templates = Jinja2Templates(directory="templates")
 
-@app.post("token")
+@route.post("token")
 def login_for_access_token(
     response: Response, 
     form_data: OAuth2PasswordRequestForm = Depends()
 ) -> Dict[str, str]:
-    user = authenticate_user(form_data.username, form_data.password)
+    user = LoginController.authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password")
-    access_token = create_access_token(data={"username": user.username})
+    access_token = LoginController.create_access_token(data={"username": user.username})
     
     # Set an HttpOnly cookie in the response. `httponly=True` prevents 
     # JavaScript from reading the cookie.
     response.set_cookie(
-        key=settings.COOKIE_NAME, 
+        key=Settings.COOKIE_NAME, 
         value=f"Bearer {access_token}", 
         httponly=True
     )  
-    return {settings.COOKIE_NAME: access_token, "token_type": "bearer"}
+    return {Settings.COOKIE_NAME: access_token, "token_type": "bearer"}
 
 
 # --------------------------------------------------------------------------
 # Home Page
 # --------------------------------------------------------------------------
-@app.get("/", response_class=HTMLResponse)
+@route.get("/", response_class=HTMLResponse)
 def index(request: Request):
     try:
-        user = get_current_user_from_cookie(request)
+        user = LoginController.get_current_user_from_cookie(request)
     except:
         user = None
     context = {
@@ -60,8 +50,8 @@ def index(request: Request):
 # Private Page
 # --------------------------------------------------------------------------
 # A private page that only logged in users can access.
-@app.get("/private", response_class=HTMLResponse)
-def index(request: Request, user: User = Depends(get_current_user_from_token)):
+@route.get("/private", response_class=HTMLResponse)
+def index(request: Request, user: User = Depends(LoginController.get_current_user_from_token)):
     context = {
         "user": user,
         "request": request
@@ -71,7 +61,7 @@ def index(request: Request, user: User = Depends(get_current_user_from_token)):
 # --------------------------------------------------------------------------
 # Register - GET
 # --------------------------------------------------------------------------
-@app.get("/register", response_class=HTMLResponse)
+@route.get("/register", response_class=HTMLResponse)
 def register_get(request: Request):
     context = {
         "request": request,
@@ -83,7 +73,7 @@ def register_get(request: Request):
 # --------------------------------------------------------------------------
 # Login - GET
 # --------------------------------------------------------------------------
-@app.get("/auth/login", response_class=HTMLResponse)
+@route.get("/auth/login", response_class=HTMLResponse)
 def login_get(request: Request):
     context = {
         "request": request,
@@ -116,7 +106,7 @@ class LoginForm:
         return False
 
 
-@app.post("/auth/login", response_class=HTMLResponse)
+@route.post("/auth/login", response_class=HTMLResponse)
 async def login_post(request: Request):
     form = LoginForm(request)
     await form.load_data()
@@ -125,7 +115,6 @@ async def login_post(request: Request):
             response = RedirectResponse("/", status.HTTP_302_FOUND)
             login_for_access_token(response=response, form_data=form)
             form.__dict__.update(msg="Login Successful!")
-            console.log("[green]Login successful!!!!")
             return response
         except HTTPException:
             form.__dict__.update(msg="")
@@ -136,11 +125,8 @@ async def login_post(request: Request):
 # --------------------------------------------------------------------------
 # Logout
 # --------------------------------------------------------------------------
-@app.get("/auth/logout", response_class=HTMLResponse)
+@route.get("/auth/logout", response_class=HTMLResponse)
 def login_get():
     response = RedirectResponse(url="/")
-    response.delete_cookie(settings.COOKIE_NAME)
+    response.delete_cookie(Settings.COOKIE_NAME)
     return response
-
-if __name__ == '__main__':
-    uvicorn.run(app, host="127.0.0.1", port=9000)

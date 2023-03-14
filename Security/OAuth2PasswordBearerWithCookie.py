@@ -1,25 +1,12 @@
-import datetime as dt
-from typing import Dict, List, Optional
-
-from fastapi import Depends, FastAPI, HTTPException, Request, Response, status
+from typing import Dict, Optional
+from fastapi import HTTPException, Request, status
 from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
-from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi.security import OAuth2, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2
 from fastapi.security.utils import get_authorization_scheme_param
-from fastapi.templating import Jinja2Templates
-from jose import JWTError, jwt
-from passlib.handlers.sha2_crypt import sha512_crypt as crypto
-from pydantic import BaseModel
-from rich import inspect, print
-from rich.console import Console
-from Database import Models
-from Database.Connexion import engine
-import uvicorn
-
-Models.Base.metadata.create_all(bind=engine)
-
-
-
+from Security.Settings import Settings
+# --------------------------------------------------------------------------
+# Authentication logic
+# --------------------------------------------------------------------------
 class OAuth2PasswordBearerWithCookie(OAuth2):
     """
     This class is taken directly from FastAPI:
@@ -50,7 +37,7 @@ class OAuth2PasswordBearerWithCookie(OAuth2):
         # IMPORTANT: this is the line that differs from FastAPI. Here we use 
         # `request.cookies.get(settings.COOKIE_NAME)` instead of 
         # `request.headers.get("Authorization")`
-        authorization: str = request.cookies.get(settings.COOKIE_NAME) 
+        authorization: str = request.cookies.get(Settings.COOKIE_NAME) 
         scheme, param = get_authorization_scheme_param(authorization)
         if not authorization or scheme.lower() != "bearer":
             if self.auto_error:
