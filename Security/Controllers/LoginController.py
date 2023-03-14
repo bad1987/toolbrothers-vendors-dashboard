@@ -7,18 +7,25 @@ from jose import JWTError, jwt
 from passlib.handlers.sha2_crypt import sha512_crypt as crypto
 from rich import print
 from Security.Settings import Settings
-from Security.DTO.User import User
+from Security.DTO.UserDto import UserDto
+from Security.DTO.UserDto import UserDtoCreate
 from Security.DTO.DataBase import DataBase
+from fastapi import Depends, HTTPException, Request, Response, status, APIRouter
+from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.orm import Session
+from Database.Models import User
+
 
 oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="token")
 DB = DataBase(
     user=[
-        User(username="user1@gmail.com",name="Bonitech1", hashed_password=crypto.hash("12345")),
-        User(username="user2@gmail.com",name="Bonitech2", hashed_password=crypto.hash("12345")),
+        UserDto(username="user1@gmail.com",name="Bonitech1", hashed_password=crypto.hash("12345")),
+        UserDto(username="user2@gmail.com",name="Bonitech2", hashed_password=crypto.hash("12345")),
     ]
 )
 
-def get_user(username: str) -> User:
+def get_user(username: str) -> UserDto:
     user = [user for user in DB.user if user.username == username]
     if user:
         return user[0]
@@ -36,7 +43,7 @@ def create_access_token(data: Dict) -> str:
     return encoded_jwt
 
 
-def authenticate_user(username: str, plain_password: str) -> User:
+def authenticate_user(username: str, plain_password: str) -> UserDto:
     user = get_user(username)
     if not user:
         return False
@@ -45,7 +52,7 @@ def authenticate_user(username: str, plain_password: str) -> User:
     return user
 
 
-def decode_token(token: str) -> User:
+def decode_token(token: str) -> UserDto:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED, 
         detail="Could not validate credentials."
@@ -64,7 +71,7 @@ def decode_token(token: str) -> User:
     return user
 
 
-def get_current_user_from_token(token: str = Depends(oauth2_scheme)) -> User:
+def get_current_user_from_token(token: str = Depends(oauth2_scheme)) -> UserDto:
     """
     Get the current user from the cookies in a request.
 
@@ -75,7 +82,7 @@ def get_current_user_from_token(token: str = Depends(oauth2_scheme)) -> User:
     return user
 
 
-def get_current_user_from_cookie(request: Request) -> User:
+def get_current_user_from_cookie(request: Request) -> UserDto:
     """
     Get the current user from the cookies in a request.
     
@@ -86,8 +93,23 @@ def get_current_user_from_cookie(request: Request) -> User:
     user = decode_token(token)
     return user
 
-def get_user(username: str) -> User:
+def get_user(username: str) -> UserDto:
     user = [user for user in DB.user if user.username == username]
     if user:
         return user[0]
     return None
+
+
+# Register user
+def create_user_account(user_dto: UserDtoCreate, db: Session):
+    user = User()
+    user.username = user_dto.username
+    user.email = user_dto.email
+    user.password = user_dto.password
+    user.roles = "Vendor"
+    
+    db.add(user)
+    db.commit()
+    db.flush(user)
+    
+    return user

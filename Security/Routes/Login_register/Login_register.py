@@ -1,14 +1,29 @@
 from typing import Dict, List, Optional
-from fastapi import Depends, FastAPI, HTTPException, Request, Response, status, APIRouter
+from fastapi import Depends, HTTPException, Request, Response, status, APIRouter
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.templating import Jinja2Templates
 from Security.Controllers import LoginController
 from Security.Settings import Settings
-from Security.DTO.User import User
+from Security.DTO.UserDto import UserDto
+from Security.Validator.LoginForm import LoginForm
+from Security.Validator.RegisterForm import RegisterForm
+from Database.Connexion import SessionLocal
+from sqlalchemy.orm import Session
+from rich.console import Console
+
 
 route = APIRouter(prefix='')
 templates = Jinja2Templates(directory="templates")
+console = Console()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 
 @route.post("token")
 def login_for_access_token(
@@ -51,7 +66,7 @@ def index(request: Request):
 # --------------------------------------------------------------------------
 # A private page that only logged in users can access.
 @route.get("/private", response_class=HTMLResponse)
-def index(request: Request, user: User = Depends(LoginController.get_current_user_from_token)):
+def index(request: Request, user: UserDto = Depends(LoginController.get_current_user_from_token)):
     context = {
         "user": user,
         "request": request
@@ -84,26 +99,7 @@ def login_get(request: Request):
 # --------------------------------------------------------------------------
 # Login - POST
 # --------------------------------------------------------------------------
-class LoginForm:
-    def __init__(self, request: Request):
-        self.request: Request = request
-        self.errors: List = []
-        self.username: Optional[str] = None
-        self.password: Optional[str] = None
 
-    async def load_data(self):
-        form = await self.request.form()
-        self.username = form.get("username")
-        self.password = form.get("password")
-
-    async def is_valid(self):
-        if not self.username or not (self.username.__contains__("@")):
-            self.errors.append("Email is required")
-        if not self.password or not len(self.password) >= 4:
-            self.errors.append("A valid password is required")
-        if not self.errors:
-            return True
-        return False
 
 
 @route.post("/auth/login", response_class=HTMLResponse)
@@ -121,6 +117,25 @@ async def login_post(request: Request):
             form.__dict__.get("errors").append("Incorrect Email or Password")
             return templates.TemplateResponse("login.html", form.__dict__)
     return templates.TemplateResponse("login.html", form.__dict__)
+
+# --------------------------------------------------------------------------
+# Register
+# --------------------------------------------------------------------------
+
+@route.post("/register", response_class=HTMLResponse)
+async def register_post(request: Request, db: Session = Depends(get_db)):
+    form = RegisterForm(request)
+    await form.load_data()
+    if await form.is_valid():
+        try:
+            response = RedirectResponse("/auth/login", status.HTTP_302_FOUND)
+            LoginController.create_user_account(form, db)
+            return response
+        except HTTPException:
+            form.__dict__.update(msg="")
+            form.__dict__.get("errors").append("Incorrect Input")
+            return templates.TemplateResponse("register.html", form.__dict__)
+    return templates.TemplateResponse("register.html", form.__dict__)
 
 # --------------------------------------------------------------------------
 # Logout
