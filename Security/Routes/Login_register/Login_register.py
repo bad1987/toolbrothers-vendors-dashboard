@@ -69,7 +69,7 @@ def index(request: Request, db: Session = Depends(get_db)):
 # Private Page
 # --------------------------------------------------------------------------
 # A private page that only logged in users can access.
-@route.get("/private", response_class=HTMLResponse)
+@route.get("/dashboard", response_class=HTMLResponse)
 def index(request: Request, db: Session = Depends(get_db)):
     user = LoginController.get_current_user_from_cookie(request, db)
     context = {
@@ -84,7 +84,7 @@ def index(request: Request, db: Session = Depends(get_db)):
 @route.get("/register", response_class=HTMLResponse)
 def register_get(request: Request):
     context = {
-        "request": request,
+        "request": request
     }
     return templates.TemplateResponse("register.html", context)
 
@@ -94,7 +94,7 @@ def register_get(request: Request):
 @route.get("/auth/login", response_class=HTMLResponse)
 def login_get(request: Request):
     context = {
-        "request": request,
+        "request": request
     }
     return templates.TemplateResponse("login.html", context)
 
