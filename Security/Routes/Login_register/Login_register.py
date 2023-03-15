@@ -130,7 +130,7 @@ async def register_post(request: Request, db: Session = Depends(get_db)):
         try:
             response = RedirectResponse("/auth/login", status.HTTP_302_FOUND)
             is_save = LoginController.create_user_account(form, db)
-            if not is_save == False:
+            if is_save == False:
                 form.__dict__.update(msg="")
                 form.__dict__.get("exist_user").append("This email exist")
                 return templates.TemplateResponse("register.html", form.__dict__) 

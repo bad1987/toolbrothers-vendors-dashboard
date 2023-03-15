@@ -1,11 +1,12 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+import SettingConnexionDatabase
 
-SQLALCHEMY_DATABASE_URL = "mariadb+mariadbconnector://fredchess:  @127.0.0.1:3306/dinotechDb"
+DATABASE_URL = f"mariadb+mariadbconnector://{SettingConnexionDatabase.MARIADB_USER}:{SettingConnexionDatabase.MARIADB_PASSWORD}@{SettingConnexionDatabase.MARIADB_HOST}:{SettingConnexionDatabase.MARIADB_PORT}/{SettingConnexionDatabase.MARIADB_DB}"
 
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL
+    DATABASE_URL
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

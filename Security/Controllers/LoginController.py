@@ -18,8 +18,8 @@ from Database.Connexion import SessionLocal
 
 # Dependency
 def get_db():
+    db = SessionLocal()
     try:
-        db = SessionLocal()
         yield db
     finally:
         db.close()
