@@ -10,8 +10,10 @@ from Database.Connexion import SessionLocal
 from sqlalchemy.orm import Session
 from Database.Models import User
 from rich.console import Console
+from fastapi.encoders import jsonable_encoder
 
 console = Console()
+
 
 
 route = APIRouter(prefix='')
@@ -39,33 +41,38 @@ def index(request: Request, db: Session = Depends(get_db)):
     }
     return templates.TemplateResponse("users.html", context)
 
+@route.get('/get-all-users', response_class=JSONResponse)
+async def get_all_users(request: Request, db: Session = Depends(get_db)):
+    user = LoginController.get_current_user_from_cookie(request, db)
+    console.log(user)
+    users = db.query(User).all()
+
+    return {'users': users}
+
 @route.post('/users/', response_class=JSONResponse)
 async def add_user(request: Request, db: Session = Depends(get_db)):
-    datas = await request.json()
-    console.log(f'[green]{datas}')
+    try:
+        datas = await request.json()
+        current_user = LoginController.get_current_user_from_cookie(request, db)
 
-    ans = LoginController.create_user_account(UserDtoCreate(datas['username'], datas['email'], datas['password']))
+        user = UserDtoCreate(**datas)
 
-    if ans:
+        ans = LoginController.create_user_account(user, db)
+
+
+        if ans:
+            return {
+                'status': True,
+                'message': 'OK',
+                'current_user': current_user
+            }
+
         return {
-            'status': True,
-            'message': 'OK'
-        }
-
-    return {
-            'status': False,
-            'message': 'An error occured'
-        }
-
-# --------------------------------------------------------------------------
-# Dashboard Page
-# --------------------------------------------------------------------------
-# A private page that only logged in users can access.
-@route.get("/dashboards", response_class=HTMLResponse)
-def index(request: Request, db: Session = Depends(get_db)):
-    user = LoginController.get_current_user_from_cookie(request, db)
-    context = {
-        "user": user,
-        "request": request
-    }
-    return templates.TemplateResponse("Private/dashboard.html", context)
+                'status': False,
+                'message': 'An error occured, cannot create'
+            }
+    except:
+        return {
+                'status': False,
+                'message': 'An error occured',
+            }

@@ -108,7 +108,9 @@ def create_user_account(user_dto: UserDtoCreate, db: Session):
         
         db.add(user)
         db.commit()
+
         db.flush(user)
+
         
         return user
     return False

@@ -4,8 +4,8 @@ from pydantic import BaseModel
 # --------------------------------------------------------------------------
 class UserDto(BaseModel):
     username: str
-    name: str
-    hashed_password: str
+    email: str
+    is_active: bool
     
 class UserDtoCreate(BaseModel):
     username: str
