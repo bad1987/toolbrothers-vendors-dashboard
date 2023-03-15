@@ -8,6 +8,7 @@ from Security.Settings import Settings
 from Security.DTO.UserDto import UserDto
 from Database.Connexion import SessionLocal
 from sqlalchemy.orm import Session
+from Database.Models import User
 
 
 
@@ -28,8 +29,10 @@ def get_db():
 @route.get("/users", response_class=HTMLResponse)
 def index(request: Request, db: Session = Depends(get_db)):
     user = LoginController.get_current_user_from_cookie(request, db)
+    users = db.query(User).filter()
     context = {
         "user": user,
+        "users": users,
         "request": request
     }
     return templates.TemplateResponse("users.html", context)
