@@ -1,14 +1,17 @@
 from typing import Dict, List, Optional
 from fastapi import Depends, FastAPI, HTTPException, Request, Response, status, APIRouter
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.templating import Jinja2Templates
 from Security.Controllers import LoginController
 from Security.Settings import Settings
-from Security.DTO.UserDto import UserDto
+from Security.DTO.UserDto import UserDto, UserDtoCreate
 from Database.Connexion import SessionLocal
 from sqlalchemy.orm import Session
 from Database.Models import User
+from rich.console import Console
+
+console = Console()
 
 
 
@@ -36,3 +39,21 @@ def index(request: Request, db: Session = Depends(get_db)):
         "request": request
     }
     return templates.TemplateResponse("users.html", context)
+
+@route.post('/users/', response_class=JSONResponse)
+async def add_user(request: Request, db: Session = Depends(get_db)):
+    datas = await request.json()
+    console.log(f'[green]{datas}')
+
+    ans = LoginController.create_user_account(UserDtoCreate(datas['username'], datas['email'], datas['password']))
+
+    if ans:
+        return {
+            'status': True,
+            'message': 'OK'
+        }
+
+    return {
+            'status': False,
+            'message': 'An error occured'
+        }

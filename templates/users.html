@@ -404,7 +404,7 @@
                 <div class="items-center p-6 border-t border-gray-200 rounded-b dark:border-gray-700">
                     <button
                         class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-                        type="submit">Add user</button>
+                        type="submit" id="btn-add-user">Add user</button>
                 </div>
 
             </div>
@@ -455,6 +455,26 @@
 
 
 </main>
+
+<script>
+    window.onload = function() {
+        document.querySelector('#btn-add-user').addEventListener('click', function () {
+            const newUser = {
+                'username': 'Anonymous',
+                'email': 'mys@gmail.com',
+                'password': '12345'
+            }
+            fetch('/users/', {
+                method: 'POST',
+                body: JSON.stringify(newUser)
+
+            }).then(function(data) {
+                return data.json()
+            })
+            .then(r => console.log(r))
+        })
+    }
+</script>
 
 
 {% endblock %}
