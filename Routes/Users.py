@@ -58,6 +58,15 @@ async def get_all_users(request: Request, db: Session = Depends(get_db)):
 
     return {'users': users}
 
+@route.delete('/users', response_class=JSONResponse)
+async def delete_user(request: Request, db: Session = Depends(get_db)):
+    user = LoginController.get_current_user_from_cookie(request, db)
+    datas = await request.json()
+
+    
+
+    return {'message': 'OK'}
+
 @route.post('/users/', response_class=JSONResponse)
 async def add_user(request: Request, db: Session = Depends(get_db)):
     try:
@@ -68,12 +77,12 @@ async def add_user(request: Request, db: Session = Depends(get_db)):
 
         ans = LoginController.create_user_account(user, db)
 
+        newUser = UserDto(**datas)
 
         if ans:
             return {
                 'status': True,
-                'message': 'OK',
-                'current_user': current_user
+                'user': newUser
             }
 
         return {
