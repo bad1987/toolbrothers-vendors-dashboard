@@ -1,6 +1,7 @@
 from typing import Dict, List, Optional
 from fastapi import Depends, HTTPException, Request, Response, status, APIRouter
 from fastapi.responses import HTMLResponse, RedirectResponse
+from Security.OAuth2PasswordBearerWithCookie import OAuth2PasswordBearerWithCookie
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.templating import Jinja2Templates
 from Security.Controllers import LoginController
@@ -17,6 +18,8 @@ route = APIRouter(prefix='')
 templates = Jinja2Templates(directory="templates")
 console = Console()
 
+oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="token")
+
 def get_db():
     db = SessionLocal()
     try:
@@ -28,12 +31,13 @@ def get_db():
 @route.post("token")
 def login_for_access_token(
     response: Response, 
-    form_data: OAuth2PasswordRequestForm = Depends()
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db)
 ) -> Dict[str, str]:
-    user = LoginController.authenticate_user(form_data.username, form_data.password)
+    user = LoginController.authenticate_user(form_data.username, form_data.password, db)
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password")
-    access_token = LoginController.create_access_token(data={"username": user.username})
+    access_token = LoginController.create_access_token(data={"username": user.email})
     
     # Set an HttpOnly cookie in the response. `httponly=True` prevents 
     # JavaScript from reading the cookie.
@@ -49,9 +53,9 @@ def login_for_access_token(
 # Home Page
 # --------------------------------------------------------------------------
 @route.get("/", response_class=HTMLResponse)
-def index(request: Request):
+def index(request: Request, db: Session = Depends(get_db)):
     try:
-        user = LoginController.get_current_user_from_cookie(request)
+        user = LoginController.get_current_user_from_cookie(request, db)
     except:
         user = None
     context = {
@@ -66,7 +70,8 @@ def index(request: Request):
 # --------------------------------------------------------------------------
 # A private page that only logged in users can access.
 @route.get("/private", response_class=HTMLResponse)
-def index(request: Request, user: UserDto = Depends(LoginController.get_current_user_from_token)):
+def index(request: Request, db: Session = Depends(get_db)):
+    user = LoginController.get_current_user_from_cookie(request, db)
     context = {
         "user": user,
         "request": request
@@ -104,7 +109,7 @@ async def login_post(request: Request, db: Session = Depends(get_db)):
     if await form.is_valid():
         try:
             response = RedirectResponse("/", status.HTTP_302_FOUND)
-            login_for_access_token(response, form)
+            res = login_for_access_token(response, form, db)
             form.__dict__.update(msg="Login Successful!")
             return response
         except HTTPException:

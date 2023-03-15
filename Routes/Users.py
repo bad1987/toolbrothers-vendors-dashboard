@@ -6,6 +6,8 @@ from fastapi.templating import Jinja2Templates
 from Security.Controllers import LoginController
 from Security.Settings import Settings
 from Security.DTO.UserDto import UserDto
+from Database.Connexion import SessionLocal
+from sqlalchemy.orm import Session
 
 
 
@@ -13,8 +15,19 @@ route = APIRouter(prefix='')
 templates = Jinja2Templates(directory="templates")
 
 
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+
 @route.get("/users", response_class=HTMLResponse)
-def index(request: Request, user: UserDto = Depends(LoginController.get_current_user_from_token)):
+def index(request: Request, db: Session = Depends(get_db)):
+    user = LoginController.get_current_user_from_cookie(request, db)
     context = {
         "user": user,
         "request": request

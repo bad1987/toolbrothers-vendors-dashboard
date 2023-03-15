@@ -26,19 +26,12 @@ def get_db():
 
 
 oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="token")
-DB = DataBase(
-    user=[
-        UserDto(username="user1@gmail.com",name="Bonitech1", hashed_password=crypto.hash("12345")),
-        UserDto(username="user2@gmail.com",name="Bonitech2", hashed_password=crypto.hash("12345")),
-    ]
-)
+
 console = Console()
 
-def get_user(username: str) -> User:
-    user = [user for user in DB.user if user.username == username]
-    if user:
-        return user[0]
-    return None
+
+def get_user_by_email(db: Session, email: str):
+    return db.query(User).filter(User.email == email).first()
 
 def create_access_token(data: Dict) -> str:
     to_encode = data.copy()
@@ -52,17 +45,16 @@ def create_access_token(data: Dict) -> str:
     return encoded_jwt
 
 
-def authenticate_user(username: str, plain_password: str) -> UserDto:
-    user = get_user(username)
-    console.log("userrrr", user)
+def authenticate_user(username: str, plain_password: str, db: Session) -> UserDto:
+    user = get_user_by_email(db, username)
     if not user:
         return False
-    if not crypto.verify(plain_password, user.hashed_password):
+    if not crypto.verify(plain_password, user.password):
         return False
     return user
 
 
-def decode_token(token: str) -> UserDto:
+def decode_token(token: str, db: Session) -> UserDto:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED, 
         detail="Could not validate credentials."
@@ -77,22 +69,23 @@ def decode_token(token: str) -> UserDto:
         print(e)
         raise credentials_exception
     
-    user = get_user(username)
+    user = get_user_by_email(db, username)
     return user
 
 
-def get_current_user_from_token(token: str = Depends(oauth2_scheme)) -> UserDto:
+def get_current_user_from_token(db: Session, token: str = Depends(oauth2_scheme)) -> UserDto:
     """
     Get the current user from the cookies in a request.
 
     Use this function when you want to lock down a route so that only 
     authenticated users can see access the route.
     """
-    user = decode_token(token)
+    console.log(f"[green]{token}")
+    user = decode_token(token, db)
     return user
 
 
-def get_current_user_from_cookie(request: Request) -> UserDto:
+def get_current_user_from_cookie(request: Request, db: Session) -> UserDto:
     """
     Get the current user from the cookies in a request.
     
@@ -100,7 +93,7 @@ def get_current_user_from_cookie(request: Request) -> UserDto:
     for views that should work for both logged in, and not logged in users.
     """
     token = request.cookies.get(Settings.COOKIE_NAME)
-    user = decode_token(token)
+    user = decode_token(token, db)
     return user
 
 # Register user
