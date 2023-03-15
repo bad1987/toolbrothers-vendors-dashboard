@@ -14,6 +14,16 @@ from fastapi import Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 from Database.Models import User
 from rich.console import Console
+from Database.Connexion import SessionLocal
+
+# Dependency
+def get_db():
+    try:
+        db = SessionLocal()
+        yield db
+    finally:
+        db.close()
+
 
 oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="token")
 DB = DataBase(
@@ -24,8 +34,7 @@ DB = DataBase(
 )
 console = Console()
 
-def get_user(username: str) -> UserDto:
-
+def get_user(username: str) -> User:
     user = [user for user in DB.user if user.username == username]
     if user:
         return user[0]
@@ -97,13 +106,16 @@ def get_current_user_from_cookie(request: Request) -> UserDto:
 # Register user
 def create_user_account(user_dto: UserDtoCreate, db: Session):
     user = User()
-    user.username = user_dto.username
-    user.email = user_dto.email
-    user.password = crypto.hash(user_dto.password)
-    user.roles = "Vendor"
-    
-    db.add(user)
-    db.commit()
-    db.flush(user)
-    
-    return user
+    is_user = db.query(User).filter(User.email == user_dto.email).first()
+    if not is_user:
+        user.username = user_dto.username
+        user.email = user_dto.email
+        user.password = crypto.hash(user_dto.password)
+        user.roles = "Vendor"
+        
+        db.add(user)
+        db.commit()
+        db.flush(user)
+        
+        return user
+    return False
