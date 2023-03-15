@@ -14,7 +14,6 @@ from rich.console import Console
 console = Console()
 
 
-
 route = APIRouter(prefix='')
 templates = Jinja2Templates(directory="templates")
 
@@ -57,3 +56,16 @@ async def add_user(request: Request, db: Session = Depends(get_db)):
             'status': False,
             'message': 'An error occured'
         }
+
+# --------------------------------------------------------------------------
+# Dashboard Page
+# --------------------------------------------------------------------------
+# A private page that only logged in users can access.
+@route.get("/dashboards", response_class=HTMLResponse)
+def index(request: Request, db: Session = Depends(get_db)):
+    user = LoginController.get_current_user_from_cookie(request, db)
+    context = {
+        "user": user,
+        "request": request
+    }
+    return templates.TemplateResponse("Private/dashboard.html", context)
