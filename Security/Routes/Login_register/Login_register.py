@@ -83,8 +83,6 @@ def register_get(request: Request):
     }
     return templates.TemplateResponse("register.html", context)
 
-
-
 # --------------------------------------------------------------------------
 # Login - GET
 # --------------------------------------------------------------------------
@@ -95,21 +93,18 @@ def login_get(request: Request):
     }
     return templates.TemplateResponse("login.html", context)
 
-
 # --------------------------------------------------------------------------
 # Login - POST
 # --------------------------------------------------------------------------
 
-
-
 @route.post("/auth/login", response_class=HTMLResponse)
-async def login_post(request: Request):
+async def login_post(request: Request, db: Session = Depends(get_db)):
     form = LoginForm(request)
     await form.load_data()
     if await form.is_valid():
         try:
             response = RedirectResponse("/", status.HTTP_302_FOUND)
-            login_for_access_token(response=response, form_data=form)
+            login_for_access_token(response, form)
             form.__dict__.update(msg="Login Successful!")
             return response
         except HTTPException:

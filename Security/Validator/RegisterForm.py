@@ -26,7 +26,7 @@ class RegisterForm:
         if not self.password or not len(self.password) >= 4:
             self.errors.append("A valid password is required")
         if not (self.confirm_password == self.password):
-            self.errors.append(f"Confirmation of password is incorrect {self.password}, {self.confirm_password}") 
+            self.errors.append("Confirmation of password is incorrect") 
         if not self.errors:
             return True
         return False

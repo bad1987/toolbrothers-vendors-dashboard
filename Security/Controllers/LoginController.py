@@ -10,12 +10,10 @@ from Security.Settings import Settings
 from Security.DTO.UserDto import UserDto
 from Security.DTO.UserDto import UserDtoCreate
 from Security.DTO.DataBase import DataBase
-from fastapi import Depends, HTTPException, Request, Response, status, APIRouter
-from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi import Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 from Database.Models import User
-
+from rich.console import Console
 
 oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="token")
 DB = DataBase(
@@ -24,8 +22,10 @@ DB = DataBase(
         UserDto(username="user2@gmail.com",name="Bonitech2", hashed_password=crypto.hash("12345")),
     ]
 )
+console = Console()
 
 def get_user(username: str) -> UserDto:
+
     user = [user for user in DB.user if user.username == username]
     if user:
         return user[0]
@@ -45,6 +45,7 @@ def create_access_token(data: Dict) -> str:
 
 def authenticate_user(username: str, plain_password: str) -> UserDto:
     user = get_user(username)
+    console.log("userrrr", user)
     if not user:
         return False
     if not crypto.verify(plain_password, user.hashed_password):
@@ -93,19 +94,12 @@ def get_current_user_from_cookie(request: Request) -> UserDto:
     user = decode_token(token)
     return user
 
-def get_user(username: str) -> UserDto:
-    user = [user for user in DB.user if user.username == username]
-    if user:
-        return user[0]
-    return None
-
-
 # Register user
 def create_user_account(user_dto: UserDtoCreate, db: Session):
     user = User()
     user.username = user_dto.username
     user.email = user_dto.email
-    user.password = user_dto.password
+    user.password = crypto.hash(user_dto.password)
     user.roles = "Vendor"
     
     db.add(user)
