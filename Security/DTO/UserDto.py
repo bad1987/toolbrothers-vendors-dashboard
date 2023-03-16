@@ -5,7 +5,9 @@ from pydantic import BaseModel
 class UserDto(BaseModel):
     username: str
     email: str
-    is_active: bool
+    status: str
+    company_id: int
+    roles: str
     
 class UserDtoCreate(BaseModel):
     username: str
