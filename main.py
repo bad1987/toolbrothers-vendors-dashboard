@@ -6,7 +6,7 @@ import uvicorn
 from Security.Routes.Login_register import Login_register
 from Routes import Users
 
-Models.Base.metadata.create_all(bind=engine)
+# Models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 app.include_router(Login_register.route) 

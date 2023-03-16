@@ -9,3 +9,4 @@ rich
 config
 mariadb
 sqlalchemy
+alembic
