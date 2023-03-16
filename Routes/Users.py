@@ -60,12 +60,19 @@ async def get_all_users(request: Request, db: Session = Depends(get_db)):
 
 @route.delete('/users', response_class=JSONResponse)
 async def delete_user(request: Request, db: Session = Depends(get_db)):
-    user = LoginController.get_current_user_from_cookie(request, db)
-    datas = await request.json()
-
-    
-
-    return {'message': 'OK'}
+    try:
+        user = LoginController.get_current_user_from_cookie(request, db)
+        datas = await request.json()
+        
+        return {
+            'status': True,
+            'message': 'Ok'
+        }
+    except:
+        return {
+            'status': False,
+            'message': 'An error occured'
+        }
 
 @route.post('/users/', response_class=JSONResponse)
 async def add_user(request: Request, db: Session = Depends(get_db)):
