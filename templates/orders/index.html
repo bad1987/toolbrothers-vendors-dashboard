@@ -210,7 +210,17 @@
             beforeMount() {
                 axios
                     .get('/get-all-orders')
-                    .then(response => this.orders = response.data.orders)
+                    .then(response => {
+                      let tab = response.data.orders
+
+                      tab.forEach(o => {
+                        o.timestamp = new Date(o.timestamp).toLocaleString("en-US")
+                      })
+
+                      console.log(tab)
+
+                      this.orders = tab
+                    })
             },
             methods:  {
                 addUser() {
