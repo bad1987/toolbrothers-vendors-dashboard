@@ -9,7 +9,8 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String(255), unique=True, index=True, nullable=False)
-    username = Column(String(255), unique=True, index=True, nullable=False)
+    username = Column(String(255), unique=False, index=True, nullable=False)
+    company_id = Column(Integer, unique=True, index=True, nullable=True)
     password = Column(String(255), nullable=False)
     roles = Column(String(255), nullable = False)
-    is_active = Column(Boolean, default=True)
+    status = Column(String(25), nullable=False)

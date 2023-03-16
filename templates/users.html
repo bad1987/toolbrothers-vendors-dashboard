@@ -156,61 +156,57 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                            {% for u in users %}
-                                <tr class="hover:bg-gray-100 dark:hover:bg-gray-700">
-                                    <td class="w-4 p-4">
-                                        <div class="flex items-center">
-                                            <input id="checkbox-1" aria-describedby="checkbox-1" type="checkbox"
-                                                class="w-4 h-4 border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600">
-                                            <label for="checkbox-1" class="sr-only">checkbox</label>
+                            <tr v-for="{{'u in users'}}" key="{{'u.email'}}" class="hover:bg-gray-100 dark:hover:bg-gray-700">
+                                <td class="w-4 p-4">
+                                    <div class="flex items-center">
+                                        <input id="checkbox-1" aria-describedby="checkbox-1" type="checkbox"
+                                            class="w-4 h-4 border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600">
+                                        <label for="checkbox-1" class="sr-only">checkbox</label>
+                                    </div>
+                                </td>
+                                <td class="flex items-center p-4 mr-12 space-x-6 whitespace-nowrap">
+                                    <img class="w-10 h-10 rounded-full"
+                                        src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="Neil Sims avatar">
+                                    <div class="text-sm font-normal text-gray-500 dark:text-gray-400">
+                                        <div class="text-base font-semibold text-gray-900 dark:text-white">{{ '{{u.username}}' }}
                                         </div>
-                                    </td>
-                                    <td class="flex items-center p-4 mr-12 space-x-6 whitespace-nowrap">
-                                        <img class="w-10 h-10 rounded-full"
-                                            src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="Neil Sims avatar">
                                         <div class="text-sm font-normal text-gray-500 dark:text-gray-400">
-                                            <div class="text-base font-semibold text-gray-900 dark:text-white">{{ u.username }}
-                                            </div>
-                                            <div class="text-sm font-normal text-gray-500 dark:text-gray-400">
-                                                {{ u.email }}</div>
-                                        </div>
-                                    </td>
-                                    <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        United States</td>
-                                    <td class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
-                                        <div class="flex items-center">
-                                            {% if u.is_active %}<div class="h-2.5 w-2.5 rounded-full bg-green-400 mr-2"></div> Active
-                                                {%else%}<div class="h-2.5 w-2.5 rounded-full bg-red-400 mr-2"></div> Inactive
-                                            {% endif %}
-                                        </div>
-                                    </td>
-                                    <td class="p-4 space-x-2 whitespace-nowrap">
-                                        <button type="button" data-modal-toggle="edit-user-modal"
-                                            class="inline-flex items-center px-3 py-1 text-sm font-medium text-center text-white rounded-lg bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-400 dark:bg-blue-500 dark:hover:bg-blue-800 dark:focus:ring-blue-500">
-                                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z">
-                                                </path>
-                                                <path fill-rule="evenodd"
-                                                    d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
-                                                    clip-rule="evenodd"></path>
-                                            </svg>
-                                            Edit user
-                                        </button>
-                                        <button type="button" data-modal-toggle="delete-user-modal"
-                                            class="inline-flex items-center px-3 py-1 text-sm font-medium text-center text-white bg-red-400 rounded-lg hover:bg-red-600 focus:ring-4 focus:ring-red-300 dark:focus:ring-red-900">
-                                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd"
-                                                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                                    clip-rule="evenodd"></path>
-                                            </svg>
-                                            Delete user
-                                        </button>
-                                    </td>
-                                </tr>
-                            {% endfor %}
+                                            {{ '{{u.email}}' }}</div>
+                                    </div>
+                                </td>
+                                <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    United States</td>
+                                <td class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
+                                    <div class="flex items-center">
+                                        <div class="h-2.5 w-2.5 rounded-full bg-green-400 mr-2"></div> Active
+                                    </div>
+                                </td>
+                                <td class="p-4 space-x-2 whitespace-nowrap">
+                                    <button type="button" data-modal-toggle="edit-user-modal"
+                                        class="inline-flex items-center px-3 py-1 text-sm font-medium text-center text-white rounded-lg bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-400 dark:bg-blue-500 dark:hover:bg-blue-800 dark:focus:ring-blue-500">
+                                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z">
+                                            </path>
+                                            <path fill-rule="evenodd"
+                                                d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                                                clip-rule="evenodd"></path>
+                                        </svg>
+                                        Edit user
+                                    </button>
+                                    <button @click="{{'setSelectedUser(u.email)'}}" type="button" data-modal-toggle="delete-user-modal"
+                                        class="inline-flex items-center px-3 py-1 text-sm font-medium text-center text-white bg-red-400 rounded-lg hover:bg-red-600 focus:ring-4 focus:ring-red-300 dark:focus:ring-red-900">
+                                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd"
+                                                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                                clip-rule="evenodd"></path>
+                                        </svg>
+                                        Delete user
+                                    </button>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -364,34 +360,34 @@
                             <div class="col-span-6 sm:col-span-3">
                                 <label for="username"
                                     class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">User Name</label>
-                                <input type="text" name="username" id="username"
+                                <input v-model="{{ 'newUser.username' }}" type="text" name="username" id="username"
                                     class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                     placeholder="Bonnie" required="">
                             </div>
                             <div class="col-span-6 sm:col-span-3">
                                 <label for="email"
                                     class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
-                                <input type="email" name="email" id="email"
+                                <input v-model="{{ 'newUser.email' }}" type="email" name="email" id="email"
                                     class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                     placeholder="example@company.com" required="">
                             </div>
                             <div class="col-span-6 sm:col-span-3">
                                 <label for="password"
                                     class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
-                                <input type="password" name="password" id="password"
+                                <input v-model="{{ 'newUser.password' }}" type="password" name="password" id="password"
                                     class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                     placeholder="••••••••" required="">
                             </div>
                             <div class="col-span-6 sm:col-span-3">
                                 <label for="role" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select a role</label>
-                                <select id="role" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <select v-model="{{ 'newUser.roles' }}" id="role" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                     <option selected>Select a role</option>
                                     <option value="admin">Admin</option>
                                     <option value="vendor">Vendor</option>
                                 </select>
                             </div>
                             <div class="flex items-center mb-4">
-                                <input id="checkbox-activate" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <input v-model="{{ 'newUser.is_active' }}" id="checkbox-activate" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                 <label for="checkbox-activate" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Activate</label>
                             </div>
                         </div>
@@ -400,6 +396,7 @@
                 <!-- Modal footer -->
                 <div class="items-center p-6 border-t border-gray-200 rounded-b dark:border-gray-700">
                     <button
+                        @click="{{'addUser'}}"
                         class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                         type="submit" id="btn-add-user">Add user</button>
                 </div>
@@ -435,7 +432,7 @@
                     </svg>
                     <h3 class="mt-5 mb-6 text-lg text-gray-500 dark:text-gray-400">Are you sure you want to delete this
                         user?</h3>
-                    <a href="#"
+                    <a @click="{{'deleteUser'}}"
                         class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-base inline-flex items-center px-3 py-2.5 text-center mr-2 dark:focus:ring-red-800">
                         Yes, I'm sure
                     </a>
@@ -454,45 +451,7 @@
 </main>
 
 <script>
-    window.onload = function() {
-        document.querySelector('#btn-add-user').addEventListener('click', function () {
-
-            const form = document.querySelector('#add-user-form')
-            let username = document.querySelector('#add-user-form input#username').value
-            let email = document.querySelector('#add-user-form input#email').value
-            let password = document.querySelector('#add-user-form input#password').value
-            let isActive = document.querySelector('#add-user-form input#checkbox-activate').checked
-
-            const newUser = {
-                'username': username,
-                'email': email,
-                'password': password,
-                'is_active': isActive
-            }
-
-            console.log('new', newUser)
-            fetch('/users/', {
-                method: 'POST',
-                body: JSON.stringify(newUser),
-                credentials: "same-origin"
-            }).then(function(data) {
-                return data.json()
-            })
-            .then(r => {
-                let pill = document.querySelector("#pill")
-                pill.classList.add('active')
-                pill.innerHTML = r.message
-                if (r.status === true) {
-                    const closeBtn = document.querySelector('#closeBtn-add-form').click()
-
-                    window.location.href = '/users'
-                }
-                else {
-                    pill.classList.add('danger')
-                }
-            })
-        })
-    }
+    
 </script>
 
 
@@ -509,12 +468,38 @@
             data() {
                 return {
                     users: [],
+                    newUser: {
+                        username: null,
+                        email: null,
+                        password: null,
+                        is_active: false
+                    },
+                    selectedUser: {email: null},
                 }
             },
             beforeMount() {
                 axios
                     .get('/get-all-users')
-                    .then(response => (console.log(response)))
+                    .then(response => this.users = response.data.users)
+            },
+            methods:  {
+                addUser() {
+                    axios
+                    .post('/users/', this.newUser)
+                    .then(response => {
+                        this.users.push(response.data.user)
+                    })
+                },
+                setSelectedUser(email) {
+                    this.selectedUser = email
+                },
+                deleteUser() {
+                    axios
+                    .delete('/users/', this.selectedUser)
+                    .then(response => {
+                        this.users = this.users.filter(x => x.email != this.selectedUser)
+                    })
+                }
             }
         }).mount('#app')
     </script>
