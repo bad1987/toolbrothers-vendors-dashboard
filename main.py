@@ -3,7 +3,7 @@ from Database import Models
 from Database.Connexion import engine
 import uvicorn
 from Security.Routes.Login_register import Login_register
-from Routes import Users, Orders
+from Routes import Users, Orders, Payments
 
 from middlewares.FirewallMiddleware import firewall_middleware
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -14,6 +14,7 @@ app = FastAPI()
 app.include_router(Login_register.route) 
 app.include_router(Users.route) 
 app.include_router(Orders.route) 
+app.include_router(Payments.route) 
 
 # allow only authenticated users
 app.add_middleware(BaseHTTPMiddleware, dispatch=firewall_middleware)
