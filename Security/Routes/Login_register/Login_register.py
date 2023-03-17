@@ -13,6 +13,10 @@ from Database.Connexion import SessionLocal
 from sqlalchemy.orm import Session
 from rich.console import Console
 
+import i18n
+
+# instantiate a new translator class
+translator = i18n.Translator('languages/')
 
 route = APIRouter(prefix='')
 templates = Jinja2Templates(directory="templates")
@@ -92,10 +96,13 @@ def register_get(request: Request):
 # Login - GET
 # --------------------------------------------------------------------------
 @route.get("/auth/login", response_class=HTMLResponse)
-def login_get(request: Request):
+def login_get(request: Request, locale: str = 'de'):
+    translator.set_locale(locale)
     context = {
         "request": request
     }
+    context.update(translator.get_data()[locale])
+
     return templates.TemplateResponse("login.html", context)
 
 # --------------------------------------------------------------------------
@@ -103,9 +110,11 @@ def login_get(request: Request):
 # --------------------------------------------------------------------------
 
 @route.post("/auth/login", response_class=HTMLResponse)
-async def login_post(request: Request, db: Session = Depends(get_db)):
+async def login_post(request: Request, locale: str = 'de', db: Session = Depends(get_db)):
+    translator.set_locale(locale)
     form = LoginForm(request)
     await form.load_data()
+    form.__dict__.update(translator.get_data()[locale])
     if await form.is_valid():
         try:
             response = RedirectResponse("/", status.HTTP_302_FOUND)
@@ -114,7 +123,8 @@ async def login_post(request: Request, db: Session = Depends(get_db)):
             return response
         except HTTPException:
             form.__dict__.update(msg="")
-            form.__dict__.get("errors").append("Incorrect Email or Password")
+            error = translator.translate("login_wrong_cred")
+            form.__dict__.get("errors").append(error)
             return templates.TemplateResponse("login.html", form.__dict__)
     return templates.TemplateResponse("login.html", form.__dict__)
 

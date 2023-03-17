@@ -1,0 +1,20 @@
+{
+    "login_title": "Sign in to platform",
+
+    "login_email": "Your email",
+
+    "login_password": "Your password",
+
+    "login_remember_me": "Remember me",
+
+    "login_forgotten_pass": "Lost Password?",
+
+    "login_signin_btn": "Sign in",
+
+    "login_not_reg": "Not registered?",
+
+    "login_create_acc": "Create account",
+
+    "login_wrong_cred": "Incorrect Email or Password"
+   
+  }

@@ -1,0 +1,20 @@
+{
+    "login_title": "Bei der Plattform anmelden",
+
+    "login_email": "Deine email",
+
+    "login_password": "Ihr passwort",
+
+    "login_remember_me": "Erinnere dich an mich",
+
+    "login_forgotten_pass": "Passwort vergessen?",
+
+    "login_signin_btn": "anmelden",
+
+    "login_not_reg": "nicht registriert?",
+
+    "login_create_acc": "Account erstellen",
+
+    "login_wrong_cred": "Falsche E-Mail oder falsches Passwort"
+    
+  }
