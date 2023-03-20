@@ -3,6 +3,7 @@ from pydantic import BaseModel
 # Models and Data
 # --------------------------------------------------------------------------
 class UserDto(BaseModel):
+    id: int
     username: str
     email: str
     status: str
