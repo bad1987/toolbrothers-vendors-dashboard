@@ -15,6 +15,7 @@ app.include_router(Login_register.route)
 app.include_router(Users.route) 
 app.include_router(Orders.route) 
 
+# allow only authenticated users
 app.add_middleware(BaseHTTPMiddleware, dispatch=firewall_middleware)
 
 if __name__ == '__main__':
