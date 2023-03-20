@@ -15,6 +15,7 @@ from sqlalchemy.orm import Session
 from Database.Models import User
 from rich.console import Console
 from Database.Connexion import SessionLocal
+import json
 
 # Dependency
 def get_db():
@@ -116,3 +117,14 @@ def create_user_account(user_dto: UserDtoCreate, db: Session):
         
         return user
     return False
+
+def is_authenticated(request: Request):
+    db = SessionLocal()
+    try:
+        user = get_current_user_from_cookie(request, db)
+    except Exception as e:
+        print(str(e))
+        user = None
+    finally:
+        db.close()
+    return user

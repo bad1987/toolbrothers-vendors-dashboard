@@ -38,6 +38,13 @@ def get_db_cscart():
         db_cscart.close()
 
 
+#check if user is connected
+# @route.get("/user/auth", response_class=JSONResponse)
+def is_authenticated(request: Request, db: Session = Depends(get_db)):
+    print('checking the actual user')
+    user = LoginController.get_current_user_from_cookie(request, db)
+    return user
+
 
 @route.get("/users", response_class=HTMLResponse)
 def index(request: Request, db: Session = Depends(get_db)):
