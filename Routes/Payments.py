@@ -49,7 +49,7 @@ async def get_order_by_vendor(request: Request, db_local: Session = Depends(get_
     return templates.TemplateResponse("Settings/payment_method.html", context)
 
 # Payment method system
-@route.get('/payment-method-vendor')
+@route.get('/payment-method-system')
 def payment_method(db_local: Session = Depends(get_db)):
     
     data = [
