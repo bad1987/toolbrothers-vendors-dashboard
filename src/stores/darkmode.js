@@ -3,7 +3,7 @@ import { ref } from "vue"
 
 
 export const useThemeStore = defineStore('theme',() => {
-    const isDark = ref(false)
+    const isDark = ref(localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches))
 
     function changeMode() {
         // if set via local storage previously
