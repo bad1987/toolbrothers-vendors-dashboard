@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, TIMESTAMP, Integer, String, Float
+from sqlalchemy import Boolean, Column, TIMESTAMP, Integer, String, Float, Text
 from sqlalchemy.orm import relationship
 
 from Database.CscartConnexion import CscartBase
@@ -26,3 +26,12 @@ class CscartOrders(CscartBase):
     phone = Column(String(25), nullable=True)
     company = Column(String(255), nullable=True)
     total = Column(Float, nullable=True)
+    
+class Cscart_payments(CscartBase):
+    __tablename__ = "cscart_payments"
+    
+    payment_id = Column(Integer, primary_key=True, index=True)
+    processor_params = Column(Text, nullable=True)
+    company_id = Column(Integer, nullable=False)
+    processor_id = Column(Integer, nullable=False)
+    status = Column(String(25), nullable=False)
