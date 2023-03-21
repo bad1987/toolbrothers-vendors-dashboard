@@ -40,6 +40,7 @@ def timestamp_to_date(s):
 
 @route.get("/orders", response_class=HTMLResponse)
 async def get_order_by_vendor(request: Request, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart)):
+
     result = OrderController.get_orders_by_vendor_connected(request, db_local, db_cscart)
     context = {
         "request": request,

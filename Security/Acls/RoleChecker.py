@@ -16,3 +16,10 @@ class Role_checker:
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Operation not permitted"
             )
+        return user
+    
+    def setRoles(self, roles):
+        if isinstance(roles, list):
+            for r in roles:
+                if r not in self.allowed_roles:
+                    self.allowed_roles.append(r)
