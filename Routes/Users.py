@@ -14,7 +14,7 @@ from passlib.handlers.sha2_crypt import sha512_crypt as crypto
 
 console = Console()
 
-route = APIRouter(prefix='')
+route = APIRouter(prefix='/admin')
 templates = Jinja2Templates(directory="templates")
 
 def get_db():

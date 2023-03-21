@@ -6,3 +6,9 @@ cd migrations
 alembic revision --autogenerate -m "a comment here"
 alembic upgrade head
 ```
+
+## Migrate payment method system
+localhost:8000/payment-method-system
+
+## Export users cscart in local database
+ localhost:8000/cscart-users
