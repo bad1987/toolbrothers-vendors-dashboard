@@ -8,7 +8,7 @@ alembic upgrade head
 ```
 
 ## Migrate payment method system
-localhost:8000/payment-method-system
+localhost:8000/payment/payment-method-system
 
 ## Export users cscart in local database
- localhost:8000/cscart-users
+ localhost:8000/admin/cscart-users
