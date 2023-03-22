@@ -1,6 +1,7 @@
+import json
 from typing import Dict, List, Optional
 from fastapi import Depends, HTTPException, Request, Response, status, APIRouter
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from Security.OAuth2PasswordBearerWithCookie import OAuth2PasswordBearerWithCookie
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.templating import Jinja2Templates
@@ -12,6 +13,7 @@ from Security.Validator.RegisterForm import RegisterForm
 from Database.Connexion import SessionLocal
 from sqlalchemy.orm import Session
 from rich.console import Console
+from fastapi.encoders import jsonable_encoder
 
 import i18n
 
@@ -32,26 +34,40 @@ def get_db():
         db.close()
 
 
+# @route.post("token")
+# def login_for_access_token(
+#     response: Response, 
+#     form_data: OAuth2PasswordRequestForm = Depends(),
+#     db: Session = Depends(get_db)
+# ) -> Dict[str, str]:
+#     user = LoginController.authenticate_user(form_data.username, form_data.password, db)
+#     if not user:
+#         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password")
+#     access_token = LoginController.create_access_token(data={"username": user.email})
+    
+#     # Set an HttpOnly cookie in the response. `httponly=True` prevents 
+#     # JavaScript from reading the cookie.
+#     response.set_cookie(
+#         key=Settings.COOKIE_NAME, 
+#         value=f"Bearer {access_token}", 
+#         httponly=True
+#     )  
+#     return {Settings.COOKIE_NAME: access_token, "token_type": "bearer"}
+
+
 @route.post("token")
 def login_for_access_token(
-    response: Response, 
-    form_data: OAuth2PasswordRequestForm = Depends(),
+    form_data: dict,
     db: Session = Depends(get_db)
 ) -> Dict[str, str]:
-    user = LoginController.authenticate_user(form_data.username, form_data.password, db)
+    user = LoginController.authenticate_user(form_data['username'], form_data['password'], db)
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password")
     access_token = LoginController.create_access_token(data={"username": user.email})
     
     # Set an HttpOnly cookie in the response. `httponly=True` prevents 
-    # JavaScript from reading the cookie.
-    response.set_cookie(
-        key=Settings.COOKIE_NAME, 
-        value=f"Bearer {access_token}", 
-        httponly=True
-    )  
+    # JavaScript from reading the cookie. 
     return {Settings.COOKIE_NAME: access_token, "token_type": "bearer"}
-
 
 # --------------------------------------------------------------------------
 # Home Page
@@ -109,24 +125,33 @@ def login_get(request: Request, locale: str = 'de'):
 # Login - POST
 # --------------------------------------------------------------------------
 
-@route.post("/auth/login", response_class=HTMLResponse)
-async def login_post(request: Request, locale: str = 'de', db: Session = Depends(get_db)):
-    translator.set_locale(locale)
-    form = LoginForm(request)
-    await form.load_data()
-    form.__dict__.update(translator.get_data()[locale])
-    if await form.is_valid():
-        try:
-            response = RedirectResponse("/", status.HTTP_302_FOUND)
-            res = login_for_access_token(response, form, db)
-            form.__dict__.update(msg="Login Successful!")
-            return response
-        except HTTPException:
-            form.__dict__.update(msg="")
-            error = translator.translate("login_wrong_cred")
-            form.__dict__.get("errors").append(error)
-            return templates.TemplateResponse("login.html", form.__dict__)
-    return templates.TemplateResponse("login.html", form.__dict__)
+# @route.post("/auth/login", response_class=HTMLResponse)
+# async def login_post(request: Request, locale: str = 'de', db: Session = Depends(get_db)):
+#     translator.set_locale(locale)
+#     form = LoginForm(request)
+#     await form.load_data()
+#     form.__dict__.update(translator.get_data()[locale])
+#     print(form.__dict__)
+#     if await form.is_valid():
+#         try:
+#             response = RedirectResponse("/", status.HTTP_302_FOUND)
+#             res = login_for_access_token(response, form, db)
+#             form.__dict__.update(msg="Login Successful!")
+#             return response
+#         except HTTPException:
+#             form.__dict__.update(msg="")
+#             error = translator.translate("login_wrong_cred")
+#             form.__dict__.get("errors").append(error)
+#             return templates.TemplateResponse("login.html", form.__dict__)
+#     return templates.TemplateResponse("login.html", form.__dict__)
+
+@route.post("/auth/login")
+async def login_post(request: Request, db: Session = Depends(get_db)):
+    credentials = json.loads(await request.body())
+    response = JSONResponse(jsonable_encoder(credentials))
+    res = login_for_access_token(credentials, db)
+    res.update({'expired_at': Settings.ACCESS_TOKEN_EXPIRE_MINUTES})
+    return jsonable_encoder(res)
 
 # --------------------------------------------------------------------------
 # Register

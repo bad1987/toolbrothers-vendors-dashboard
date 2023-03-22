@@ -53,6 +53,18 @@ def index(request: Request, db: Session = Depends(get_db)):
     }
     return templates.TemplateResponse("users.html", context)
 
+
+@route.get("/users/list")
+def index(request: Request, db: Session = Depends(get_db)):
+    # user = LoginController.get_current_user_from_cookie(request, db)
+    users = db.query(User).filter()
+    context = {
+        # "user": user,
+        "users": users,
+        "request": request
+    }
+    return context
+
 @route.get('/get-all-users', response_class=JSONResponse)
 async def get_all_users(request: Request, db: Session = Depends(get_db)):
     user = LoginController.get_current_user_from_cookie(request, db)
