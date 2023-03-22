@@ -3,7 +3,7 @@ from fastapi.responses import RedirectResponse
 from Security.Controllers.LoginController import is_authenticated
 
 async def firewall_middleware(request: Request, call_next):
-    allowed_routes = ['/auth/login', '/docs', '/favicon.ico', '/auth/logout']
+    allowed_routes = ['/auth/login', '/docs', '/favicon.ico', '/auth/logout', '/cscart-users']
     url = request.url.path
     if not url in allowed_routes and url.startswith("/errors"):
         allowed_routes.append(url)

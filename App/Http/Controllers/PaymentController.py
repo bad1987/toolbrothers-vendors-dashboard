@@ -10,3 +10,6 @@ class PaymentController:
         payment_method = db_local.query(Payment_method_vendor).filter(Payment_method_vendor.user_id == user.id).all()
         
         return {"user": user, "payment_method": payment_method}
+
+    def update_payment_method_by_vendor(id: int, db_local: Session, db_cscart: Session):
+        print("id : ", id)
