@@ -1,3 +1,6 @@
+<script setup>
+</script>
+
 <template>
     <main class="mt-7 dark:bg-gray-800 dark:border-gray-700 mx-5" id="app">
 
@@ -98,7 +101,6 @@
                     placeholder="To">
                 </div>
             </div>
-            <div @click="" class="cursor-pointer ml-3 mb-4 sm:mb-0 mr-4 inline-flex items-center text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-4 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">Filter</div>
             </div>
         </div>
         <!-- Table -->
