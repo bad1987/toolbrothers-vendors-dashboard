@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import Depends,Request, APIRouter
+from fastapi import Depends, HTTPException,Request, APIRouter
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from Security.Controllers import LoginController
@@ -42,6 +42,11 @@ def get_db_cscart():
 def is_authenticated(request: Request, db: Session = Depends(get_db)):
     print('checking the actual user')
     user = LoginController.get_current_user_from_cookie(request, db)
+    if not user:
+        raise HTTPException(
+            status_code=401,
+            detail="Not authenticated"
+        )
     return user
 
 
@@ -59,6 +64,7 @@ def index(request: Request, db: Session = Depends(get_db)):
 
 @route.get("/users/list", response_model=List[UserSchema], responses={200:{"model": UserSchema}})#, response_model=list(UserSchema)
 def index(request: Request, db: Session = Depends(get_db)):
+    is_authenticated(request, db)
     users = db.query(User).all()
     res = []
     for u in users:

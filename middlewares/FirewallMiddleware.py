@@ -8,10 +8,11 @@ async def firewall_middleware(request: Request, call_next):
     if not url in allowed_routes and url.startswith("/errors"):
         allowed_routes.append(url)
     cookie = request.headers.get('Cookie')
+    # print(request.headers.get('Cookie'))
     if request.url.path not in allowed_routes:
         # cookie deleted
         if not cookie:
-            return RedirectResponse("/auth/login")
+            return RedirectResponse("/errors/401", status_code=401)
         # cookie expired
         user = is_authenticated(request)
         if not user:

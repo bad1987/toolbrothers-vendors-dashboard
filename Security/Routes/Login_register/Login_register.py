@@ -151,6 +151,7 @@ async def login_post(request: Request, db: Session = Depends(get_db)):
     response = JSONResponse(jsonable_encoder(credentials))
     res = login_for_access_token(credentials, db)
     res.update({'expired_at': Settings.ACCESS_TOKEN_EXPIRE_MINUTES})
+    res.update({'cookie_name': Settings.COOKIE_NAME})
     return jsonable_encoder(res)
 
 # --------------------------------------------------------------------------
