@@ -13,7 +13,7 @@ console = Console()
 
 
 
-route = APIRouter(prefix='')
+route = APIRouter(prefix='/payment')
 templates = Jinja2Templates(directory="templates")
 
 
@@ -37,7 +37,7 @@ def get_db_cscart():
 def timestamp_to_date(s):
     return time.ctime(s)
 
-@route.get("/payment-method", response_class=HTMLResponse)
+@route.get("/method", response_class=HTMLResponse)
 async def get_order_by_vendor(request: Request, db_local: Session = Depends(get_db)):
     result = PaymentController.get_payment_method_by_vendor(request, db_local)
     context = {
@@ -58,7 +58,6 @@ def payment_method(db_local: Session = Depends(get_db)):
         {"name": "Klarna", "processor_id": "134"}
     ]
     
-    
     for item in data:
         payment_methods = Payment_method()
         payment_methods.name = item["name"]
@@ -68,3 +67,9 @@ def payment_method(db_local: Session = Depends(get_db)):
         db_local.commit()
         
         db_local.flush(payment_methods)
+
+# Enable and disable payment method
+@route.get('/update/{id}')
+def update_payment_method(id: int, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart)):
+    result = PaymentController.update_payment_method_by_vendor(id, db_local, db_cscart)
+    print("result", result, id)

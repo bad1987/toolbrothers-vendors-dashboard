@@ -107,7 +107,7 @@ def create_user_account(user_dto: UserDtoCreate, db: Session):
         user.username = user_dto.username
         user.email = user_dto.email
         user.password = crypto.hash(user_dto.password)
-        user.roles = "ad"
+        user.roles = "Role_admin"
         user.status = "A"
         user.company_id = 10
         

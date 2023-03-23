@@ -42,4 +42,4 @@ app.add_middleware(BaseHTTPMiddleware, dispatch=orders_permissions)
 # app.add_middleware(BaseHTTPMiddleware, dispatch=firewall_middleware)
 
 if __name__ == '__main__':
-    uvicorn.run(app, host="127.0.0.1", port=9000)
+    uvicorn.run(app, host="127.0.0.1", port=6540)

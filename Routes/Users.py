@@ -17,7 +17,7 @@ from schemas.UserSchema import UserSchema
 
 console = Console()
 
-route = APIRouter(prefix='')
+route = APIRouter(prefix='/admin')
 templates = Jinja2Templates(directory="templates")
 
 def get_db():
