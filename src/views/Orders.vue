@@ -13,6 +13,9 @@ import axios from 'axios'
     }).then(resp => {
       orders.value = resp.data.orders
     })
+    .catch(error => {
+      console.log(error.response.status)
+    })
   }
 
   function nextPage() {
