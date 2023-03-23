@@ -40,7 +40,6 @@ def get_db_cscart():
 #check if user is connected
 # @route.get("/user/auth", response_class=JSONResponse)
 def is_authenticated(request: Request, db: Session = Depends(get_db)):
-    print('checking the actual user')
     user = LoginController.get_current_user_from_cookie(request, db)
     if not user:
         raise HTTPException(
