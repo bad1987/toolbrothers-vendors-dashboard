@@ -1,13 +1,16 @@
 <script setup>
 import { ref } from 'vue';
-import { api } from '../api'
+import axios from 'axios'
 
   const orders = ref([])
 
-  orders.value = api('http://localhost:8000/orders', 'get', {})
+  const fetchOrders = () => {
+    axios.get('/get-all-orders').then(resp => {
+      orders.value = resp.data.orders
+    })
+  }
 
-  console.log(orders.value)
-
+  fetchOrders()
 
 </script>
 
