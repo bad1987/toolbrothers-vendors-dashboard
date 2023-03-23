@@ -31,7 +31,7 @@ class Payment_method_vendor(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(255), nullable=False)
-    processor_id = Column(Text, nullable=True)
+    processor_id = Column(Integer, nullable=True)
     payment_id = Column(Integer, nullable=False)
     status = Column(String(25), nullable=False)
     processor_params = Column(Text, nullable=True)

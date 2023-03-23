@@ -8,6 +8,9 @@ from sqlalchemy.orm import Session
 from rich.console import Console
 from App.Http.Controllers.PaymentController import PaymentController
 from Database.Models import Payment_method
+from typing import List
+from schemas.Payment_method.PaymentMethodSchema import PaymentMethodSchema
+from fastapi.encoders import jsonable_encoder
 
 console = Console()
 
@@ -37,16 +40,22 @@ def get_db_cscart():
 def timestamp_to_date(s):
     return time.ctime(s)
 
-@route.get("/method", response_class=HTMLResponse)
-async def get_order_by_vendor(request: Request, db_local: Session = Depends(get_db)):
+@route.get("/method", response_model=List[PaymentMethodSchema], responses={200:{"model": PaymentMethodSchema}})
+def get_payment_method_by_vendor(request: Request, db_local: Session = Depends(get_db)):
     result = PaymentController.get_payment_method_by_vendor(request, db_local)
-    context = {
-        "request": request,
-        "payment_method": result["payment_method"],
-        "user": result["user"]
-    }
+    res = []
+    console.log(result)
     
-    return templates.TemplateResponse("Settings/payment_method.html", context)
+    for u in result["payment_method"]:
+        res.append(PaymentMethodSchema(**jsonable_encoder(u)))
+    return res
+    # context = {
+    #     "request": request,
+    #     "payment_method": result["payment_method"],
+    #     "user": result["user"]
+    # }
+    
+    # return templates.TemplateResponse("Settings/payment_method.html", context)
 
 # Payment method system
 @route.get('/payment-method-system')
