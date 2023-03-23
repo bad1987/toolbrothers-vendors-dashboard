@@ -94,6 +94,8 @@ def get_current_user_from_cookie(request: Request, db: Session) -> UserDto:
     for views that should work for both logged in, and not logged in users.
     """
     token = request.cookies.get(Settings.COOKIE_NAME)
+    if not token:
+        return None
     user = decode_token(token, db)
     return user
 
@@ -124,6 +126,10 @@ def is_authenticated(request: Request):
         user = get_current_user_from_cookie(request, db)
     except Exception as e:
         print(str(e))
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not Authenticated"
+        )
         user = None
     finally:
         db.close()

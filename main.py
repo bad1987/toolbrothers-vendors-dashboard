@@ -39,7 +39,7 @@ app.add_middleware(
 # authorizations
 app.add_middleware(BaseHTTPMiddleware, dispatch=orders_permissions)
 # allow only authenticated users
-app.add_middleware(BaseHTTPMiddleware, dispatch=firewall_middleware)
+# app.add_middleware(BaseHTTPMiddleware, dispatch=firewall_middleware)
 
 if __name__ == '__main__':
     uvicorn.run(app, host="127.0.0.1", port=6540)
