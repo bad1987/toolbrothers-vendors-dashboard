@@ -50,8 +50,9 @@ async def get_order_by_vendor(request: Request, db_local: Session = Depends(get_
     
     return templates.TemplateResponse("orders/index.html", context) 
 
-@route.get('/get-all-orders', response_class=JSONResponse)
-async def get_all_orders(request: Request, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart)):
-    result = OrderController.get_orders_by_vendor_connected(request, db_local, db_cscart)
+@route.get('/orders/list/', response_class=JSONResponse)
+async def get_all_orders(request: Request, db_local: Session = Depends(get_db),
+                          db_cscart: Session = Depends(get_db_cscart), skip: int = 0, limit: int = 10):
+    result = OrderController.get_orders_by_vendor_connected(request, db_local, db_cscart, skip, limit)
 
-    return {'orders': result["orders"]}
+    return {'orders': result["orders"], 'total': result["total"]}

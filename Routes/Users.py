@@ -3,7 +3,7 @@ from fastapi import Depends, HTTPException,Request, APIRouter
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from Security.Controllers import LoginController
-from Security.DTO.UserDto import UserDtoCreate
+from Security.DTO.UserDto import UserDtoCreate, UserDto
 from Database.Connexion import SessionLocal
 from Database.CscartConnexion import CscartSession
 from sqlalchemy.orm import Session
@@ -72,9 +72,11 @@ def index(request: Request, db: Session = Depends(get_db)):
 
 @route.get('/get-all-users', response_class=JSONResponse)
 async def get_all_users(request: Request, db: Session = Depends(get_db)):
-    user = LoginController.get_current_user_from_cookie(request, db)
-    console.log(user)
+    # user = LoginController.get_current_user_from_cookie(request, db)
+    # console.log(user)
     users = db.query(User).all()
+
+    datas = []
 
     return {'users': users}
 

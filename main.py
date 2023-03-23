@@ -37,7 +37,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 # authorizations
-app.add_middleware(BaseHTTPMiddleware, dispatch=orders_permissions)
+# app.add_middleware(BaseHTTPMiddleware, dispatch=orders_permissions)
 # allow only authenticated users
 # app.add_middleware(BaseHTTPMiddleware, dispatch=firewall_middleware)
 
