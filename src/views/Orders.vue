@@ -5,13 +5,15 @@ import axios from 'axios'
   const orders = ref([])
   const actualSkip = ref(0)
   const actuaLimit = ref(5)
+  const totalOrders = ref(0)
   const availableLimits = [5, 10, 25, 50, 75, 100]
 
   const fetchOrders = () => {
     axios.get('/orders/list', {
-      params: {skip: actualSkip.value, limit: actuaLimit.value}
+      params: { skip: actualSkip.value, limit: actuaLimit.value }
     }).then(resp => {
       orders.value = resp.data.orders
+      totalOrders.value = resp.data.total
     })
   }
 
@@ -30,6 +32,10 @@ import axios from 'axios'
     actualSkip.value = Math.max(0, actualSkip.value - actuaLimit.value)
 
     fetchOrders()
+  }
+
+  function fastForward() {
+    actualSkip = Math.ceil( totalOrders.value / actuaLimit ) - 1
   }
 
   fetchOrders()
