@@ -109,7 +109,7 @@ def create_user_account(user_dto: UserDtoCreate, db: Session):
         user.password = crypto.hash(user_dto.password)
         user.roles = "Role_admin"
         user.status = "A"
-        user.company_id = 10
+        user.company_id = -1
         
         db.add(user)
         db.commit()

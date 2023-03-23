@@ -1,3 +1,4 @@
+import re
 from typing import List
 from fastapi import Depends, HTTPException,Request, APIRouter
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -198,4 +199,21 @@ async def cscart_users(db_cscart: Session = Depends(get_db_cscart), db_local: Se
     except Exception as e:
         console.log("error ...", str(e))
     
-    
+def extract_credentials(payload: str, username: bool = False, password: bool = False, client_id: bool = False, client_secret: bool = False):
+    if username and password:
+        regex = '^.*?"username".*?"(.*?)".*?"password".*?"(.*?)"'
+        res = re.findall(regex, payload)
+        return {
+            'username': res[0][0],
+            'password': res[0][1],
+        } if len(res) > 0 else None
+    elif client_id and client_secret:
+        regex = '^.*?"client_id".*?"(.*?)".*?"secret".*?"(.*?)"'
+        res = re.findall(regex, payload)
+        return {
+            'client_id': res[0][0],
+            'client_secret': res[0][1],
+        } if len(res) > 0 else None
+    else:
+        print("[+]invalid arguments")
+        return None

@@ -2,6 +2,7 @@ import time
 from fastapi import Depends,Request, APIRouter
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
+from Routes.Users import is_authenticated
 from Security.Controllers import LoginController
 from Security.DTO.UserDto import UserDtoCreate
 from Database.Connexion import SessionLocal
@@ -53,6 +54,7 @@ async def get_order_by_vendor(request: Request, db_local: Session = Depends(get_
 @route.get('/orders/list/', response_class=JSONResponse)
 async def get_all_orders(request: Request, db_local: Session = Depends(get_db),
                           db_cscart: Session = Depends(get_db_cscart), skip: int = 0, limit: int = 10):
+    is_authenticated(request, db_local)
     result = OrderController.get_orders_by_vendor_connected(request, db_local, db_cscart, skip, limit)
 
     return {'orders': result["orders"], 'total': result["total"]}
