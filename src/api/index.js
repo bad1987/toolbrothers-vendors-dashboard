@@ -15,3 +15,25 @@ export function api(url, method, params) {
 
     return response
 }
+
+export function interceptor(){
+    // Request interceptors for API calls
+    axios.interceptors.request.use(
+        config => {
+        // config.headers['Accept'] = 'application/json';
+        // config.headers['Content-Type'] = 'application/json'
+        config.headers['withCredentials'] = true;
+        // config.headers['Authorization'] = getCookie('access_token');
+            return config;
+        },
+        error => {
+            return Promise.reject(error);
+        }
+    );
+}
+
+export function getCookie(name) {
+    var pair = document.cookie.split('; ').find(x => x.startsWith(name+'='));
+    if (pair)
+       return pair.split('=')[1]
+}
