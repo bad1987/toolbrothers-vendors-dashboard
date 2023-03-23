@@ -2,45 +2,19 @@
     import axios from 'axios';
     import { ref, onMounted } from 'vue';
 
-    const users = ref([
-        {
-            id: 1,
-            username: 'Fredchess',
-            email: 'fredchess@gmail.com',
-        },
-        {
-            id: 2,
-            username: 'Frederick Essono',
-            email: 'fredericktabi30@gmail.com',
-        }
-    ])
+    const users = ref([])
+
+    const fetchUsers = () => {
+        axios.get('/admin/users/list').then((response) => {
+            users.value = response.data
+        })
+    }
+
+    fetchUsers()
 
     const newUser = ref({
         username: '',
         email: ''
-    })
-    const url = "http://localhost:8000/users/list"
-    const get_users = () => {
-        axios.get(
-            url,
-            {
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                withCredentials: true,
-            }
-        )
-        .then(response => {
-            console.log(response)
-        })
-        .catch(error => {
-            console.log(error)
-        })
-    }
-    
-    onMounted(() => {
-        get_users()
     })
 </script>
 
