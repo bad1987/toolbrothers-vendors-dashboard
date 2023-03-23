@@ -1,12 +1,13 @@
 <script setup>
-import { ref } from 'vue';
-import axios from 'axios'
+  import { ref } from 'vue';
+  import axios from 'axios'
 
   const orders = ref([])
   const actualSkip = ref(0)
   const actuaLimit = ref(5)
   const totalOrders = ref(0)
   const availableLimits = [5, 10, 25, 50, 75, 100]
+  const skeletonCnt = ref(5)
 
   const fetchOrders = () => {
     axios.get('/orders/list', {
@@ -14,6 +15,7 @@ import axios from 'axios'
     }).then(resp => {
       orders.value = resp.data.orders
       totalOrders.value = resp.data.total
+      skeletonCnt.value = 0
     })
   }
 
@@ -35,7 +37,15 @@ import axios from 'axios'
   }
 
   function fastForward() {
-    actualSkip = Math.ceil( totalOrders.value / actuaLimit ) - 1
+    actualSkip.value = (Math.ceil( totalOrders.value / actuaLimit.value ) - 1) * actuaLimit.value
+
+    fetchOrders()
+  }
+
+  function fastBackward() {
+    actualSkip.value = 0
+
+    fetchOrders()
   }
 
   fetchOrders()
@@ -172,6 +182,17 @@ import axios from 'axios'
                     </tr>
                   </thead>
                   <tbody class="bg-white dark:bg-gray-800">
+                      <tr v-for="u in skeletonCnt" role="status" :key="u"
+                        class="max-w-md p-4 space-y-5 divide-gray-200 rounded animate-pulse dark:divide-gray-700 md:p-6">
+                        <td v-for="u in 6" class="items-center " :key="u">
+                          <div class="flex items-center justify-between">
+                            <div>
+                              <div class="w-32 h-3 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                            </div>
+                          </div>
+                        </td>
+                        <div class="h-3"></div>
+                      </tr>
                       <tr v-for="order in orders" key="order.order_id">
                         <td class="p-4 text-sm font-normal text-gray-900 whitespace-nowrap dark:text-white">
                           Order <span class="font-semibold">#{{ order.order_id }}</span>
@@ -211,7 +232,7 @@ import axios from 'axios'
                 <!-- <option selected>Limit to</option> -->
                 <option v-for="limit in availableLimits" :key="limit" :selected="limit == 5" :value="limit">{{ limit }} Elements</option>
             </select>
-            <svg @click="" class="text-gray-500 cursor-pointer" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <svg v-if="actualSkip > 0" @click="fastBackward" class="text-gray-500 cursor-pointer" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5"></path>
             </svg>
             <div class="flex space-x-2">
@@ -228,7 +249,7 @@ import axios from 'axios'
                 Next
                 </div>
             </div>
-            <svg @click="" class="text-gray-500 cursor-pointer" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <svg @click="fastForward" class="text-gray-500 cursor-pointer" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 4.5l7.5 7.5-7.5 7.5m-6-15l7.5 7.5-7.5 7.5"></path>
             </svg>
             </div>
