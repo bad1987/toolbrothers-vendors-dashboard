@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import Depends,Request, APIRouter
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
@@ -11,6 +12,8 @@ from rich.console import Console
 from fastapi.encoders import jsonable_encoder
 from Database.CscartModels import CscartCompanies, Cscart_payments
 from passlib.handlers.sha2_crypt import sha512_crypt as crypto
+
+from schemas.UserSchema import UserSchema
 
 console = Console()
 
@@ -54,16 +57,13 @@ def index(request: Request, db: Session = Depends(get_db)):
     return templates.TemplateResponse("users.html", context)
 
 
-@route.get("/users/list")
+@route.get("/users/list", response_model=List[UserSchema], responses={200:{"model": UserSchema}})#, response_model=list(UserSchema)
 def index(request: Request, db: Session = Depends(get_db)):
-    # user = LoginController.get_current_user_from_cookie(request, db)
-    users = db.query(User).filter()
-    context = {
-        # "user": user,
-        "users": users,
-        "request": request
-    }
-    return context
+    users = db.query(User).all()
+    res = []
+    for u in users:
+        res.append(UserSchema(**jsonable_encoder(u)))
+    return res
 
 @route.get('/get-all-users', response_class=JSONResponse)
 async def get_all_users(request: Request, db: Session = Depends(get_db)):
