@@ -36,7 +36,7 @@ import axios from 'axios'
 </script>
 
 <template>
-    <main class="mt-7 dark:bg-gray-800 dark:border-gray-700 mx-5" id="app">
+    <main class="mx-5 mt-7 dark:bg-gray-800 dark:border-gray-700" id="app">
 
         <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:border-gray-700 sm:p-6 dark:bg-gray-800">
         <!-- Card header -->
@@ -185,7 +185,7 @@ import axios from 'axios'
                         <td class="inline-flex items-center p-4 space-x-2 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
                           <span>{{ order.phone }}</span>
                         </td>
-                        <td class="p-4 whitespace-nowrap text-gray-500 dark:text-gray-400">
+                        <td class="p-4 text-gray-500 whitespace-nowrap dark:text-gray-400">
                           {{ order.total }} $
                         </td>
                       </tr>
@@ -196,7 +196,7 @@ import axios from 'axios'
         </div>
       </div>
         <!-- Card Footer -->
-        <div class="flex items-center justify-between pt-3 sm:pt-6 mt-10 w-1/3">
+        <div class="flex items-center justify-between w-1/3 pt-3 mt-10 sm:pt-6">
             <div class="flex space-x-4">
             <select id="limits"
                 @change="changeLimit"
@@ -213,12 +213,12 @@ import axios from 'axios'
                 <div
                 v-if="actualSkip > 0"
                 @click="previousPage()"
-                class="cursor-pointer inline-flex items-center px-4 py-2 mr-3 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                class="inline-flex items-center px-4 py-2 mr-3 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
                 Previous
             </div>
                 <div
                 @click="nextPage()"
-                class="cursor-pointer inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
                 Next
                 </div>
             </div>
