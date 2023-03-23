@@ -1,0 +1,85 @@
+<script setup>
+import { ref } from 'vue';
+import axios from 'axios'
+
+const loginState = ref({
+    username: "",
+    password: ""
+})
+const url = "http://localhost:8000/auth/login"
+
+function handleSubmit(e) {
+    const data = {
+        ...loginState.value
+    }
+    axios.post(
+        url,
+        {
+            ...data,
+        },
+        {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            withCredentials: true,
+        }
+    )
+    .then(response=> {
+        console.log(response)
+        console.log(document.cookie)
+    })
+    .catch(err => {
+        console.log(err.response.data.detail)
+        console.log(err.response.status)
+    })
+}console.log(document.cookie)
+</script>
+
+<template>
+    <div class="flex flex-col items-center justify-center px-6 pt-8 mx-auto md:h-screen pt:mt-0 dark:bg-gray-900">
+    <div class="w-full max-w-xl p-6 space-y-8 sm:p-8 bg-white rounded-lg shadow dark:bg-gray-800">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+            Sign in to platform
+        </h2>
+        <!-- {% for error in errors %}
+            <div class="max-w-lg mx-auto items-center justify-center justify-items-center m-auto mt-10">
+                <div class="flex bg-red-100 rounded-lg p-4 mb-4 text-sm text-red-700" role="alert">
+                    <svg class="w-5 h-5 inline mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+                    <div>
+                        <p>
+                            <p class="">{{ error }}</p>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+        {% endfor %} -->
+        <form class="mt-8 space-y-6" @submit.stop.prevent="handleSubmit">
+            <div>
+                <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
+                <input type="email" name="username" v-model="loginState.username" required class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="bad@company.com" >
+            </div>
+            <div>
+                <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your password</label>
+                <input type="password" name="password" v-model="loginState.password" required id="password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" >
+            </div>
+            <div class="flex items-start">
+                <div class="flex items-center h-5">
+                    <input id="remember" aria-describedby="remember" name="remember" type="checkbox" class="w-4 h-4 border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:focus:ring-primary-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600">
+                </div>
+                <div class="ml-3 text-sm">
+                <label for="remember" class="font-medium text-gray-900 dark:text-white">Remember me</label>
+                </div>
+                <a href="#" class="ml-auto text-sm text-primary-700 hover:underline dark:text-primary-500">Lost Password?</a>
+            </div>
+            <button class="w-full text-white bg-gray-500 hover:bg-gray-500 focus:ring-4 focus:outline-none focus:ring-gray-500font-medium rounded-lg text-sm px-5 py-2.5 text-center">Sign in</button>
+        </form>
+    </div>
+</div>
+</template>
+
+
+<style lang="scss" scoped>
+
+</style>

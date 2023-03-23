@@ -1,5 +1,6 @@
 <script setup>
-    import { ref } from 'vue';
+    import axios from 'axios';
+    import { ref, onMounted } from 'vue';
 
     const users = ref([
         {
@@ -17,6 +18,29 @@
     const newUser = ref({
         username: '',
         email: ''
+    })
+    const url = "http://localhost:8000/users/list"
+    const get_users = () => {
+        axios.get(
+            url,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                withCredentials: true,
+            }
+        )
+        .then(response => {
+            console.log(response)
+        })
+        .catch(error => {
+            console.log(error)
+        })
+    }
+    
+    onMounted(() => {
+        get_users()
     })
 </script>
 
