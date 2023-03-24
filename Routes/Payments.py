@@ -11,6 +11,7 @@ from Database.Models import Payment_method
 from typing import List
 from schemas.Payment_method.PaymentMethodSchema import PaymentMethodSchema
 from fastapi.encoders import jsonable_encoder
+from Routes.Users import is_authenticated
 
 console = Console()
 
@@ -58,7 +59,7 @@ def get_payment_method_by_vendor(request: Request, db_local: Session = Depends(g
     # return templates.TemplateResponse("Settings/payment_method.html", context)
 
 # Payment method system
-@route.get('/payment-method-system')
+@route.get('/method-system')
 def payment_method(db_local: Session = Depends(get_db)):
     
     data = [
@@ -80,5 +81,27 @@ def payment_method(db_local: Session = Depends(get_db)):
 # Enable and disable payment method
 @route.get('/update/{id}')
 def update_payment_method(id: int, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart)):
+    console.log(id)
     result = PaymentController.update_payment_method_by_vendor(id, db_local, db_cscart)
-    print("result", result, id)
+    
+    return result
+
+# Modify secret credential
+def extract_credentials(payload: str):
+    if not payload:
+        return None
+    regex = '^.*?"username".*?"(.*?)".*?"password".*?"(.*?)"'
+    res = re.findall(regex, payload)
+    if len(res) and isinstance(res[0], tuple):
+        return {
+            'username': res[0][0],
+            'password': res[0][1],
+        }
+    regex = '^.*?"client_id".*?"(.*?)".*?"secret".*?"(.*?)"'
+    res = re.findall(regex, payload)
+    if len(res) and isinstance(res[0], tuple):
+        return {
+            'username': res[0][0],
+            'password': res[0][1],
+        }
+    return None
