@@ -14,7 +14,7 @@ import { userStore } from '../stores/UserStore';
         show: false,
         loading: false
     })
-    const url = axios.defaults.baseURL + "login"
+    const url = axios.defaults.baseURL + "auth/login"
     const router = useRouter()
     const uStore = userStore()
     
