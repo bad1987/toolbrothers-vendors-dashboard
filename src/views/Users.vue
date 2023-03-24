@@ -1,6 +1,7 @@
 <script setup>
     import axios from 'axios';
     import { ref, onMounted } from 'vue';
+    import { initFlowbite, initModals } from 'flowbite'
 
     const users = ref([])
 
@@ -15,6 +16,10 @@
     const newUser = ref({
         username: '',
         email: ''
+    })
+
+    onMounted(() => {
+        initModals()
     })
 </script>
 
