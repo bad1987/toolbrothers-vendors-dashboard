@@ -43,6 +43,7 @@ def timestamp_to_date(s):
 
 @route.get("/method", response_model=List[PaymentMethodSchema], responses={200:{"model": PaymentMethodSchema}})
 def get_payment_method_by_vendor(request: Request, db_local: Session = Depends(get_db)):
+    is_authenticated(request, db_local)
     result = PaymentController.get_payment_method_by_vendor(request, db_local)
     res = []
     console.log(result)
@@ -60,7 +61,7 @@ def get_payment_method_by_vendor(request: Request, db_local: Session = Depends(g
 
 # Payment method system
 @route.get('/method-system')
-def payment_method(db_local: Session = Depends(get_db)):
+def payment_method( db_local: Session = Depends(get_db)):
     
     data = [
         {"name": "PayPal", "processor_id": "122"},
@@ -80,9 +81,10 @@ def payment_method(db_local: Session = Depends(get_db)):
 
 # Enable and disable payment method
 @route.get('/update/{id}')
-def update_payment_method(id: int, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart)):
+def update_payment_method(request: Request, id: int, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart)):
+    is_authenticated(request, db_local)
     console.log(id)
-    result = PaymentController.update_payment_method_by_vendor(id, db_local, db_cscart)
+    result = PaymentController.update_payment_method_by_vendor(id, db_local, db_cscart, request)
     
     return result
 

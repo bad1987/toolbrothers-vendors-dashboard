@@ -8,15 +8,17 @@ from Database.CscartModels import Cscart_payments
 class PaymentController:
     def get_payment_method_by_vendor(request: Request, db_local: Session):
         
-        #user = LoginController.get_current_user_from_cookie(request, db_local)
-        payment_method = db_local.query(Payment_method_vendor).filter(Payment_method_vendor.user_id == 3).all()
+        user = LoginController.get_current_user_from_cookie(request, db_local)
+        payment_method = db_local.query(Payment_method_vendor).filter(Payment_method_vendor.user_id == user.id).all()
         return {"payment_method": payment_method}
 
-    def update_payment_method_by_vendor(id: int, db_local: Session, db_cscart: Session):
+
+    def update_payment_method_by_vendor(id: int, db_local: Session, db_cscart: Session, request):
+        user = LoginController.get_current_user_from_cookie(request, db_local)
         payment_method = db_local\
                         .query(Payment_method_vendor)\
                         .filter(Payment_method_vendor.id == id)\
-                        .filter(Payment_method_vendor.user_id == 3)\
+                        .filter(Payment_method_vendor.user_id == user.id)\
                         .first()
         
         if not payment_method:

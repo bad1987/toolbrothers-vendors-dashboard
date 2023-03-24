@@ -152,12 +152,12 @@ async def cscart_users(db_cscart: Session = Depends(get_db_cscart), db_local: Se
             user.company_id = item.company_id
             user.username = item.company
             user.email = item.email
-            user.password = crypto.hash(f"{item.email}".split("@")[0]+"@!"+str(item.company_id))      
-            user.roles = "Role_affiliate" if item.company_id == 4 | 205 else "Role_direct_sale"
+            user.password = crypto.hash(f"{item.email}".split("@")[0]+"@!"+str(item.company_id))
+            user.roles = "Role_direct_sale" if (item.company_id == 4 or item.company_id ==205) else "Role_affiliate"
             user.status = item.status
             
-            db_local.add(user)
-            db_local.commit()
+            db_local.add(user) 
+            db_local.commit() 
             
             payment_method_vendor = db_cscart.query(Cscart_payments).filter(Cscart_payments.company_id == item.company_id).all()
             if payment_method_vendor:

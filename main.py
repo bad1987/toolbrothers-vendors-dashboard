@@ -13,24 +13,24 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 from fastapi.staticfiles import StaticFiles
 
-# Models.Base.metadata.create_all(bind=engine)
+Models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
-
+ 
 origins = [
     "http://localhost:5173"
 ]
-
+ 
 app.include_router(Login_register.route) 
 app.include_router(Users.route) 
 app.include_router(Orders.route)
 app.include_router(Errors.route)
 app.include_router(Payments.route)
-
+ 
 # static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # cors
-app.add_middleware(
+app.add_middleware( 
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,

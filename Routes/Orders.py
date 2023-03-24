@@ -12,7 +12,7 @@ from rich.console import Console
 from App.Http.Controllers.OrderController import OrderController
 
 console = Console()
-
+ 
 
 
 route = APIRouter(prefix='')
