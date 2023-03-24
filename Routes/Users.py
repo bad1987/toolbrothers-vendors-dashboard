@@ -138,22 +138,6 @@ async def cscart_users(db_cscart: Session = Depends(get_db_cscart), db_local: Se
             
             if is_exist:
                 console.log("This user exist", item.company)    
-                # payment_method_vendor = db_cscart.query(CscartPayment_method).filter(CscartPayment_method.company_id == is_exist.company_id).all()
-                
-                # if payment_method_vendor:
-                #     for item in payment_method_vendor:
-                #         payment_method_vendor_local = Payment_method()
-                        
-                #         payment_method_vendor_local.payment_id = is_exist.company_id
-                #         payment_method_vendor_local.processor_params = item.processor_params
-                #         payment_method_vendor_local.status = item.status
-                #         payment_method_vendor_local.user_id = is_exist.id
-                        
-                #         db_local.add(payment_method_vendor_local)
-                #         db_local.commit()
-                #         db_local.flush(payment_method_vendor)
-                        
-                #         console.log("Method payment for this user", item.payment_id)
                 continue
             
             user = User()
@@ -176,6 +160,13 @@ async def cscart_users(db_cscart: Session = Depends(get_db_cscart), db_local: Se
                     method_vendor = db_local.query(Payment_method).filter(Payment_method.processor_id == item_cscart.processor_id).first()
                     
                     if method_vendor:
+                        result = extract_credentials(item_cscart.processor_params)
+                        
+                        # Add secret credentials
+                        if result:
+                            payment_method_vendor_local.client_secret = result['password']
+                            payment_method_vendor_local.client_secret_id = result['username']
+                            console.log("credential extract", result['username'], result['password'])
                         
                         payment_method_vendor_local.payment_id = user.company_id
                         payment_method_vendor_local.name = method_vendor.name
@@ -199,6 +190,7 @@ async def cscart_users(db_cscart: Session = Depends(get_db_cscart), db_local: Se
     except Exception as e:
         console.log("error ...", str(e))
     
+# Extract secret credential
 def extract_credentials(payload: str):
     if not payload:
         return None
@@ -213,7 +205,7 @@ def extract_credentials(payload: str):
     res = re.findall(regex, payload)
     if len(res) and isinstance(res[0], tuple):
         return {
-            'client_id': res[0][0],
-            'client_secret': res[0][1],
+            'username': res[0][0],
+            'password': res[0][1],
         }
     return None

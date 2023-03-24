@@ -35,10 +35,12 @@ class Payment_method_vendor(Base):
     payment_id = Column(Integer, nullable=False)
     status = Column(String(25), nullable=False)
     processor_params = Column(Text, nullable=True)
+    client_secret = Column(String(255), nullable=True)
+    client_secret_id = Column(String(255), nullable=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     payment_method_id = Column(Integer, ForeignKey("payment_method.id", ondelete="CASCADE"), nullable=False)
     created_at = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"), nullable=True)
-
+    
     # users = relationship("User", back_populates="payment_method")
     # payment_method = relationship("Payment_method_vendor", back_populates="payment_method")
     
