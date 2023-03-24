@@ -2,8 +2,9 @@ from fastapi import FastAPI
 from Database import Models
 from Database.Connexion import engine
 import uvicorn
+from Routes.settings import Payments
 from Security.Routes.Login_register import Login_register
-from Routes import Users, Orders, Errors, Payments
+from Routes import Users, Orders, Errors
 from fastapi.middleware.cors import CORSMiddleware
 
 from middlewares.FirewallMiddleware import firewall_middleware
