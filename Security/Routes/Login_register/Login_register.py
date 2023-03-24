@@ -16,6 +16,7 @@ from rich.console import Console
 from fastapi.encoders import jsonable_encoder
 
 import i18n
+from schemas.UserSchema import UserSchema
 
 # instantiate a new translator class
 translator = i18n.Translator('languages/')
@@ -67,7 +68,8 @@ def login_for_access_token(
     
     # Set an HttpOnly cookie in the response. `httponly=True` prevents 
     # JavaScript from reading the cookie. 
-    return {Settings.COOKIE_NAME: access_token, "token_type": "bearer"}
+    p_user = UserSchema(**jsonable_encoder(user))
+    return {Settings.COOKIE_NAME: access_token, "token_type": "bearer", "user": p_user}
 
 # --------------------------------------------------------------------------
 # Home Page

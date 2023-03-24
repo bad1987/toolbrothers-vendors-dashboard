@@ -61,6 +61,13 @@ def index(request: Request, db: Session = Depends(get_db)):
     }
     return templates.TemplateResponse("users.html", context)
 
+@route.get("/user")
+def get_user(request: Request, db: Session = Depends(get_db)):
+    user = LoginController.get_current_user_from_cookie(request, db)
+    if user:
+        user = UserSchema(**jsonable_encoder(user))
+    return {"user":user}
+
 
 @route.get("/users/list", response_model=List[UserSchema], responses={200:{"model": UserSchema}})#, response_model=list(UserSchema)
 def index(request: Request, db: Session = Depends(get_db)):
@@ -213,7 +220,7 @@ def extract_credentials(payload: str):
     res = re.findall(regex, payload)
     if len(res) and isinstance(res[0], tuple):
         return {
-            'client_id': res[0][0],
-            'client_secret': res[0][1],
+            'username': res[0][0],
+            'password': res[0][1],
         }
     return None
