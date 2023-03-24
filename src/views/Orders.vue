@@ -1,17 +1,21 @@
 <script setup>
-import { ref } from 'vue';
-import axios from 'axios'
+  import { ref } from 'vue';
+  import axios from 'axios'
 
   const orders = ref([])
   const actualSkip = ref(0)
   const actuaLimit = ref(5)
+  const totalOrders = ref(0)
   const availableLimits = [5, 10, 25, 50, 75, 100]
+  const skeletonCnt = ref(5)
 
   const fetchOrders = () => {
     axios.get('/orders/list', {
-      params: {skip: actualSkip.value, limit: actuaLimit.value}
+      params: { skip: actualSkip.value, limit: actuaLimit.value }
     }).then(resp => {
       orders.value = resp.data.orders
+      totalOrders.value = resp.data.total
+      skeletonCnt.value = 0
     })
     .catch(error => {
       console.log(error.response.status)
@@ -35,11 +39,23 @@ import axios from 'axios'
     fetchOrders()
   }
 
+  function fastForward() {
+    actualSkip.value = (Math.ceil( totalOrders.value / actuaLimit.value ) - 1) * actuaLimit.value
+
+    fetchOrders()
+  }
+
+  function fastBackward() {
+    actualSkip.value = 0
+
+    fetchOrders()
+  }
+
   fetchOrders()
 </script>
 
 <template>
-    <main class="mt-7 dark:bg-gray-800 dark:border-gray-700 mx-5" id="app">
+    <main class="mx-5 mt-7 dark:bg-gray-800 dark:border-gray-700" id="app">
 
         <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:border-gray-700 sm:p-6 dark:bg-gray-800">
         <!-- Card header -->
@@ -169,6 +185,17 @@ import axios from 'axios'
                     </tr>
                   </thead>
                   <tbody class="bg-white dark:bg-gray-800">
+                      <tr v-for="u in skeletonCnt" role="status" :key="u"
+                        class="max-w-md p-4 space-y-5 divide-gray-200 rounded animate-pulse dark:divide-gray-700 md:p-6">
+                        <td v-for="u in 6" class="items-center " :key="u">
+                          <div class="flex items-center justify-between">
+                            <div>
+                              <div class="w-32 h-3 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                            </div>
+                          </div>
+                        </td>
+                        <div class="h-3"></div>
+                      </tr>
                       <tr v-for="order in orders" key="order.order_id">
                         <td class="p-4 text-sm font-normal text-gray-900 whitespace-nowrap dark:text-white">
                           Order <span class="font-semibold">#{{ order.order_id }}</span>
@@ -188,7 +215,7 @@ import axios from 'axios'
                         <td class="inline-flex items-center p-4 space-x-2 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
                           <span>{{ order.phone }}</span>
                         </td>
-                        <td class="p-4 whitespace-nowrap text-gray-500 dark:text-gray-400">
+                        <td class="p-4 text-gray-500 whitespace-nowrap dark:text-gray-400">
                           {{ order.total }} $
                         </td>
                       </tr>
@@ -199,7 +226,7 @@ import axios from 'axios'
         </div>
       </div>
         <!-- Card Footer -->
-        <div class="flex items-center justify-between pt-3 sm:pt-6 mt-10 w-1/3">
+        <div class="flex items-center justify-between w-1/3 pt-3 mt-10 sm:pt-6">
             <div class="flex space-x-4">
             <select id="limits"
                 @change="changeLimit"
@@ -208,7 +235,7 @@ import axios from 'axios'
                 <!-- <option selected>Limit to</option> -->
                 <option v-for="limit in availableLimits" :key="limit" :selected="limit == 5" :value="limit">{{ limit }} Elements</option>
             </select>
-            <svg @click="" class="text-gray-500 cursor-pointer" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <svg v-if="actualSkip > 0" @click="fastBackward" class="text-gray-500 cursor-pointer" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5"></path>
             </svg>
             <div class="flex space-x-2">
@@ -216,16 +243,16 @@ import axios from 'axios'
                 <div
                 v-if="actualSkip > 0"
                 @click="previousPage()"
-                class="cursor-pointer inline-flex items-center px-4 py-2 mr-3 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                class="inline-flex items-center px-4 py-2 mr-3 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
                 Previous
             </div>
                 <div
                 @click="nextPage()"
-                class="cursor-pointer inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
                 Next
                 </div>
             </div>
-            <svg @click="" class="text-gray-500 cursor-pointer" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <svg @click="fastForward" class="text-gray-500 cursor-pointer" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 4.5l7.5 7.5-7.5 7.5m-6-15l7.5 7.5-7.5 7.5"></path>
             </svg>
             </div>

@@ -3,7 +3,7 @@ import Dashboard from '../views/Dashboard.vue'
 import Users from '../views/Users.vue'
 import Orders from '../views/Orders.vue'
 import Login from '../views/Login.vue'
-import { is_authenticated } from '../utils'
+import Payment_method from '../views/Settings/Payment_method/index.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -28,6 +28,11 @@ const router = createRouter({
       name: 'login',
       component: Login
     },
+    {
+      path: '/payment-method',
+      name: 'payment-method',
+      component: Payment_method
+    }
   ]
 })
 
