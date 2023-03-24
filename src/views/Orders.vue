@@ -1,7 +1,7 @@
 <script setup>
   import { ref, onMounted } from 'vue'
   import axios from 'axios'
-    import { initFlowbite, initModals } from 'flowbite'
+  import { initFlowbite, initModals } from 'flowbite'
 
   const orders = ref([])
   const actualSkip = ref(0)
@@ -24,8 +24,8 @@
       totalOrders.value = resp.data.total
       skeletonCnt.value = 0
     })
-    .catch(error => {
-      console.log(error.response.status)
+    .catch(() => {
+      skeletonCnt.value = 0;
     })
   }
 
@@ -59,7 +59,6 @@
   } 
 
   onMounted(() => {
-    initFlowbite()
   })
 
   fetchOrders()
@@ -131,7 +130,7 @@
                   </ul>
                   </div>
               </div>
-              <div date-rangepicker class="flex items-center space-x-4">
+              <div date-rangepicker id="datePicker" class="flex items-center space-x-4">
                   <div class="relative">
                   <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                       <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20"

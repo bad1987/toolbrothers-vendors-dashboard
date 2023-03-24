@@ -1,6 +1,7 @@
 <script setup>
 import axios from "axios";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import { initDrawers } from 'flowbite'
 // import PaymentMethodUpdateConfirm from './../../../components/settings/PaymentMethodUpdateConfirm.vue'
 
 const payment_method = ref([]);
@@ -13,7 +14,9 @@ const getPaymentMethodByVendorConnected = () => {
       payment_method.value = response.data;
       skeletonCnt.value = 0;
     })
-    .then(console.error());
+    .catch(() => {
+      skeletonCnt.value = 0;
+    })
 };
 
 const disableOrUnablePaymentMethod = (payment_method_id) => {
@@ -23,6 +26,10 @@ const disableOrUnablePaymentMethod = (payment_method_id) => {
       getPaymentMethodByVendorConnected()
     })
 }
+
+onMounted(() => {
+  initDrawers()
+})
 
 getPaymentMethodByVendorConnected();
 </script>
