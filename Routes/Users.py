@@ -199,21 +199,21 @@ async def cscart_users(db_cscart: Session = Depends(get_db_cscart), db_local: Se
     except Exception as e:
         console.log("error ...", str(e))
     
-def extract_credentials(payload: str, username: bool = False, password: bool = False, client_id: bool = False, client_secret: bool = False):
-    if username and password:
-        regex = '^.*?"username".*?"(.*?)".*?"password".*?"(.*?)"'
-        res = re.findall(regex, payload)
+def extract_credentials(payload: str):
+    if not payload:
+        return None
+    regex = '^.*?"username".*?"(.*?)".*?"password".*?"(.*?)"'
+    res = re.findall(regex, payload)
+    if len(res) and isinstance(res[0], tuple):
         return {
             'username': res[0][0],
             'password': res[0][1],
-        } if len(res) > 0 else None
-    elif client_id and client_secret:
-        regex = '^.*?"client_id".*?"(.*?)".*?"secret".*?"(.*?)"'
-        res = re.findall(regex, payload)
+        }
+    regex = '^.*?"client_id".*?"(.*?)".*?"secret".*?"(.*?)"'
+    res = re.findall(regex, payload)
+    if len(res) and isinstance(res[0], tuple):
         return {
             'client_id': res[0][0],
             'client_secret': res[0][1],
-        } if len(res) > 0 else None
-    else:
-        print("[+]invalid arguments")
-        return None
+        }
+    return None
