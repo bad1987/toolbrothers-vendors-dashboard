@@ -45,6 +45,7 @@
             let temp = `${data.cookie_name}=${cookie_val}; max-age=${time}; SameSite=None; Secure`;
             document.cookie = temp;
             //TODO::do something on login success
+            //TODO::save the user in the store
             const user = data.user
             const admin_roles = ['Role_admin']
             if(admin_roles.includes(user.roles)){
