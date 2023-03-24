@@ -1,6 +1,8 @@
 <script setup>
-    import { ref } from 'vue';
+    import { ref, onBeforeMount } from 'vue';
     import axios from 'axios'
+    import { useRouter } from 'vue-router';
+    import { is_authenticated } from '../utils';
 
     const credentials = ref({
         username: "",
@@ -12,6 +14,14 @@
         loading: false
     })
     const url = "http://localhost:8000/auth/login"
+    const router = useRouter()
+    
+    // redirect the user from where he came from if he is authenticated
+    onBeforeMount(()=>{
+        if(is_authenticated()){
+            router.back()
+        }
+    })
 
     function handleSubmit(e) {
         const data = {
@@ -35,8 +45,19 @@
             let temp = `${data.cookie_name}=${cookie_val}; max-age=${time}; SameSite=None; Secure`;
             document.cookie = temp;
             //TODO::do something on login success
+            const user = data.user
+            const admin_roles = ['Role_admin']
+            if(admin_roles.includes(user.roles)){
+                // redirect to admin homepage
+                router.push('/private')
+            }
+            else{
+                // redirect to vendors homepage
+                router.push('/')
+            }
         })
         .catch(err => {
+            console.log(err)
             _state.value.show = true
             _state.value.error = err.response.data.detail
         })
