@@ -37,3 +37,19 @@ export function getCookie(name) {
     if (pair)
        return pair.split('=')[1]
 }
+
+export function getUser(setter =null){
+    const url = axios.defaults.baseURL + 'admin/user'
+    axios.get(url)
+        .then(response => {
+            if(setter){
+                setter(response.data.user)
+            }
+            return response.data.user
+        })
+        .catch(err => {
+            // pass
+            console.log(err)
+            return null
+        })
+}

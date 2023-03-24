@@ -5,6 +5,7 @@ import FooterComponent from './components/FooterComponent.vue';
 import { is_authenticated } from './utils'
 import { onBeforeMount } from 'vue';
 import { useRouter } from 'vue-router';
+import { userStore } from './stores/UserStore'
 
 onBeforeMount(()=>{
     const router = useRouter()
@@ -15,6 +16,10 @@ onBeforeMount(()=>{
     if(authRequired && !is_auth){
         router.push('/login')
     }
+
+    // init the user store
+    const uStore = userStore()
+    uStore.init()
 })
 </script>
 

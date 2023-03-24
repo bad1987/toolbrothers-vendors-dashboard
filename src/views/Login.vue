@@ -3,6 +3,7 @@
     import axios from 'axios'
     import { useRouter } from 'vue-router';
     import { is_authenticated } from '../utils';
+import { userStore } from '../stores/UserStore';
 
     const credentials = ref({
         username: "",
@@ -13,8 +14,9 @@
         show: false,
         loading: false
     })
-    const url = "http://localhost:8000/auth/login"
+    const url = axios.defaults.baseURL + "login"
     const router = useRouter()
+    const uStore = userStore()
     
     // redirect the user from where he came from if he is authenticated
     onBeforeMount(()=>{
@@ -47,6 +49,8 @@
             //TODO::do something on login success
             //TODO::save the user in the store
             const user = data.user
+            uStore.setUser(user)
+
             const admin_roles = ['Role_admin']
             if(admin_roles.includes(user.roles)){
                 // redirect to admin homepage
