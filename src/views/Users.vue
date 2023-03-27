@@ -8,6 +8,9 @@
     const fetchUsers = () => {
         axios.get('/admin/users/list').then((response) => {
             users.value = response.data
+        }).then(() => {
+
+            initModals()
         })
     }
 
@@ -18,26 +21,8 @@
         email: ''
     })
 
-    const func = () => {
-        initModals()
-
-        const editModal = document.getElementById('edit-user-modal')
-        const editBtns = document.querySelectorAll("button[data-modal-toggle='edit-user-modal']")
-
-
-        if (editBtns) {
-            // const modal = new Modal(editModal)
-            editBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    // modal.toggle()
-                    console.log("clicked")
-                })
-            })
-        }
-    }
-
     onMounted(() => {
-        func()
+        initModals()
     })
 </script>
 
