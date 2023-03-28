@@ -35,7 +35,7 @@ onMounted(() => {
 getPaymentMethodByVendorConnected();
 </script>
 <template>
-  <main class="mx-5 mt-7 dark:bg-gray-800 dark:border-gray-700" id="app">
+  <main class="mx-5 mt-[6%] px-[5%] dark:bg-gray-800 dark:border-gray-700 " id="app">
     <div
       class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:border-gray-700 sm:p-6 dark:bg-gray-800"
     >
