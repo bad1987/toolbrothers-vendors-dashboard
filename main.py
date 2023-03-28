@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from Database import Models
 from Database.Connexion import engine
 import uvicorn
-from Routes.settings import Payments
+from Routes.settings import Payments, PlentyMarket
 from Security.Routes.Login_register import Login_register
 from Routes import Users, Orders, Errors
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,7 +13,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 from fastapi.staticfiles import StaticFiles
 
-Models.Base.metadata.create_all(bind=engine)
+Models.Base.metadata.create_all(bind=engine) 
 app = FastAPI()
  
 origins = [
@@ -25,6 +25,7 @@ app.include_router(Users.route)
 app.include_router(Orders.route)
 app.include_router(Errors.route)
 app.include_router(Payments.route)
+app.include_router(PlentyMarket.route)
  
 # static files
 app.mount("/static", StaticFiles(directory="static"), name="static")

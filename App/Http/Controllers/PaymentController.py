@@ -3,7 +3,6 @@ from fastapi import Request, status
 from Security.Controllers import LoginController
 from Database.Models import Payment_method_vendor
 from fastapi.responses import JSONResponse
-from Database.CscartModels import Cscart_payments
 
 class PaymentController:
     def get_payment_method_by_vendor(request: Request, db_local: Session):

@@ -1,4 +1,4 @@
-from sqlalchemy import TIMESTAMP, Column, ForeignKey, Integer, String, text
+from sqlalchemy import TIMESTAMP, Column, ForeignKey, Integer, String, text, BigInteger
 from sqlalchemy.orm import relationship
 from sqlalchemy.types import Text
 from Database.Connexion import Base
@@ -48,14 +48,16 @@ class Platform_settings(Base):
     __tablename__ = "platform_settings"
     
     id = Column(Integer, primary_key=True, index=True)
-    platform_id = Column(Integer, index=True, nullable=True)
-    referrer_id = Column(Integer, index=True, nullable=True)
-    api_id = Column(Integer, index=True, nullable=True)
-    api_secret = Column(Integer, index=True, nullable=True)
-    access_token = Column(Integer, index=True, nullable=True)
+    platform_id = Column(BigInteger, index=True, nullable=True)
+    referrer_id = Column(BigInteger, index=True, nullable=True)
+    api_id = Column(BigInteger, index=True, nullable=True)
+    api_secret = Column(BigInteger, index=True, nullable=True)
+    access_token = Column(BigInteger, index=True, nullable=True)
+    user_id = Column(BigInteger, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     platform_url = Column(String(250), index=True, nullable=True)
-    method_payment_id = Column(Integer, index=True, nullable=True)
-    shipping_profile_id = Column(Integer, index=True, nullable=True)
+    method_payment_id = Column(BigInteger, index=True, nullable=True)
+    shipping_profile_id = Column(BigInteger, index=True, nullable=True)
+    created_at = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"), nullable=True)
     
     # payment_method_vendor = relationship("Payment_method_vendor",  back_populates="payment_method", cascade="all, delete")
 

@@ -46,8 +46,6 @@ def get_payment_method_by_vendor(request: Request, db_local: Session = Depends(g
     is_authenticated(request, db_local)
     result = PaymentController.get_payment_method_by_vendor(request, db_local)
     res = []
-    console.log(result)
-    
     for u in result["payment_method"]:
         res.append(PaymentMethodSchema(**jsonable_encoder(u)))
     return res
