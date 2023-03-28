@@ -3,6 +3,8 @@ from fastapi import Request, status
 from Security.Controllers import LoginController
 from Database.Models import Payment_method_vendor
 from fastapi.responses import JSONResponse
+from schemas.Settings.PaymentMethodSchema import PaymentMethodSchema, updatePaymentMethod
+
 
 class PaymentController:
     def get_payment_method_by_vendor(request: Request, db_local: Session):
@@ -12,6 +14,7 @@ class PaymentController:
         return {"payment_method": payment_method}
 
 
+    # Enable or disable payment method
     def update_payment_method_by_vendor(id: int, db_local: Session, db_cscart: Session, request):
         user = LoginController.get_current_user_from_cookie(request, db_local)
         payment_method = db_local\
@@ -35,4 +38,32 @@ class PaymentController:
         db_local.commit()
         db_local.flush(payment_method)
         return JSONResponse(status_code=status.HTTP_200_OK, content='Status change successful') 
+    
+    # Update credential payment method
+    def update_credential_payment_method_by_vendor(request: Request, id: int, schema: updatePaymentMethod, db_local: Session, db_cscart: Session):
+        is_user_authenticate = LoginController.get_current_user_from_cookie(request, db_local)
         
+        if is_user_authenticate:
+            payment_method = db_local\
+                .query(Payment_method_vendor)\
+                .filter(Payment_method_vendor.id == id)\
+                .filter(Payment_method_vendor.user_id == is_user_authenticate.id)\
+                .first()
+            if payment_method:
+                payment_method.client_secret = schema.client_secret
+                payment_method.client_secret_id = schema.client_secret_id
+                
+                db_local.commit()
+                db_local.flush(payment_method)
+                
+                return JSONResponse(status_code=status.HTTP_201_CREATED, content='Update successful') 
+            
+            add_payment_credential = Payment_method_vendor()
+            add_payment_credential.client_secret = schema.client_secret
+            add_payment_credential.client_secret_id = schema.client_secret_id
+            
+            db_local.add(add_payment_credential)
+            db_local.commit()
+            db_local.flush(add_payment_credential)
+            
+            return JSONResponse(status_code=status.HTTP_201_CREATED, content='Created successful') 

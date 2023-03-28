@@ -9,7 +9,7 @@ from rich.console import Console
 from App.Http.Controllers.PaymentController import PaymentController
 from Database.Models import Payment_method
 from typing import List
-from schemas.Payment_method.PaymentMethodSchema import PaymentMethodSchema
+from schemas.Settings.PaymentMethodSchema import PaymentMethodSchema, updatePaymentMethod
 from fastapi.encoders import jsonable_encoder
 from Routes.Users import is_authenticated
 
@@ -81,10 +81,16 @@ def payment_method( db_local: Session = Depends(get_db)):
 @route.get('/update/{id}')
 def update_payment_method(request: Request, id: int, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart)):
     is_authenticated(request, db_local)
-    console.log(id)
     result = PaymentController.update_payment_method_by_vendor(id, db_local, db_cscart, request)
     
     return result
+
+# Update credential payment method
+@route.post('/update/credential/{id}')
+def update_credential_method(request: Request, id: int, schema: updatePaymentMethod, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart)):
+    is_authenticated(request, db_local)
+    return PaymentController.update_credential_payment_method_by_vendor(request, id, schema, db_local, db_cscart)
+
 
 # Modify secret credential
 def extract_credentials(payload: str):

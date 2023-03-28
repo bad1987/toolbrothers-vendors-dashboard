@@ -9,3 +9,7 @@ class PaymentMethodSchema(BaseModel):
     client_secret: Optional[str]
     client_secret_id: Optional[str]
     
+class updatePaymentMethod(BaseModel):
+    client_secret: Optional[str]
+    client_secret_id: Optional[str]
+    

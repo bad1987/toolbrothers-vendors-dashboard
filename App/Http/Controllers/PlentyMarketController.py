@@ -26,18 +26,14 @@ class PlentyMarketController:
 
             return JSONResponse(status_code=status.HTTP_201_CREATED, content='Create successful') 
 
-            
         result = PlentyMarketController.persist_setting_information(request, user.id, schema, setting)
         db_local.commit()
         db_local.flush(result)
 
         return JSONResponse(status_code=status.HTTP_201_CREATED, content='Update successful') 
-
-
     
     # Persist information 
     def persist_setting_information(request: Request, user_id, schema: PlentyMarketSchema, setting):
-        console.log(schema)
         if not setting:
             add_setting = Platform_settings()
             add_setting.user_id = user_id
