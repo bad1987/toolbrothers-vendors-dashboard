@@ -61,7 +61,7 @@
 <template>
     <div class="px-[5%] justify-center items-center justify-items-center m-auto md:mt-[5%]">
         <div class="w-full grid grid-cols-1">
-            <h1 class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">Plentymarkets API configuration </h1>
+            <h1 class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-5xl dark:text-white">Plentymarkets API configuration </h1>
             <p class="my-5 mb-10 text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">
                 these settings will alow us to push orders to your platform
             </p>
