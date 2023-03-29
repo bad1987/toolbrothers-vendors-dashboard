@@ -1,10 +1,13 @@
 <script setup>
 import axios from "axios";
-import { ref } from "vue";
-// import PaymentMethodUpdateConfirm from './../../../components/settings/PaymentMethodUpdateConfirm.vue'
+import { ref, onMounted } from "vue";
+import { initDrawers } from 'flowbite'
 
 const payment_method = ref([]);
 const skeletonCnt = ref(5);
+const isSuccess = ref("")
+const isError = ref("")
+let is_valid = ref(false)
 
 const getPaymentMethodByVendorConnected = () => {
   axios
@@ -13,7 +16,12 @@ const getPaymentMethodByVendorConnected = () => {
       payment_method.value = response.data;
       skeletonCnt.value = 0;
     })
-    .then(console.error());
+    .then(() => {
+      initDrawers()
+    })
+    .catch(() => {
+      skeletonCnt.value = 0;
+    })
 };
 
 const disableOrUnablePaymentMethod = (payment_method_id) => {
@@ -24,10 +32,51 @@ const disableOrUnablePaymentMethod = (payment_method_id) => {
     })
 }
 
+const handleUpdateCredential = (e) => {
+  const data = {
+    "client_secret": e.target["client_secret"].value,
+    "client_secret_id": e.target["client_secret_id"].value,
+    "id": e.target["id"].value
+  }
+
+  validateForm(data)
+  console.log(is_valid.value);
+  if (!is_valid.value) {
+    return false
+  }else{
+    axios
+      .post('/payment/update/credential/'+data.id, data)
+      .then((res) => {
+        isSuccess.value = res.data
+        isError.value = ''
+        getPaymentMethodByVendorConnected()
+      })
+      .catch((err) => {
+        isError.value = err.data
+        isSuccess.value = ''
+      })
+  }
+}
+
+const validateForm = (data = {}) => {
+  if (data.client_secret == '' || data.client_secret == '' || data.id == ''){
+    isError.value = "Fill in all fields !"
+    isSuccess.value = ''
+    is_valid.value = false
+    return false
+  }else {
+    is_valid.value = true
+    return true
+  }
+}
+
+onMounted(() => {
+})
+
 getPaymentMethodByVendorConnected();
 </script>
 <template>
-  <main class="mx-5 mt-7 dark:bg-gray-800 dark:border-gray-700" id="app">
+  <main class="mx-5 mt-[6%] px-[5%] dark:bg-gray-800 dark:border-gray-700 " id="app">
     <div
       class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:border-gray-700 sm:p-6 dark:bg-gray-800"
     >
@@ -46,168 +95,29 @@ getPaymentMethodByVendorConnected();
             >
           </div>
         </div>
-        <div class="items-center sm:flex">
-          <div class="flex items-center">
-            <button
-              id="dropdownDefault"
-              data-dropdown-toggle="dropdown"
-              class="mb-4 sm:mb-0 mr-4 inline-flex items-center text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-4 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-              type="button"
-            >
-              Filter by status
-              <svg
-                class="w-4 h-4 ml-2"
-                aria-hidden="true"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 9l-7 7-7-7"
-                ></path>
-              </svg>
-            </button>
-            <!-- Dropdown menu -->
-            <div
-              id="dropdown"
-              class="z-10 hidden w-56 p-3 bg-white rounded-lg shadow dark:bg-gray-700"
-            >
-              <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">
-                Category
-              </h6>
-              <ul class="space-y-2 text-sm" aria-labelledby="dropdownDefault">
-                <li class="flex items-center">
-                  <input
-                    id="apple"
-                    type="checkbox"
-                    value=""
-                    class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                  />
-
-                  <label
-                    for="apple"
-                    class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                  >
-                    Completed (56)
-                  </label>
-                </li>
-
-                <li class="flex items-center">
-                  <input
-                    id="fitbit"
-                    type="checkbox"
-                    value=""
-                    checked
-                    class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                  />
-
-                  <label
-                    for="fitbit"
-                    class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                  >
-                    Cancelled (56)
-                  </label>
-                </li>
-
-                <li class="flex items-center">
-                  <input
-                    id="dell"
-                    type="checkbox"
-                    value=""
-                    class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                  />
-
-                  <label
-                    for="dell"
-                    class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                  >
-                    In progress (56)
-                  </label>
-                </li>
-
-                <li class="flex items-center">
-                  <input
-                    id="asus"
-                    type="checkbox"
-                    value=""
-                    checked
-                    class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                  />
-
-                  <label
-                    for="asus"
-                    class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                  >
-                    In review (97)
-                  </label>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div date-rangepicker class="flex items-center space-x-4">
-            <div class="relative">
-              <div
-                class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
-              >
-                <svg
-                  class="w-5 h-5 text-gray-500 dark:text-gray-400"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M5.25 12a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H6a.75.75 0 01-.75-.75V12zM6 13.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V14a.75.75 0 00-.75-.75H6zM7.25 12a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H8a.75.75 0 01-.75-.75V12zM8 13.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V14a.75.75 0 00-.75-.75H8zM9.25 10a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H10a.75.75 0 01-.75-.75V10zM10 11.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V12a.75.75 0 00-.75-.75H10zM9.25 14a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H10a.75.75 0 01-.75-.75V14zM12 9.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V10a.75.75 0 00-.75-.75H12zM11.25 12a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H12a.75.75 0 01-.75-.75V12zM12 13.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V14a.75.75 0 00-.75-.75H12zM13.25 10a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H14a.75.75 0 01-.75-.75V10zM14 11.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V12a.75.75 0 00-.75-.75H14z"
-                  ></path>
-                  <path
-                    clip-rule="evenodd"
-                    fill-rule="evenodd"
-                    d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z"
-                  ></path>
-                </svg>
-              </div>
-              <input
-                name="start"
-                type="text"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                placeholder="From"
-              />
-            </div>
-            <div class="relative">
-              <div
-                class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
-              >
-                <svg
-                  class="w-5 h-5 text-gray-500 dark:text-gray-400"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M5.25 12a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H6a.75.75 0 01-.75-.75V12zM6 13.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V14a.75.75 0 00-.75-.75H6zM7.25 12a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H8a.75.75 0 01-.75-.75V12zM8 13.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V14a.75.75 0 00-.75-.75H8zM9.25 10a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H10a.75.75 0 01-.75-.75V10zM10 11.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V12a.75.75 0 00-.75-.75H10zM9.25 14a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H10a.75.75 0 01-.75-.75V14zM12 9.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V10a.75.75 0 00-.75-.75H12zM11.25 12a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H12a.75.75 0 01-.75-.75V12zM12 13.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V14a.75.75 0 00-.75-.75H12zM13.25 10a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H14a.75.75 0 01-.75-.75V10zM14 11.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V12a.75.75 0 00-.75-.75H14z"
-                  ></path>
-                  <path
-                    clip-rule="evenodd"
-                    fill-rule="evenodd"
-                    d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z"
-                  ></path>
-                </svg>
-              </div>
-              <input
-                name="end"
-                type="text"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                placeholder="To"
-              />
-            </div>
-          </div>
-        </div>
       </div>
+      <!-- Alert -->
+      <div v-if="isSuccess" id="alert-border-3" class="flex p-4 my-4 text-green-800 border-l-4 border rounded-md border-green-300 bg-green-50 dark:text-green-400 dark:bg-gray-800 dark:border-green-800" role="alert">
+            <svg class="flex-shrink-0 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+            <div class="ml-3 text-sm font-medium">
+                {{ isSuccess }}
+            </div>
+            <button type="button" class="ml-auto -mx-1.5 -my-1.5 bg-green-50 text-green-500 rounded-lg focus:ring-2 focus:ring-green-400 p-1.5 hover:bg-green-200 inline-flex h-8 w-8 dark:bg-gray-800 dark:text-green-400 dark:hover:bg-gray-700"  data-dismiss-target="#alert-border-3" aria-label="Close">
+            <span class="sr-only">Dismiss</span>
+            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+            </button>
+        </div>
+
+        <div v-if="isError" id="alert-border-4" class="flex p-4 my-4 text-green-800 border-l-4 border rounded-md border-red-300 bg-red-50 dark:text-red-400 dark:bg-gray-800 dark:border-red-800" role="alert">
+            <svg class="flex-shrink-0 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+            <div class="ml-3 text-sm font-medium">
+                {{ isError }}
+            </div>
+            <button type="button" class="ml-auto -mx-1.5 -my-1.5 bg-red-50 text-red-500 rounded-lg focus:ring-2 focus:ring-red-400 p-1.5 hover:bg-red-200 inline-flex h-8 w-8 dark:bg-gray-800 dark:text-red-400 dark:hover:bg-gray-700"  data-dismiss-target="#alert-border-4" aria-label="Close">
+            <span class="sr-only">Dismiss</span>
+            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+            </button>
+        </div>
       <!-- Table -->
       <div class="flex flex-col mt-6">
         <div class="overflow-x-auto rounded-lg">
@@ -486,19 +396,19 @@ getPaymentMethodByVendorConnected();
                                 :role="`tabpanel${item.id}`"
                                 :aria-labelledby="`faq-tab${item.id}`"
                               >
-                                <form action="#" method="post" autocomplete="off">
+                                <form @submit.prevent="handleUpdateCredential($event)" method="post" action="/payment/update/credential/">
                                   <div class="relative">
                                     <input
                                       type="text"
                                       autocomplete="off"
-                                      name="clientId"
-                                      id="clientId"
+                                      id="client_secret_id"
                                       placeholder=" "
-                                      :value="item.client_secret_id"
+                                      v-model="item.client_secret_id"
                                       class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                                     />
+                                    <input type="number" id="id" hidden v-model="item.id">
                                     <label
-                                      for="clientId"
+                                      for="client_secret_id"
                                       class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
                                       >Client ID</label
                                     >
@@ -508,16 +418,34 @@ getPaymentMethodByVendorConnected();
                                       placeholder=".........."
                                       autocomplete="off"
                                       type="text"
-                                      name="clientSecretId"
-                                      id="clientSecretId"
-                                      :value="item.client_secret"
+                                      id="client_secret"
+                                      v-model="item.client_secret"
                                       class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                                     />
                                     <label
-                                      for="clientSecretId"
+                                      for="client_secret"
                                       class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
                                       >Client Secret</label
                                     >
+                                  </div>
+                                   <!-- Modal footer -->
+                                  <div
+                                    class="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600"
+                                  >
+                                    <button
+                                      @click="handleUpdateCredential"
+                                      :data-modal-hide="`staticModal${item.id}`"
+                                      class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                                    >
+                                      Save
+                                    </button>
+                                    <button
+                                      :data-modal-hide="`staticModal${item.id}`"
+                                      type="button"
+                                      class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+                                    >
+                                      Cansel
+                                    </button>
                                   </div>
                                 </form>
                               </div>
@@ -531,25 +459,7 @@ getPaymentMethodByVendorConnected();
                               </div>
                             </div>
                           </div>
-                          <!-- Modal footer -->
-                          <div
-                            class="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600"
-                          >
-                            <button
-                              :data-modal-hide="`staticModal${item.id}`"
-                              type="button"
-                              class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                            >
-                              Save
-                            </button>
-                            <button
-                              :data-modal-hide="`staticModal${item.id}`"
-                              type="button"
-                              class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
-                            >
-                              Cansel
-                            </button>
-                          </div>
+                         
                         </div>
                       </div>
                     </div>

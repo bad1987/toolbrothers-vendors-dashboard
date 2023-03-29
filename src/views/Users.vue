@@ -1,12 +1,16 @@
 <script setup>
     import axios from 'axios';
     import { ref, onMounted } from 'vue';
+    import { initFlowbite, initModals, Modal } from 'flowbite'
 
     const users = ref([])
 
     const fetchUsers = () => {
         axios.get('/admin/users/list').then((response) => {
             users.value = response.data
+        }).then(() => {
+
+            initModals()
         })
     }
 
@@ -15,6 +19,10 @@
     const newUser = ref({
         username: '',
         email: ''
+    })
+
+    onMounted(() => {
+        initModals()
     })
 </script>
 
@@ -174,7 +182,7 @@
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                                <tr v-for="u in users" key="u.id" class="hover:bg-gray-100 dark:hover:bg-gray-700">
+                                <tr v-for="(u, idx) in users" :key="idx" class="hover:bg-gray-100 dark:hover:bg-gray-700">
                                     <td class="w-4 p-4">
                                         <div class="flex items-center">
                                             <input id="checkbox-1" aria-describedby="checkbox-1" type="checkbox"
@@ -201,6 +209,7 @@
                                     </td>
                                     <td class="p-4 space-x-2 whitespace-nowrap">
                                         <button type="button" data-modal-toggle="edit-user-modal"
+                                            @click="func"   
                                             class="inline-flex items-center px-3 py-1 text-sm font-medium text-center text-white rounded-lg bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-400 dark:bg-blue-500 dark:hover:bg-blue-800 dark:focus:ring-blue-500">
                                             <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"
                                                 xmlns="http://www.w3.org/2000/svg">
@@ -213,7 +222,7 @@
                                             </svg>
                                             Edit user
                                         </button>
-                                        <button @click="setSelectedUser(u.email)" type="button" data-modal-toggle="delete-user-modal"
+                                        <button @click="" type="button" data-modal-toggle="delete-user-modal"
                                             class="inline-flex items-center px-3 py-1 text-sm font-medium text-center text-white bg-red-400 rounded-lg hover:bg-red-600 focus:ring-4 focus:ring-red-300 dark:focus:ring-red-900">
                                             <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"
                                                 xmlns="http://www.w3.org/2000/svg">
@@ -405,7 +414,7 @@
                                     </select>
                                 </div>
                                 <div class="flex items-center mb-4">
-                                    <input v-model="newUser.is_active" id="checkbox-activate" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    <input v-model="newUser.is_active" id="checkbox-activate-create" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                     <label for="checkbox-activate" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Activate</label>
                                 </div>
                             </div>
