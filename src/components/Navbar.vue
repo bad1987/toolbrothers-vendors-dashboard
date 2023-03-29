@@ -11,7 +11,6 @@
   const handleLogout = event => {
     let cookie_name = local_storage_get('cookie_name')
     let cookie = cookie_name + '=;Max-Age=0'
-    console.log(cookie)
     document.cookie = cookie
     window.location.href = '/'
   }
