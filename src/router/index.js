@@ -26,7 +26,8 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: Login
+      component: Login,
+      meta: { hideNavigation: true }
     },
     {
       path: '/payment-method',
