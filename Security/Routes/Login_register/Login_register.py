@@ -187,3 +187,17 @@ def login_get():
     response = RedirectResponse(url="/")
     response.delete_cookie(Settings.COOKIE_NAME)
     return response
+
+@route.get('/auth/refresh')
+async def refresh_token(request: Request, db: Session = Depends(get_db)):
+    user = LoginController.get_current_user_from_cookie(request, db)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not logged in"
+        )
+    access_token = LoginController.create_access_token(data={"username": user.email})
+    context = {Settings.COOKIE_NAME: access_token, "token_type": "bearer"}
+    context.update({'expired_at': Settings.ACCESS_TOKEN_EXPIRE_MINUTES})
+    context.update({'cookie_name': Settings.COOKIE_NAME})
+    return jsonable_encoder(context)
