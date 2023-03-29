@@ -48,7 +48,7 @@ import { userStore } from '../stores/UserStore';
             document.cookie = temp;
             //TODO::save the cookie max-age for later use(refresh token)
             local_storage_set('cookie_name', data.cookie_name)
-            local_storage_set(data.cookie_name, time)
+            local_storage_set(data.cookie_name, new Date().getTime() + time*1000)
             //TODO::save the user in the store
             const user = data.user
             uStore.setUser(user)

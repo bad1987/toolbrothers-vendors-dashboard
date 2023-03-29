@@ -2,12 +2,13 @@
 import Navbar from './components/Navbar.vue';
 import Sidebar from './components/Sidebar.vue';
 import FooterComponent from './components/FooterComponent.vue';
-import { is_authenticated } from './utils'
-import { onBeforeMount, ref } from 'vue';
+import { is_authenticated, refresh_token } from './utils'
+import { onBeforeMount, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { userStore } from './stores/UserStore'
 
 const classes = ref("")
+const refreshIntervalID = ref(0)
 const router = useRouter()
 
 router.beforeEach(to => {
@@ -28,13 +29,16 @@ onBeforeMount(()=>{
     // init the user store
     const uStore = userStore()
     uStore.init()
+
+    // refresh token after each 5 minutes
+    refreshIntervalID.value = setInterval(() => {
+        refresh_token() 
+    }, 300000);
 })
 
-function showMenubars(){
-    const url = window.location.href.split('/').pop()
-    console.log(url != 'login')
-    return url != 'login'
-}
+onUnmounted(()=>{
+    clearInterval(refreshIntervalID.value)
+})
 
 </script>
 
