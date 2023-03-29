@@ -1,10 +1,20 @@
 <script setup>
   import { storeToRefs } from 'pinia';
   import {useThemeStore} from '../stores/darkmode.js'
+  import { local_storage_get } from '../utils';
   
   const themeStore = useThemeStore()
   
   const { isDark } = storeToRefs(themeStore)
+
+  // logout
+  const handleLogout = event => {
+    let cookie_name = local_storage_get('cookie_name')
+    let cookie = cookie_name + '=;Max-Age=0'
+    console.log(cookie)
+    document.cookie = cookie
+    window.location.href = '/'
+  }
 </script>
 
 <template>
@@ -54,7 +64,7 @@
                     <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Earnings</a>
                   </li>
                   <li>
-                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Sign out</a>
+                    <a href="#" @click="handleLogout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Sign out</a>
                   </li>
                 </ul>
               </div>

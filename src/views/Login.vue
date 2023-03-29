@@ -2,7 +2,7 @@
     import { ref, onBeforeMount } from 'vue';
     import axios from 'axios'
     import { useRouter } from 'vue-router';
-    import { is_authenticated } from '../utils';
+    import { is_authenticated, local_storage_set } from '../utils';
 import { userStore } from '../stores/UserStore';
 
     const credentials = ref({
@@ -46,7 +46,9 @@ import { userStore } from '../stores/UserStore';
             let time = data.expired_at * 60;
             let temp = `${data.cookie_name}=${cookie_val}; max-age=${time}; SameSite=None; Secure`;
             document.cookie = temp;
-            //TODO::do something on login success
+            //TODO::save the cookie max-age for later use(refresh token)
+            local_storage_set('cookie_name', data.cookie_name)
+            local_storage_set(data.cookie_name, time)
             //TODO::save the user in the store
             const user = data.user
             uStore.setUser(user)
@@ -64,7 +66,12 @@ import { userStore } from '../stores/UserStore';
         .catch(err => {
             console.log(err)
             _state.value.show = true
-            _state.value.error = err.response.data.detail
+            if(err.response.data){
+                _state.value.error = err.response.data.detail
+            }
+            else{
+                _state.value.error = "Unknown error"
+            }
         })
         .finally(() => {
             _state.value.loading = false
