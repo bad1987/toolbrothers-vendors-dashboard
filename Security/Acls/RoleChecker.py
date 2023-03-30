@@ -6,8 +6,11 @@ from Database.Models import User
 from Security.Controllers.LoginController import get_current_user_from_cookie
 
 class Role_checker:
-    def __init__(self, allowed_roles: list) -> None:
+    def __init__(self, allowed_roles: list = []) -> None:
         self.allowed_roles = allowed_roles
+        self.admin_roles = ['Role_admin']
+        self.direct_sale_roles = ['Role_direct_sale']
+        self.affiliate_roles = ['Role_affiliate']
     
     def __call__(self, request: Request, db: Session):
         user = get_current_user_from_cookie(request, db)
@@ -23,3 +26,42 @@ class Role_checker:
             for r in roles:
                 if r not in self.allowed_roles:
                     self.allowed_roles.append(r)
+    
+    def admin_access(self, roles: str) -> bool:
+        if not roles:
+            return False
+        roles = roles.split(',')
+        for role in roles:
+            if role in self.admin_roles:
+                return True
+        return False
+
+    def affiliate_access(self, roles: str) -> bool:
+        if not roles:
+            return False
+        roles = roles.split(',')
+        for role in roles:
+            if role in self.affiliate_roles:
+                return True
+        return False
+
+
+    def direct_sale_access(self, roles: str) -> bool:
+        if not roles:
+            return False
+        roles = roles.split(',')
+        for role in roles:
+            if role in self.direct_sale_roles:
+                return True
+        return False
+    
+
+    def vendors_access(self, roles: str) -> bool:
+        combined_roles = self.affiliate_roles + self.direct_sale_roles
+        if not roles:
+            return False
+        roles = roles.split(',')
+        for role in roles:
+            if role in combined_roles:
+                return True
+        return False

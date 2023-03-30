@@ -1,8 +1,9 @@
 import re
 from typing import List
-from fastapi import Depends, HTTPException,Request, APIRouter
+from fastapi import Depends, HTTPException,Request, APIRouter, status
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
+from Security.Acls.RoleChecker import Role_checker
 from Security.Controllers import LoginController
 from Security.DTO.UserDto import UserDtoCreate, UserDto
 from Database.Connexion import SessionLocal
@@ -20,6 +21,8 @@ console = Console()
 
 route = APIRouter(prefix='/admin')
 templates = Jinja2Templates(directory="templates")
+
+roles_checker = Role_checker()
 
 def get_db():
     db = SessionLocal()
@@ -71,7 +74,16 @@ def get_user(request: Request, db: Session = Depends(get_db)):
 
 @route.get("/users/list", response_model=List[UserSchema], responses={200:{"model": UserSchema}})#, response_model=list(UserSchema)
 def index(request: Request, db: Session = Depends(get_db)):
-    is_authenticated(request, db)
+    # first check if the user is authenticated
+    user = is_authenticated(request, db)
+    # then check if the user has the right permissions(admin only)
+    if not roles_checker.admin_access(user.roles):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access forbidden"
+        )
+        # return JSONResponse(content="Access Forbidden", status_code=status.HTTP_403_FORBIDDEN)
+    
     users = db.query(User).all()
     res = []
     for u in users:
