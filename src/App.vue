@@ -6,10 +6,14 @@ import { is_authenticated, refresh_token } from './utils'
 import { onBeforeMount, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { userStore } from './stores/UserStore'
+import { storeToRefs } from 'pinia';
 
 const classes = ref("")
 const refreshIntervalID = ref(0)
 const router = useRouter()
+
+// init the user store
+const uStore = userStore()
 
 router.beforeEach(to => {
     if(to.path != '/login'){
@@ -26,8 +30,6 @@ onBeforeMount(()=>{
         router.push('/login')
     }
 
-    // init the user store
-    const uStore = userStore()
     uStore.init()
 
     // refresh token after each 5 minutes
