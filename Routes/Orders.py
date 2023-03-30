@@ -1,8 +1,9 @@
 import time
-from fastapi import Depends,Request, APIRouter
+from fastapi import Depends,Request, APIRouter, HTTPException, status
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from Routes.Users import is_authenticated
+from Security.Acls.RoleChecker import Role_checker
 from Security.Controllers import LoginController
 from Security.DTO.UserDto import UserDtoCreate
 from Database.Connexion import SessionLocal
@@ -12,12 +13,12 @@ from rich.console import Console
 from App.Http.Controllers.OrderController import OrderController
 
 console = Console()
- 
-
 
 route = APIRouter(prefix='')
 templates = Jinja2Templates(directory="templates")
 
+
+roles_checker = Role_checker()
 
 def get_db():
     db = SessionLocal()
@@ -54,7 +55,13 @@ async def get_order_by_vendor(request: Request, db_local: Session = Depends(get_
 @route.get('/orders/list/', response_class=JSONResponse)
 async def get_all_orders(request: Request, db_local: Session = Depends(get_db),
                           db_cscart: Session = Depends(get_db_cscart), skip: int = 0, limit: int = 10):
-    is_authenticated(request, db_local)
+    user = is_authenticated(request, db_local)
+    # then check if the user has the right permissions(admin only)
+    if not roles_checker.vendors_access(user.roles):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access forbidden"
+        )
     result = OrderController.get_orders_by_vendor_connected(request, db_local, db_cscart, skip, limit)
 
     return {'orders': result["orders"], 'total': result["total"]}

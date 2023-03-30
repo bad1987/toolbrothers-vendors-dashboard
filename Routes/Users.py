@@ -82,7 +82,6 @@ def index(request: Request, db: Session = Depends(get_db)):
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Access forbidden"
         )
-        # return JSONResponse(content="Access Forbidden", status_code=status.HTTP_403_FORBIDDEN)
     
     users = db.query(User).all()
     res = []
