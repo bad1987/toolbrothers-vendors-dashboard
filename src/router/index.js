@@ -5,6 +5,7 @@ import Orders from '../views/Orders.vue'
 import Login from '../views/Login.vue'
 import Payment_method from '../views/Settings/Payment_method/index.vue'
 import Plenty_market from '../views/Settings/Plenty_market/index.vue'
+import Error403 from '../components/erros/Error403.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -42,6 +43,11 @@ const router = createRouter({
       path: '/plenty-market',
       name: 'plenty-market',
       component: Plenty_market
+    },
+    {
+      path: '/error/403',
+      name: '403',
+      component: Error403
     }
   ]
 })

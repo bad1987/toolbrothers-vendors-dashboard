@@ -2,15 +2,24 @@
     import axios from 'axios';
     import { ref, onMounted } from 'vue';
     import { initFlowbite, initModals, Modal } from 'flowbite'
+import { useRouter } from 'vue-router';
 
     const users = ref([])
-
+    const router = useRouter()
     const fetchUsers = () => {
         axios.get('/admin/users/list').then((response) => {
             users.value = response.data
         }).then(() => {
 
             initModals()
+        })
+        .catch(err => {
+            if (err.response) {
+                if (err.response.status) {
+                    console.log(err.response.status);
+                    router.push('/error/403')
+                }
+            }
         })
     }
 

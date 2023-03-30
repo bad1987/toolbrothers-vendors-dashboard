@@ -1,6 +1,5 @@
 import { userStore } from '../stores/UserStore'
 import { computed } from 'vue'
-import { createAcl, defineAclRules } from 'vue-simple-acl';
 import { getUser } from '../api';
 
 export async function acl() {
