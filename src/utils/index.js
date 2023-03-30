@@ -25,7 +25,7 @@ export function refresh_token(){
     current_age = parseInt(current_age/60000)
     // console.log(`max-age:${cookie_age} cuurent-age:${current_age}`)
     let diff = cookie_age - current_age
-    if(diff > 0 && diff <= 1){
+    if(diff > 0 && diff <= 5){
         // console.log("It is time to refresh the token")
         let url = axios.defaults.baseURL + 'auth/refresh'
         axios.get(url)

@@ -15,9 +15,15 @@ import { useRouter } from 'vue-router';
         })
         .catch(err => {
             if (err.response) {
-                if (err.response.status) {
-                    console.log(err.response.status);
-                    router.push('/error/403')
+                let status = err.response.status
+                if (status) {
+                    if (status == 403) {
+                        // console.log(err.response.status);
+                        router.push('/error/403')
+                    }
+                    else if (status == 401) {
+                        router.push('/llogin')
+                    }
                 }
             }
         })
