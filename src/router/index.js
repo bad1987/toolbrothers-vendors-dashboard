@@ -12,7 +12,10 @@ const router = createRouter({
     {
       path: '/',
       name: 'dashboard',
-      component: Dashboard
+      component: Dashboard,
+      meta: {
+        rule: 'isPublic'
+      }
     },
     {
       path: '/users',

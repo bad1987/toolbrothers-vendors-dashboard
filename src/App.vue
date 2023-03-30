@@ -6,11 +6,13 @@ import { is_authenticated, refresh_token } from './utils'
 import { onBeforeMount, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { userStore } from './stores/UserStore'
-import { storeToRefs } from 'pinia';
+import { getUser } from './api';
+
 
 const classes = ref("")
 const refreshIntervalID = ref(0)
 const router = useRouter()
+
 
 const uStore = userStore()
 
@@ -20,15 +22,19 @@ router.beforeEach(to => {
     }
 })
 
-onBeforeMount(()=>{
+
+
+onBeforeMount(async ()=>{
+
     const publicPages = ['/login']
     const url = '/' + window.location.href.split('/').pop()
     const authRequired = !publicPages.includes(url)
     const is_auth = is_authenticated()
+    console.log("is authencate user", is_auth);
     if(authRequired && !is_auth){
         router.push('/login')
     }
-
+ 
     // init the user store
     uStore.init()
 

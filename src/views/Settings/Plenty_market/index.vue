@@ -13,7 +13,6 @@
             .get("/plenty-market/vendor")
             .then((res) => {
                 plenty_market.value = res.data;
-                console.log("this value get", res);
             })
             .then(() =>  {
                 initDrawers()

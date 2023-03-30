@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { getUser } from '../api'
+
 export let userStore = defineStore("user", {
     state: () => ({
         "user": null

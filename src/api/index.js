@@ -42,7 +42,10 @@ export async function getUser(setter = null) {
     try {
         const url = axios.defaults.baseURL + 'admin/user'
         const res = await axios.get(url)
-        setter(res.data.user)
+        if (setter){
+            setter(res.data.user)
+        }
+        return res.data.user
     } catch (error) {
         console.log(error)
     }
