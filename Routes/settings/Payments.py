@@ -1,5 +1,5 @@
 import time
-from fastapi import Depends,Request, APIRouter
+from fastapi import Depends, HTTPException,Request, APIRouter, status
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from Database.Connexion import SessionLocal
@@ -9,6 +9,7 @@ from rich.console import Console
 from App.Http.Controllers.PaymentController import PaymentController
 from Database.Models import Payment_method
 from typing import List
+from Security.Acls.RoleChecker import Role_checker
 from schemas.Settings.PaymentMethodSchema import PaymentMethodSchema, updatePaymentMethod
 from fastapi.encoders import jsonable_encoder
 from Routes.Users import is_authenticated
@@ -16,6 +17,7 @@ from Routes.Users import is_authenticated
 console = Console()
 
 
+roles_checker = Role_checker()
 
 route = APIRouter(prefix='/payment')
 templates = Jinja2Templates(directory="templates")
@@ -43,7 +45,13 @@ def timestamp_to_date(s):
 
 @route.get("/method", response_model=List[PaymentMethodSchema], responses={200:{"model": PaymentMethodSchema}})
 def get_payment_method_by_vendor(request: Request, db_local: Session = Depends(get_db)):
-    is_authenticated(request, db_local)
+    user = is_authenticated(request, db_local)
+    # then check if the user has the right permissions(direct sale vendors only)
+    if not roles_checker.direct_sale_access(user.roles):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access forbidden"
+        )
     result = PaymentController.get_payment_method_by_vendor(request, db_local)
     res = []
     for u in result["payment_method"]:
@@ -80,7 +88,13 @@ def payment_method( db_local: Session = Depends(get_db)):
 # Enable and disable payment method
 @route.get('/update/{id}')
 def update_payment_method(request: Request, id: int, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart)):
-    is_authenticated(request, db_local)
+    user = is_authenticated(request, db_local)
+    # then check if the user has the right permissions(direct sale vendors only)
+    if not roles_checker.direct_sale_access(user.roles):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access forbidden"
+        )
     result = PaymentController.update_payment_method_by_vendor(id, db_local, db_cscart, request)
     
     return result
@@ -88,7 +102,13 @@ def update_payment_method(request: Request, id: int, db_local: Session = Depends
 # Update credential payment method
 @route.post('/update/credential/{id}')
 def update_credential_method(request: Request, id: int, schema: updatePaymentMethod, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart)):
-    is_authenticated(request, db_local)
+    user = is_authenticated(request, db_local)
+    # then check if the user has the right permissions(direct sale vendors only)
+    if not roles_checker.direct_sale_access(user.roles):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access forbidden"
+        )
     return PaymentController.update_credential_payment_method_by_vendor(request, id, schema, db_local, db_cscart)
 
 
