@@ -1,7 +1,21 @@
 <script setup>
 import axios from "axios";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onBeforeMount } from "vue";
 import { initDrawers } from 'flowbite'
+
+import { acl } from "../../../router/acl";
+import { useRouter } from "vue-router";
+
+const userRef = ref({user: null, isAdmin: false})
+const router = useRouter()
+onBeforeMount( async () => {
+
+    const test = await acl()
+    userRef.value = test
+    userRef.value.user = test
+    userRef.value.isAdmin = test.roles == "Role_admin"
+    console.log("get user information from acl", userRef.value.email );
+})
 
 const payment_method = ref([]);
 const skeletonCnt = ref(5);
@@ -19,7 +33,19 @@ const getPaymentMethodByVendorConnected = () => {
     .then(() => {
       initDrawers()
     })
-    .catch(() => {
+    .catch(err => {
+      if (err.response) {
+        let status = err.response.status
+        if (status) {
+          if (status == 403) {
+            console.log(err.response.status);
+            router.push('/error/403')
+          }
+          else if (status == 401) {
+            router.push('/login')
+          }
+        }
+      }
       skeletonCnt.value = 0;
     })
 };
@@ -76,7 +102,7 @@ onMounted(() => {
 getPaymentMethodByVendorConnected();
 </script>
 <template>
-  <main class="mx-5 mt-[6%] px-[5%] dark:bg-gray-800 dark:border-gray-700 " id="app">
+  <main v-if="!userRef.isAdmin" class="mx-5 mt-[6%] px-[5%] dark:bg-gray-800 dark:border-gray-700 " id="app">
     <div
       class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:border-gray-700 sm:p-6 dark:bg-gray-800"
     >
