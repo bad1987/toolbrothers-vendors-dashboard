@@ -12,7 +12,6 @@ const classes = ref("")
 const refreshIntervalID = ref(0)
 const router = useRouter()
 
-// init the user store
 const uStore = userStore()
 
 router.beforeEach(to => {
@@ -30,6 +29,7 @@ onBeforeMount(()=>{
         router.push('/login')
     }
 
+    // init the user store
     uStore.init()
 
     // refresh token after each 5 minutes

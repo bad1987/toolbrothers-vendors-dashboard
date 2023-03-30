@@ -1,4 +1,7 @@
 <script setup>
+import { userStore } from '../stores/UserStore';
+
+  const uStore = userStore()
 </script>
 
 <template>
@@ -10,6 +13,7 @@
       <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">
         <div class="flex items-center justify-between mb-4">
           <div class="flex-shrink-0">
+            {{ uStore.user.email }}
             <span class="text-xl font-bold leading-none text-gray-900 sm:text-2xl dark:text-white">$45,385</span>
             <h3 class="text-base font-light text-gray-500 dark:text-gray-400">Sales this week</h3>
           </div>

@@ -7,23 +7,23 @@ export function api(url, method, params) {
         url,
         method,
         data: params
-    }).then (res => {
+    }).then(res => {
         response = res.data
-    }).catch (err => {
+    }).catch(err => {
         response = err
     })
 
     return response
 }
 
-export function interceptor(){
+export function interceptor() {
     // Request interceptors for API calls
     axios.interceptors.request.use(
         config => {
-        // config.headers['Accept'] = 'application/json';
-        // config.headers['Content-Type'] = 'application/json'
-        config.headers['withCredentials'] = true;
-        // config.headers['Authorization'] = getCookie('access_token');
+            // config.headers['Accept'] = 'application/json';
+            // config.headers['Content-Type'] = 'application/json'
+            config.headers['withCredentials'] = true;
+            // config.headers['Authorization'] = getCookie('access_token');
             return config;
         },
         error => {
@@ -33,23 +33,17 @@ export function interceptor(){
 }
 
 export function getCookie(name) {
-    var pair = document.cookie.split('; ').find(x => x.startsWith(name+'='));
+    var pair = document.cookie.split('; ').find(x => x.startsWith(name + '='));
     if (pair)
-       return pair.split('=')[1]
+        return pair.split('=')[1]
 }
 
-export function getUser(setter =null){
-    const url = axios.defaults.baseURL + 'admin/user'
-    axios.get(url)
-        .then(response => {
-            if(setter){
-                setter(response.data.user)
-            }
-            return response.data.user
-        })
-        .catch(err => {
-            // pass
-            console.log(err)
-            return null
-        })
+export async function getUser(setter = null) {
+    try {
+        const url = axios.defaults.baseURL + 'admin/user'
+        const res = await axios.get(url)
+        setter(res.data.user)
+    } catch (error) {
+        console.log(error)
+    }
 }
