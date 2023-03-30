@@ -1,10 +1,11 @@
 from pydantic import BaseModel
+from typing import Text, List, Optional
 
 class UserSchema(BaseModel):
-    id: int
-    email: str
-    username: str
-    company_id: int
-    roles: str
-    status: str
+    id: Optional[int]
+    email: Optional[str]
+    username: Optional[str]
+    company_id: Optional[int]
+    roles: Optional[str]
+    status: Optional[str]
     
