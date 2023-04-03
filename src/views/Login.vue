@@ -4,7 +4,7 @@
     import { useRouter } from 'vue-router';
     import { is_authenticated, local_storage_set } from '../utils';
     
-import { userStore } from '../stores/UserStore';
+    import { userStore } from '../stores/UserStore';
 
     const credentials = ref({
         username: "",
@@ -57,11 +57,13 @@ import { userStore } from '../stores/UserStore';
             const admin_roles = ['Role_admin']
             if(admin_roles.includes(user.roles)){
                 // redirect to admin homepage
-                router.push('/private')
+                //router.push('/private')
+                window.location.href = '/private'
             }
             else{
                 // redirect to vendors homepage
-                router.push('/')
+                //router.push('/')
+                window.location.href = '/'
             }
         })
         .catch(err => {
