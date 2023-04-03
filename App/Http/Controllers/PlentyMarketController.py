@@ -56,5 +56,7 @@ class PlentyMarketController:
             add_setting.method_payment_id = schema.method_payment_id
         if schema.shipping_profile_id:
             add_setting.shipping_profile_id = schema.shipping_profile_id
+        if schema.export_product_link:
+            add_setting.export_product_link = schema.export_product_link
         
         return add_setting
