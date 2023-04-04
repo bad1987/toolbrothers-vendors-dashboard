@@ -1,7 +1,7 @@
 <script setup>
 import axios from "axios";
 import { ref, onMounted, onBeforeMount } from "vue";
-import { initDrawers } from 'flowbite'
+import { initDrawers, initFlowbite } from 'flowbite'
 
 import { acl } from "../../../router/acl";
 import { useRouter } from "vue-router";
@@ -31,7 +31,7 @@ const getPaymentMethodByVendorConnected = () => {
       skeletonCnt.value = 0;
     })
     .then(() => {
-      initDrawers()
+      initFlowbite()
     })
     .catch(err => {
       if (err.response) {

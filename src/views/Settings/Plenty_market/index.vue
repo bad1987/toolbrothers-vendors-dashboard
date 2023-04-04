@@ -24,7 +24,7 @@ const getPlentyMarketInformationByVendorPlatform = () => {
   axios
     .get("/plenty-market/vendor")
     .then((res) => {
-      plenty_market.value = res.data;
+      plenty_market.value = res.data[0];
     })
     .then(() => {
       initDrawers();
@@ -185,7 +185,6 @@ getPlentyMarketInformationByVendorPlatform();
 
     <form
       @submit.prevent="handSubmit($event)"
-      v-for="plenty_market in plenty_market"
       action="/plenty-market/update"
       method="post"
       class="space-y-5 m-auto"
