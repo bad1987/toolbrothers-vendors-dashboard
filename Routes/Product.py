@@ -13,6 +13,7 @@ from Security.Acls.RoleChecker import Role_checker
 from fastapi.encoders import jsonable_encoder
 from Routes.Users import is_authenticated
 from App.Http.Schema.ProductSchema import ProductSchema
+from App.Http.Schema.ProductPriceSchema import ProductPriceSchema
 
 console = Console()
 
@@ -55,7 +56,8 @@ async def getProductListByVendor(request: Request, db_local: Session = Depends(g
     
     data = []
     for p in result['products']:
-        temp = ProductSchema(**jsonable_encoder(p))
-        console.log(jsonable_encoder(temp.cscart_product_prices))
+        temp = ProductSchema(**jsonable_encoder(p[0]))
+        temp.setPrices(ProductPriceSchema(**jsonable_encoder(p[1])))
+        temp.setProductName(p[2])
         data.append(temp)
     return {"products": data, "total": result["total"]}

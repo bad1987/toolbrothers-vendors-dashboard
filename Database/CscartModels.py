@@ -47,14 +47,16 @@ class Cscart_products(CscartBase):
     master_product_status = Column(String(25))
     status = Column(String(25))
     
-    cscart_product_prices = relationship("Cscart_product_prices",  back_populates="cscart_products")
-    cscart_product_descriptions = relationship("Cscart_product_descriptions",  back_populates="cscart_products")
+    cscart_product_prices = relationship("Cscart_product_prices", lazy="joined", back_populates="cscart_products")
+    cscart_product_descriptions = relationship("Cscart_product_descriptions", lazy="joined", back_populates="cscart_products")
 
 class Cscart_product_descriptions(CscartBase):
     __tablename__ = "cscart_product_descriptions"
-    lang_code = Column(Integer, primary_key=True, nullable=False)
+    shortname = Column(Integer, primary_key=True, nullable=False)
     full_description = Column(Text, nullable=True)
     short_description = Column(Text, nullable=True)
+    product = Column(String(100), nullable=True)
+    lang_code = Column(String(100), nullable=True)
     product_id = Column(Integer, ForeignKey("cscart_products.product_id"))
     
     cscart_products = relationship("Cscart_products",  back_populates="cscart_product_descriptions")
