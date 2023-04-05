@@ -7,6 +7,9 @@ import Payment_method from '../views/Settings/Payment_method/index.vue'
 import Plenty_market from '../views/Settings/Plenty_market/index.vue'
 import Product from '../views/Products/index.vue'
 import Error403 from '../components/erros/Error403.vue'
+import { is_authenticated } from '../utils'
+import { userStore } from '../stores/UserStore';
+import { getUser } from '../api'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -22,12 +25,20 @@ const router = createRouter({
     {
       path: '/users',
       name: 'users',
-      component: Users
+      component: Users,
+      meta: {
+        requiresAuth: true,
+        roles: ['Role_admin']
+      }
     },
     {
       path: '/orders',
       name: 'orders',
-      component: Orders
+      component: Orders,
+      meta: {
+        requiresAuth: true,
+        roles: ['Role_direct_sale', 'Role_affiliate']
+      }
     },
     {
       path: '/login',
@@ -38,25 +49,68 @@ const router = createRouter({
     {
       path: '/payment-method',
       name: 'payment-method',
-      component: Payment_method
+      component: Payment_method,
+      meta: {
+        requiresAuth: true,
+        roles: ['Role_direct_sale']
+      }
     },
     {
       path: '/plenty-market',
       name: 'plenty-market',
-      component: Plenty_market
+      component: Plenty_market,
+      meta: {
+        requiresAuth: true,
+        roles: ['Role_direct_sale']
+      }
     },
     {
       path: '/products',
       name: 'products',
-      component: Product
+      component: Product,
+      meta: {
+        requiresAuth: true,
+        roles: ['Role_direct_sale', 'Role_affiliate']
+      },
     },
     {
       path: '/error/403',
       name: '403',
       component: Error403
     },
-    
+
   ]
 })
+
+// register authentication guard for protected routes
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (!is_authenticated()) {
+      next({
+        path: '/login',
+        query: { redirect: to.fullPath }
+      })
+    } else {
+      const uStore = userStore()
+      let userRole = uStore.user
+      if(!userRole){
+        getUser(uStore.setUser)
+        userRole = uStore.user
+        console.log(userRole)
+      }
+      else{
+        userRole = userRole.roles
+      }
+      if (userRole && to.meta.roles.includes(userRole)) {
+        next()
+      } else {
+        console.log('redirecting to 403')
+        next({ name: '403' })
+      }
+    }
+  } else {
+    next();
+  }
+});
 
 export default router

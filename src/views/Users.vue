@@ -33,7 +33,7 @@
                         router.push('/error/403')
                     }
                     else if (status == 401) {
-                        router.push('/llogin')
+                        router.push('/login')
                     }
                 }
             }
