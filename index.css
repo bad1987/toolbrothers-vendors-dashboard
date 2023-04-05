@@ -1,0 +1,31 @@
+html {
+    --scrollbarBG: gray ;
+    --thumbBG: #115740;
+  }
+  body::-webkit-scrollbar {
+    width: 12px;
+
+  }
+  body {
+    scrollbar-width: thin;
+    scrollbar-color: var(--thumbBG) var(--scrollbarBG);
+  }
+  body::-webkit-scrollbar-track {
+    background: var(--scrollbarBG);
+  }
+  body::-webkit-scrollbar-thumb {
+    background-color: var(--thumbBG) ;
+    border-radius: 50px;
+    border: 2px solid var(--scrollbarBG);
+  }
+  
+  
+  html {
+    overflow: hidden;
+  }
+  body {
+    height: 100vh;
+    overflow-y: auto;
+    margin: 0 auto;
+    border: 1px solid rgba(0, 0, 0, 0.25)
+  }

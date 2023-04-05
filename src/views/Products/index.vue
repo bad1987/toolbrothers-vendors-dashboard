@@ -91,7 +91,7 @@ fetchProducts()
 </script>
 
 <template>
-  <main v-if="!userRef.isAdmin" class="mx-5 mt-7 dark:bg-gray-800 dark:border-gray-700" id="app">
+  <main v-if="!userRef.isAdmin" class="mx-5 mt-7 mb-[5%] dark:bg-gray-800 dark:border-gray-700" id="app">
     <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:border-gray-700 sm:p-6 dark:bg-gray-800">
       <!-- Card header -->
       <div class="items-center justify-between lg:flex">
@@ -113,80 +113,37 @@ fetchProducts()
               </button>
               <!-- Dropdown menu -->
               <div id="dropdown" class="z-10 hidden w-56 p-3 bg-white rounded-lg shadow dark:bg-gray-700">
-              <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">
-                  Category
-              </h6>
-              <ul class="space-y-2 text-sm" aria-labelledby="dropdownDefault">
-                  <li class="flex items-center">
-                  <input id="apple" type="checkbox" value=""
-                      class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+                <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">
+                    Status
+                </h6>
+                <ul class="space-y-2 text-sm" aria-labelledby="dropdownDefault">
+                    <li class="flex items-center">
+                      <input id="apple" type="checkbox" checked value=""
+                          class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
 
-                  <label for="apple" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-                      Completed (56)
-                  </label>
-                  </li>
+                      <label for="apple" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+                          Online (56)
+                      </label>
+                    </li>
 
-                  <li class="flex items-center">
-                  <input id="fitbit" type="checkbox" value="" checked
-                      class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+                    <li class="flex items-center">
+                      <input id="fitbit" type="checkbox" value="" 
+                          class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
 
-                  <label for="fitbit" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-                      Cancelled (56)
-                  </label>
-                  </li>
+                      <label for="fitbit" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+                          Offline (56)
+                      </label>
+                    </li>
 
-                  <li class="flex items-center">
-                  <input id="dell" type="checkbox" value=""
-                      class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+                    <li class="flex items-center">
+                      <input id="dell" type="checkbox" value=""
+                          class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
 
-                  <label for="dell" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-                      In progress (56)
-                  </label>
-                  </li>
-
-                  <li class="flex items-center">
-                  <input id="asus" type="checkbox" value="" checked
-                      class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
-
-                  <label for="asus" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-                      In review (97)
-                  </label>
-                  </li>
-              </ul>
-              </div>
-          </div>
-          <div date-rangepicker id="datePicker" class="flex items-center space-x-4">
-              <div class="relative">
-              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path
-                      d="M5.25 12a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H6a.75.75 0 01-.75-.75V12zM6 13.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V14a.75.75 0 00-.75-.75H6zM7.25 12a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H8a.75.75 0 01-.75-.75V12zM8 13.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V14a.75.75 0 00-.75-.75H8zM9.25 10a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H10a.75.75 0 01-.75-.75V10zM10 11.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V12a.75.75 0 00-.75-.75H10zM9.25 14a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H10a.75.75 0 01-.75-.75V14zM12 9.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V10a.75.75 0 00-.75-.75H12zM11.25 12a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H12a.75.75 0 01-.75-.75V12zM12 13.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V14a.75.75 0 00-.75-.75H12zM13.25 10a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H14a.75.75 0 01-.75-.75V10zM14 11.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V12a.75.75 0 00-.75-.75H14z">
-                  </path>
-                  <path clip-rule="evenodd" fill-rule="evenodd"
-                      d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z">
-                  </path>
-                  </svg>
-              </div>
-              <input name="start" type="text"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                  placeholder="From">
-              </div>
-              <div class="relative">
-              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path
-                      d="M5.25 12a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H6a.75.75 0 01-.75-.75V12zM6 13.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V14a.75.75 0 00-.75-.75H6zM7.25 12a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H8a.75.75 0 01-.75-.75V12zM8 13.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V14a.75.75 0 00-.75-.75H8zM9.25 10a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H10a.75.75 0 01-.75-.75V10zM10 11.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V12a.75.75 0 00-.75-.75H10zM9.25 14a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H10a.75.75 0 01-.75-.75V14zM12 9.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V10a.75.75 0 00-.75-.75H12zM11.25 12a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H12a.75.75 0 01-.75-.75V12zM12 13.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V14a.75.75 0 00-.75-.75H12zM13.25 10a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H14a.75.75 0 01-.75-.75V10zM14 11.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V12a.75.75 0 00-.75-.75H14z">
-                  </path>
-                  <path clip-rule="evenodd" fill-rule="evenodd"
-                      d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z">
-                  </path>
-                  </svg>
-              </div>
-              <input name="end" type="text"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                  placeholder="To">
+                      <label for="dell" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+                        Disable (56)
+                      </label>
+                    </li>
+                </ul>
               </div>
           </div>
           </div>
@@ -206,6 +163,9 @@ fetchProducts()
                       Status
                     </th>
                     <th scope="col" class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
+                      Name
+                    </th>
+                    <th scope="col" class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
                       Product code
                     </th>
                     <th scope="col" class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
@@ -218,14 +178,14 @@ fetchProducts()
                       Amount
                     </th>
                     <th scope="col" class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
-                      Created at
+                      Price
                     </th>
                   </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-gray-800">
                     <tr v-for="u in skeletonCnt" role="status" :key="u"
                       class="max-w-md p-4 space-y-5 divide-gray-200 rounded animate-pulse dark:divide-gray-700 md:p-6">
-                      <td v-for="u in 6" class="items-center " :key="u">
+                      <td v-for="u in 8" class="items-center " :key="u">
                         <div class="flex items-center justify-between">
                           <div>
                             <div class="w-32 h-3 bg-gray-200 rounded-full dark:bg-gray-700"></div>
@@ -236,15 +196,37 @@ fetchProducts()
                     </tr>
                     <tr v-for="product in products" key="product.product_id">
                       <td class="p-4 text-sm font-normal text-gray-900 whitespace-nowrap dark:text-white">
-                        Product <span class="font-semibold">#{{ product.product_id }}</span>
+                        #{{ product.product_id }}
                       </td>
-                      <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
+                      <td v-if="product.status == 'A'" class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
                         <span
+                        
                           class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-gray-700 dark:text-green-400 border border-green-100 dark:border-green-500">
+                          Online
+                        </span>
+                      </td>
+                      <td v-if="product.status == 'D'" class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
+                        <span
+                          class="bg-green-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-gray-700 dark:text-red-400 border border-red-100 dark:border-red-500">
+                          Disable
+                        </span>
+                      </td>
+                      <td v-if="product.status == 'H'" class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
+                        <span
+                          class="bg-green-100 text-red-500 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-gray-700 dark:text-red-300 border border-red-100 dark:border-red-400">
+                          Offline
+                        </span>
+                      </td>
+                      <td v-if="!product.status == 'H' && !product.status == 'D' && !product.status == 'A'" class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
+                        <span
+                          class="bg-green-100 text-grey-300 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-gray-700 dark:text-grey-300 border border-grey-100 dark:border-grey-400">
                           {{ product.status }}
                         </span>
                       </td>
-                      <td class="p-4 text-sm font-semibold text-gray-900 whitespace-nowrap dark:text-white">
+                      <td class="p-4 !w-32 line-clamp-1 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
+                        {{ product.product }}
+                      </td>
+                      <td class="p-4 text-sm text-gray-900 whitespace-nowrap dark:text-white">
                         {{ product.product_code }}
                       </td>
                       <td class="inline-flex items-center p-4 space-x-2 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
@@ -256,8 +238,8 @@ fetchProducts()
                       <td class="p-4 text-gray-500 whitespace-nowrap dark:text-gray-400">
                         {{ product.amount }}
                       </td>
-                      <td class="p-4 text-sm font-semibold text-gray-900 whitespace-nowrap dark:text-white">
-                        {{ product.timestamp }}
+                      <td class="p-4 text-sm text-gray-900 whitespace-nowrap dark:text-white">
+                        {{ product.cscart_product_prices.price }} $
                       </td>
                     </tr>
                 </tbody>

@@ -91,7 +91,7 @@ fetchOrders()
 </script>
 
 <template>
-  <main v-if="!userRef.isAdmin" class="mx-5 mt-7 dark:bg-gray-800 dark:border-gray-700" id="app">
+  <main v-if="!userRef.isAdmin" class="mx-5 mt-7 mb-[5%] dark:bg-gray-800 dark:border-gray-700" id="app">
     <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:border-gray-700 sm:p-6 dark:bg-gray-800">
       <!-- Card header -->
       <div class="items-center justify-between lg:flex">
