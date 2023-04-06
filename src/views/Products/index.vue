@@ -194,7 +194,7 @@ fetchProducts()
                       </td>
                       <div class="h-3"></div>
                     </tr>
-                    <tr v-for="product in products" key="product.product_id">
+                    <tr v-for="product in products" :key="product.product_id">
                       <td class="p-4 text-sm font-normal text-gray-900 whitespace-nowrap dark:text-white">
                         #{{ product.product_id }}
                       </td>
