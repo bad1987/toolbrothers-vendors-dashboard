@@ -14,6 +14,7 @@ class User(Base):
     password = Column(String(255), nullable=False)
     roles = Column(String(255), nullable = False)
     status = Column(String(25), nullable=False)
+    parent_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
     
     # payment_method_vendor = relationship("Payment_method_vendor",  back_populates="users", cascade="all, delete")
     
@@ -53,7 +54,7 @@ class Platform_settings(Base):
     api_id = Column(BigInteger, nullable=True)
     api_secret = Column(BigInteger, nullable=True)
     access_token = Column(BigInteger, nullable=True)
-    user_id = Column(BigInteger, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     platform_url = Column(String(250), nullable=True)
     method_payment_id = Column(BigInteger, nullable=True)
     shipping_profile_id = Column(BigInteger, nullable=True)
@@ -62,4 +63,14 @@ class Platform_settings(Base):
     
     # payment_method_vendor = relationship("Payment_method_vendor",  back_populates="payment_method", cascade="all, delete")
 
-    
+class Permission(Base):
+    __tablename__ = "permissions"
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    name = Column(String(25), nullable=False) 
+    description = Column(Text, nullable=True)
+
+class User_Permission(Base):
+    __tablename__ = "user_permissions"
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
+    permission_id = Column(Integer, ForeignKey("permissions.id", ondelete="CASCADE"), nullable=True)
