@@ -4,6 +4,7 @@
     import { initFlowbite, initModals, Modal } from 'flowbite'
     import { useRouter, useRoute } from 'vue-router';
     import { acl } from '../router/acl';
+    import CheckboxGroup from './components/CheckboxGroup.vue';
 
   const userRef = ref({user: null, isAdmin: false})
 
@@ -22,19 +23,20 @@
     const users = ref([])
     const permissions = ref([
         {
-            id: 1,
-            name: 'view products',
-            description: 'User can view products list'
+            text: 'view products',
+            description: 'User can view products list',
+            value: '1'
         },{
-            id: 2,
-            name: 'create products',
-            description: 'User can create products list'
+            text: 'create products',
+            description: 'User can create products list',
+            value: '2'
         },{
-            id: 3,
-            name: 'delete products',
-            description: 'User can delete products list'
+            text: 'delete products',
+            description: 'User can delete products list',
+            value: '3'
         },
     ])
+    const selectedPermissions = ref([])
     const router = useRouter()
     const route = useRoute()
     const fetchUsers = () => {
@@ -58,6 +60,25 @@
             }
         })
     }
+    function addAdmin() {
+        if (route.params.type === 'admins') {
+            newUser.value.permissions = selectedPermissions
+            axios.post('/admin/users/admins/', {
+                user: newUser.value
+            }).then(response => {
+                console.log(response.data)
+                fetchUsers()
+            }).then(() => initFlowbite)
+        }
+    }
+
+    function togglePermissionValue(item) {
+        if (selectedPermissions.value.indexOf(item.value) >= 0) 
+            selectedPermissions.value = selectedPermissions.value.filter(x => x != item.value)
+        else selectedPermissions.value.push(item.value)
+
+        console.log(selectedPermissions.value)
+    }
 
     watch(() => route.params.type,
         () => {
@@ -69,7 +90,8 @@
 
     const newUser = ref({
         username: '',
-        email: ''
+        email: '',
+        permissions: null
     })
 </script>
 
@@ -501,7 +523,7 @@
                         </div>
                         <!-- Modal body -->
                         <div class="p-6 space-y-6">
-                            <form action="#" id="add-user-form">
+                            <form action="#" id="add-admin-form">
                                 <div class="grid grid-cols-6 gap-6">
                                     <div class="col-span-6 sm:col-span-3">
                                         <label for="username"
@@ -522,12 +544,9 @@
                                         <label for="checkbox-activate" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Activate</label>
                                     </div>
                                     <div class="col-span-6">
-                                        <h4 class="font-bold">Set permissions</h4>
+                                        <h4 class="font-bold dark:text-white">Set permissions</h4>
                                         <div class="permissions-list">
-                                            <div v-for="perm in permissions">
-                                                <input :id="'checkbox-permission-' + perm.id" type="checkbox" :value="perm.name" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                                <label :for="'checkbox-permission-' + perm.id" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">{{ perm.name }}</label>
-                                            </div>
+                                            <CheckboxGroup :items="permissions" name="permission" id="checkbox-group-perm" @toggle-value="togglePermissionValue"/>
                                         </div>
                                     </div>
                                 </div>
@@ -536,7 +555,7 @@
                         <!-- Modal footer -->
                         <div class="items-center p-6 border-t border-gray-200 rounded-b dark:border-gray-700">
                             <button
-                                @click="addUser"
+                                @click="addAdmin"
                                 class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                                 type="submit" id="btn-add-user">Add user</button>
                         </div>
