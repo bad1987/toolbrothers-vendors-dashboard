@@ -7,6 +7,7 @@ import Payment_method from '../views/Settings/Payment_method/index.vue'
 import Plenty_market from '../views/Settings/Plenty_market/index.vue'
 import Product from '../views/Products/index.vue'
 import Error403 from '../components/erros/Error403.vue'
+import Error404 from '../components/erros/Error404.vue'
 import { is_authenticated } from '../utils'
 import { userStore } from '../stores/UserStore';
 import { getUser } from '../api'
@@ -77,6 +78,11 @@ const router = createRouter({
       path: '/error/403',
       name: '403',
       component: Error403
+    },
+    {
+      path: '/:catchAll(.*)',
+      name: '404',
+      component: Error404
     },
 
   ]

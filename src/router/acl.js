@@ -6,7 +6,7 @@ export async function acl() {
   const store = userStore()
 
   const user = await getUser()
-  console.log(user);
+  // console.log(user);
   return user
 } 
 
