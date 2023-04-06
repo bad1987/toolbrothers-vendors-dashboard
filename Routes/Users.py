@@ -5,7 +5,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from Security.Acls.RoleChecker import Role_checker
 from Security.Controllers import LoginController
-from Security.DTO.UserDto import UserDtoCreate, UserDto
+from Security.DTO.UserDto import UserDtoCreate, UserDto, AdminDtoCreate
 from Database.Connexion import SessionLocal
 from Database.CscartConnexion import CscartSession
 from sqlalchemy.orm import Session
@@ -150,6 +150,39 @@ async def add_user(request: Request, db: Session = Depends(get_db)):
                 'message': 'An error occured',
             }
         
+
+@route.post('/users/admins', response_class=JSONResponse)
+async def add_admin_user(request: Request, db: Session = Depends(get_db)):
+    try:
+        datas = await request.json()
+        console.log(datas)
+        # current_user = is_authenticated()
+
+        user = AdminDtoCreate(**datas)
+
+        user.password = crypto.hash("secret")
+
+        ans = LoginController.create_user_account(user, db)
+
+        newUser = UserDto(**datas)
+
+        if ans:
+            return {
+                'status': True,
+                'user': newUser
+            }
+
+        return {
+                'status': False,
+                'message': 'An error occured, cannot create'
+            }
+    except Exception as e:
+        return {
+                'status': False,
+                'message': 'An error occured',
+                'complete error': str(e)
+            }
+   
     
 # Scrap user vendor in cscart database
 @route.get('/cscart-users')
