@@ -5,10 +5,11 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from Security.Acls.RoleChecker import Role_checker
 from Security.Controllers import LoginController
-from Security.DTO.UserDto import UserDtoCreate, UserDto
+from Security.DTO.UserDto import UserDtoCreate, UserDto, AdminDtoCreate
 from Database.Connexion import SessionLocal
 from Database.CscartConnexion import CscartSession
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 from Database.Models import User, Payment_method, Payment_method_vendor
 from rich.console import Console
 from fastapi.encoders import jsonable_encoder
@@ -72,8 +73,8 @@ def get_user(request: Request, db: Session = Depends(get_db)):
     return {"user":user}
 
 
-@route.get("/users/list", response_model=List[UserSchema], responses={200:{"model": UserSchema}})#, response_model=list(UserSchema)
-def index(request: Request, db: Session = Depends(get_db)):
+@route.get("/users/{type}/list", response_model=List[UserSchema], responses={200:{"model": UserSchema}})#, response_model=list(UserSchema)
+def index(type: str, request: Request, db: Session = Depends(get_db)):
     # first check if the user is authenticated
     user = is_authenticated(request, db)
     # then check if the user has the right permissions(admin only)
@@ -83,7 +84,13 @@ def index(request: Request, db: Session = Depends(get_db)):
             detail="Access forbidden"
         )
     
-    users = db.query(User).all()
+
+    users = []
+    if type == "vendors":
+        users = db.query(User).filter(or_(User.roles == "Role_affiliate", User.roles == "Role_direct_sale")).all()
+    elif type == "admins":
+        users = db.query(User).filter(User.roles == "Role_admin").all()
+
     res = []
     for u in users:
         res.append(UserSchema(**jsonable_encoder(u)))
@@ -143,6 +150,39 @@ async def add_user(request: Request, db: Session = Depends(get_db)):
                 'message': 'An error occured',
             }
         
+
+@route.post('/users/admins', response_class=JSONResponse)
+async def add_admin_user(request: Request, db: Session = Depends(get_db)):
+    try:
+        datas = await request.json()
+        console.log(datas)
+        # current_user = is_authenticated()
+
+        user = AdminDtoCreate(**datas)
+
+        user.password = crypto.hash("secret")
+
+        ans = LoginController.create_user_account(user, db)
+
+        newUser = UserDto(**datas)
+
+        if ans:
+            return {
+                'status': True,
+                'user': newUser
+            }
+
+        return {
+                'status': False,
+                'message': 'An error occured, cannot create'
+            }
+    except Exception as e:
+        return {
+                'status': False,
+                'message': 'An error occured',
+                'complete error': str(e)
+            }
+   
     
 # Scrap user vendor in cscart database
 @route.get('/cscart-users')
@@ -208,6 +248,23 @@ async def cscart_users(db_cscart: Session = Depends(get_db_cscart), db_local: Se
     except Exception as e:
         console.log("error ...", str(e))
     
+@route.get('/users/create-admin-users')
+async def create_admin(db_local: Session = Depends(get_db)):
+    user = User()
+
+    user.company_id = -1
+    user.email = "admin@dino.com"
+    user.password = crypto.hash("Admin")
+    user.roles = "Role_master_admin"
+    user.status = "A"
+    user.username = "Admin"
+
+    db_local.add(user)
+    db_local.commit()
+    db_local.flush(user)
+
+    return None
+
 # Extract secret credential
 def extract_credentials(payload: str):
     if not payload:
@@ -227,3 +284,4 @@ def extract_credentials(payload: str):
             'password': res[0][1],
         }
     return None
+

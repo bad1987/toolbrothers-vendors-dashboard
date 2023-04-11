@@ -14,3 +14,9 @@ class UserDtoCreate(BaseModel):
     username: str
     email: str
     password: str
+
+class AdminDtoCreate(BaseModel):
+    username: str
+    email: str
+    password: str | None = None
+    permissions: list | None = None
