@@ -50,8 +50,9 @@ const router = createRouter({
       meta: { hideNavigation: true}
     },
     {
-      path: '/reset-password?token=:token',
+      path: '/reset-password',
       name: 'reset-password',
+      props: (route) => ({ token: route.query.token }),
       component: ResetPassword,
       meta: { hideNavigation: true}
     },
