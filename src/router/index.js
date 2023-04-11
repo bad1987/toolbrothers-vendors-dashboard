@@ -89,34 +89,34 @@ const router = createRouter({
 })
 
 // register authentication guard for protected routes
-// router.beforeEach((to, from, next) => {
-//   if (to.matched.some(record => record.meta.requiresAuth)) {
-//     if (!is_authenticated()) {
-//       next({
-//         path: '/login',
-//         query: { redirect: to.fullPath }
-//       })
-//     } else {
-//       const uStore = userStore()
-//       let userRole = uStore.user
-//       if(!userRole){
-//         getUser(uStore.setUser)
-//         userRole = uStore.user
-//         console.log(userRole)
-//       }
-//       else{
-//         userRole = userRole.roles
-//       }
-//       if (userRole && to.meta.roles.includes(userRole)) {
-//         next()
-//       } else {
-//         console.log('redirecting to 403')
-//         next({ name: '403' })
-//       }
-//     }
-//   } else {
-//     next();
-//   }
-// });
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (!is_authenticated()) {
+      next({
+        path: '/login',
+        query: { redirect: to.fullPath }
+      })
+    } else {
+      const uStore = userStore()
+      let userRole = uStore.user
+      if(!userRole){
+        getUser(uStore.setUser)
+        userRole = uStore.user
+        console.log(userRole)
+      }
+      else{
+        userRole = userRole.roles
+      }
+      if (userRole && to.meta.roles.includes(userRole)) {
+        next()
+      } else {
+        console.log('redirecting to 403')
+        next({ name: '403' })
+      }
+    }
+  } else {
+    next();
+  }
+});
 
 export default router
