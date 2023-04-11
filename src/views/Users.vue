@@ -41,7 +41,8 @@
     const route = useRoute()
     const fetchUsers = () => {
         axios.get(`/admin/users/${route.params.type}/list`).then((response) => {
-            users.value = response.data
+            console.log(response.data)
+            users.value = response.data.users
         }).then(() => {
             initFlowbite()
         })
@@ -60,16 +61,26 @@
             }
         })
     }
-    function addAdmin() {
+
+    function addUser() {
+        newUser.value.permissions = selectedPermissions
+
         if (route.params.type === 'admins') {
-            newUser.value.permissions = selectedPermissions
-            axios.post('/admin/users/admins/', {
-                user: newUser.value
-            }).then(response => {
-                console.log(response.data)
-                fetchUsers()
-            }).then(() => initFlowbite)
+            newUser.value.roles = 'Role_admin'
         }
+
+        axios.post('admin/users', {
+            username: newUser.value.username,
+            email: newUser.value.email,
+            status: newUser.value.status,
+            permissions: newUser.value.permissions,
+            roles: newUser.value.roles
+        }).then(response => {
+            console.log(response.data)
+            fetchUsers()
+        }).catch(err => {
+            console.log(err)
+        })
     }
 
     function togglePermissionValue(item) {
@@ -78,6 +89,10 @@
         else selectedPermissions.value.push(item.value)
 
         console.log(selectedPermissions.value)
+    }
+
+    function changeRole(event) {
+        newUser.value.roles = event.target.value
     }
 
     watch(() => route.params.type,
@@ -89,8 +104,10 @@
     fetchUsers()
 
     const newUser = ref({
-        username: '',
-        email: '',
+        username: null,
+        email: null,
+        status: false,
+        roles: null,
         permissions: null
     })
 </script>
@@ -462,14 +479,15 @@
                                     </div>
                                     <div class="col-span-6 sm:col-span-3">
                                         <label for="role" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select a role</label>
-                                        <select id="role" v-model="newUser.role" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                            <option value="direct_sale">Direct sale</option>
-                                            <option value="affiliate">Affiliate</option>
+                                        <select v-model="newUser.roles" @change="changeRole" id="role" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                            <option value="" selected>Select a role</option>
+                                            <option value="Role_affiliate">Affiliate</option>
+                                            <option value="Role_direct_sale">Direct sale</option>
                                         </select>
                                     </div>
-                                    <div class="flex items-center mb-4">
-                                        <input v-model="newUser.is_active" id="checkbox-activate-create" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                        <label for="checkbox-activate" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Activate</label>
+                                    <div class="col-span-6 sm:col-span-3 flex items-center">
+                                        <input v-model="newUser.status" id="checkbox-activate-create" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <label for="checkbox-activate-create" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Activate</label>
                                     </div>
                                 </div>
                             </form>
@@ -525,7 +543,7 @@
                                             placeholder="example@company.com" required="">
                                     </div>
                                     <div class="flex items-center mb-4">
-                                        <input v-model="newUser.is_active" id="checkbox-activate-create" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <input v-model="newUser.status" id="checkbox-activate-create" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                         <label for="checkbox-activate" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Activate</label>
                                     </div>
                                     <div class="col-span-6">
@@ -540,7 +558,7 @@
                         <!-- Modal footer -->
                         <div class="items-center p-6 border-t border-gray-200 rounded-b dark:border-gray-700">
                             <button
-                                @click="addAdmin"
+                                @click="addUser"
                                 class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                                 type="submit" id="btn-add-user">Add user</button>
                         </div>
