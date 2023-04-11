@@ -1,20 +1,21 @@
 import re
-from typing import List
+from typing import List, Any
 from fastapi import Depends, HTTPException,Request, APIRouter, status
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from Security.Acls.RoleChecker import Role_checker
 from Security.Controllers import LoginController
-from Security.DTO.UserDto import UserDtoCreate, UserDto, AdminDtoCreate
+from Security.DTO.UserDto import UserDtoCreate, UserDto, UserListDto, Permission
 from Database.Connexion import SessionLocal
 from Database.CscartConnexion import CscartSession
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
-from Database.Models import User, Payment_method, Payment_method_vendor
+from Database.Models import User, Payment_method, Payment_method_vendor, User_Permission, Permission
 from rich.console import Console
 from fastapi.encoders import jsonable_encoder
 from Database.CscartModels import CscartCompanies, Cscart_payments
 from passlib.handlers.sha2_crypt import sha512_crypt as crypto
+from App.Enums.UserRoleEnum import UserRoleEnum
 
 from schemas.UserSchema import UserSchema
 
@@ -73,7 +74,7 @@ def get_user(request: Request, db: Session = Depends(get_db)):
     return {"user":user}
 
 
-@route.get("/users/{type}/list", response_model=List[UserSchema], responses={200:{"model": UserSchema}})#, response_model=list(UserSchema)
+@route.get("/users/{type}/list", response_model=UserListDto, responses={200:{"model": UserSchema}})#, response_model=list(UserSchema)
 def index(type: str, request: Request, db: Session = Depends(get_db)):
     # first check if the user is authenticated
     user = is_authenticated(request, db)
@@ -87,14 +88,17 @@ def index(type: str, request: Request, db: Session = Depends(get_db)):
 
     users = []
     if type == "vendors":
-        users = db.query(User).filter(or_(User.roles == "Role_affiliate", User.roles == "Role_direct_sale")).all()
+        users = db.query(User).filter(or_(User.roles == UserRoleEnum.AFFILIATE.value, User.roles == UserRoleEnum.DIRECT_SALE.value)).all()
     elif type == "admins":
-        users = db.query(User).filter(User.roles == "Role_admin").all()
+        users = db.query(User).filter(User.roles == UserRoleEnum.ADMIN.value).all()
 
     res = []
+    permissions = db.query(Permission).all()
+
     for u in users:
         res.append(UserSchema(**jsonable_encoder(u)))
-    return res
+        
+    return {"users": res, "permissions": permissions}
 
 @route.get('/get-all-users', response_class=JSONResponse)
 async def get_all_users(request: Request, db: Session = Depends(get_db)):
@@ -122,67 +126,43 @@ async def delete_user(request: Request, db: Session = Depends(get_db)):
             'message': 'An error occured'
         }
 
-@route.post('/users/', response_class=JSONResponse)
-async def add_user(request: Request, db: Session = Depends(get_db)):
+@route.post('/users', response_model= UserDto | Any)
+async def add_user(request: Request, model: UserDtoCreate, db: Session = Depends(get_db)):
     try:
-        datas = await request.json()
-        current_user = LoginController.get_current_user_from_cookie(request, db)
+        transaction = db.begin()
+        current_user = is_authenticated(request, db)
+        user = User()
+        # If role is admin
 
-        user = UserDtoCreate(**datas)
-
-        ans = LoginController.create_user_account(user, db)
-
-        newUser = UserDto(**datas)
-
-        if ans:
-            return {
-                'status': True,
-                'user': newUser
-            }
-
-        return {
-                'status': False,
-                'message': 'An error occured, cannot create'
-            }
-    except:
-        return {
-                'status': False,
-                'message': 'An error occured',
-            }
-        
-
-@route.post('/users/admins', response_class=JSONResponse)
-async def add_admin_user(request: Request, db: Session = Depends(get_db)):
-    try:
-        datas = await request.json()
-        console.log(datas)
-        # current_user = is_authenticated()
-
-        user = AdminDtoCreate(**datas)
-
+        user.username = model.username
+        user.email = model.email
         user.password = crypto.hash("secret")
+        user.status = "A" if model.status == True else "D"
+        user.roles = model.roles
 
-        ans = LoginController.create_user_account(user, db)
+        db.add(user)
 
-        newUser = UserDto(**datas)
+        if model.roles == UserRoleEnum.ADMIN.value:
+            for perm_id in model.permissions:
+                permission = db.query(Permission).filter(Permission.id == int(perm_id)).first()
 
-        if ans:
-            return {
-                'status': True,
-                'user': newUser
-            }
+                if permission != None: 
+                    user.permissions.append(permission)
+                else:
+                    return {"error": True, "message": "Permission doesn't exist"}
+        elif model.roles == UserRoleEnum.AFFILIATE.value or model.roles == UserRoleEnum.DIRECT_SALE.value:
+            ...
+        else:
+            return {"error": True, "message": "Role doesn't exist"}
 
-        return {
-                'status': False,
-                'message': 'An error occured, cannot create'
-            }
+        db.commit()
+        db.flush()
+
+        return user
     except Exception as e:
-        return {
-                'status': False,
-                'message': 'An error occured',
-                'complete error': str(e)
-            }
-   
+        # db.delete(user)
+        transaction.rollback()
+        return {'error': True, 'message': str(e)}
     
 # Scrap user vendor in cscart database
 @route.get('/cscart-users')
