@@ -1,7 +1,7 @@
 <script setup>
     import { ref, onBeforeMount } from 'vue';
     import axios from 'axios'
-    
+    console.log(this.$route.params.token);
 
     const credentials = ref({
         password: "",
