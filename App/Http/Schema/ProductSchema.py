@@ -10,7 +10,10 @@ class ProductSchema(BaseModel):
     status: Optional[str]
     cscart_product_descriptions: Optional[ProductDescriptionSchema] = {}
     cscart_product_prices: Optional[ProductPriceSchema] = {}
-    
+
+    def setPrices(self, obj):
+        self.cscart_product_prices = obj
+
     class Config:
         orm_mode = True
 

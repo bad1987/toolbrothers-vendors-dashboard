@@ -55,7 +55,8 @@ async def getProductListByVendor(request: Request, db_local: Session = Depends(g
     
     data = []
     for p in result['products']:
-        temp = ProductSchema(**jsonable_encoder(p))
-        console.log(jsonable_encoder(temp.cscart_product_prices))
+        temp = ProductSchema(**jsonable_encoder(p[0]))
+        temp.setPrices(p[1])
+        # temp.setPrice(p[1])
         data.append(temp)
     return {"products": data, "total": result["total"]}

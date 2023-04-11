@@ -53,7 +53,7 @@ class Platform_settings(Base):
     api_id = Column(BigInteger, nullable=True)
     api_secret = Column(BigInteger, nullable=True)
     access_token = Column(BigInteger, nullable=True)
-    user_id = Column(BigInteger, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     platform_url = Column(String(250), nullable=True)
     method_payment_id = Column(BigInteger, nullable=True)
     shipping_profile_id = Column(BigInteger, nullable=True)
