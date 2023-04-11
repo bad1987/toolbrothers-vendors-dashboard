@@ -17,7 +17,7 @@ class User(Base):
     parent_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
     
     # payment_method_vendor = relationship("Payment_method_vendor",  back_populates="users", cascade="all, delete")
-    
+
 class Payment_method(Base):
     __tablename__ = "payment_method"
     

@@ -3,7 +3,7 @@ from Database import Models
 from Database.Connexion import engine
 import uvicorn
 from Routes.settings import Payments, PlentyMarket
-from Security.Routes.Login_register import Login_register
+from Security.Routes.Login_register import Login_register, Forgot_password
 from Routes import Users, Orders, Product, Errors
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -21,6 +21,7 @@ origins = [
 ]
  
 app.include_router(Login_register.route) 
+app.include_router(Forgot_password.route) 
 app.include_router(Users.route) 
 app.include_router(Orders.route)
 app.include_router(Errors.route)

@@ -12,3 +12,6 @@ class PlentyMarketSchema(BaseModel):
     shipping_profile_id: Optional[int]
     export_product_link: Optional[str]
     
+    class Config:
+        orm_mode = True
+    
