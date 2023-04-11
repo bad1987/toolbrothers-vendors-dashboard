@@ -396,18 +396,11 @@
                                             placeholder="example@company.com" value="user@dinotech.com" required="" disabled>
                                     </div>
                                     <div class="col-span-6 sm:col-span-3">
-                                        <label for="password"
-                                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
-                                        <input type="password" name="password" id="password"
-                                            class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                            placeholder="••••••••" required="">
-                                    </div>
-                                    <div class="col-span-6 sm:col-span-3">
                                         <label for="role" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select a role</label>
-                                        <select id="role" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <select id="role" v-model="role" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                             <option selected>Select a role</option>
-                                            <option value="admin">Admin</option>
-                                            <option value="vendor">Vendor</option>
+                                            <option value="direct_sale">Direct sale</option>
+                                            <option value="affiliate">Affiliate</option>
                                         </select>
                                     </div>
                                     <div class="flex items-center mb-4">
@@ -468,18 +461,10 @@
                                             placeholder="example@company.com" required="">
                                     </div>
                                     <div class="col-span-6 sm:col-span-3">
-                                        <label for="password"
-                                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
-                                        <input v-model="newUser.password" type="password" name="password" id="password"
-                                            class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                            placeholder="••••••••" required="">
-                                    </div>
-                                    <div class="col-span-6 sm:col-span-3">
                                         <label for="role" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select a role</label>
-                                        <select v-model="newUser.roles" id="role" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                            <option selected>Select a role</option>
-                                            <option value="admin">Admin</option>
-                                            <option value="vendor">Vendor</option>
+                                        <select id="role" v-model="newUser.role" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                            <option value="direct_sale">Direct sale</option>
+                                            <option value="affiliate">Affiliate</option>
                                         </select>
                                     </div>
                                     <div class="flex items-center mb-4">

@@ -47,7 +47,7 @@ const getPlentyMarketInformationByVendorPlatform = () => {
 
 const handSubmit = (e) => {
   const data = {
-    referrer_id: e.target["referrer_id"].value,
+    referrer_id: e.target["referrer_id"].value | null,
     api_id: e.target["api_id"].value,
     api_secret: e.target["api_secret"].value,
     access_token: e.target["access_token"].value,

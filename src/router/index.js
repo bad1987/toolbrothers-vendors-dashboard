@@ -3,6 +3,8 @@ import Dashboard from '../views/Dashboard.vue'
 import Users from '../views/Users.vue'
 import Orders from '../views/Orders.vue'
 import Login from '../views/Login.vue'
+import ForgotPassword from '../views/ForgotPassword.vue'
+import ResetPassword from '../views/ResetPassword.vue'
 import Payment_method from '../views/Settings/Payment_method/index.vue'
 import Plenty_market from '../views/Settings/Plenty_market/index.vue'
 import Product from '../views/Products/index.vue'
@@ -39,6 +41,18 @@ const router = createRouter({
         requiresAuth: true,
         roles: ['Role_direct_sale', 'Role_affiliate']
       }
+    },
+    {
+      path: '/forgot-password',
+      name: 'forgot-password',
+      component: ForgotPassword,
+      meta: { hideNavigation: true}
+    },
+    {
+      path: '/reset-password?token=:token',
+      name: 'reset-password',
+      component: ResetPassword,
+      meta: { hideNavigation: true}
     },
     {
       path: '/login',
@@ -82,35 +96,35 @@ const router = createRouter({
   ]
 })
 
-// register authentication guard for protected routes
-// router.beforeEach((to, from, next) => {
-//   if (to.matched.some(record => record.meta.requiresAuth)) {
-//     if (!is_authenticated()) {
-//       next({
-//         path: '/login',
-//         query: { redirect: to.fullPath }
-//       })
-//     } else {
-//       const uStore = userStore()
-//       let userRole = uStore.user
-//       if(!userRole){
-//         getUser(uStore.setUser)
-//         userRole = uStore.user
-//         console.log(userRole)
-//       }
-//       else{
-//         userRole = userRole.roles
-//       }
-//       if (userRole && to.meta.roles.includes(userRole)) {
-//         next()
-//       } else {
-//         console.log('redirecting to 403')
-//         next({ name: '403' })
-//       }
-//     }
-//   } else {
-//     next();
-//   }
-// });
+//register authentication guard for protected routes
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (!is_authenticated()) {
+      next({
+        path: '/login',
+        query: { redirect: to.fullPath }
+      })
+    } else {
+      const uStore = userStore()
+      let userRole = uStore.user
+      if(!userRole){
+        getUser(uStore.setUser)
+        userRole = uStore.user
+        console.log(userRole)
+      }
+      else{
+        userRole = userRole.roles
+      }
+      if (userRole && to.meta.roles.includes(userRole)) {
+        next()
+      } else {
+        console.log('redirecting to 403')
+        next({ name: '403' })
+      }
+    }
+  } else {
+    next();
+  }
+});
 
 export default router
