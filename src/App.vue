@@ -25,15 +25,6 @@ router.beforeEach(to => {
 
 
 onBeforeMount(async ()=>{
-
-    const publicPages = ['/login']
-    const url = '/' + window.location.href.split('/').pop()
-    const authRequired = !publicPages.includes(url)
-    const is_auth = is_authenticated()
-    console.log("is authencate user", is_auth);
-    if(authRequired && !is_auth){
-        router.push('/login')
-    }
  
     // init the user store
     uStore.init()

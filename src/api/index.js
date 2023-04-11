@@ -48,5 +48,6 @@ export async function getUser(setter = null) {
         return res.data.user
     } catch (error) {
         console.log(error)
+        return false
     }
 }

@@ -22,7 +22,9 @@ const router = createRouter({
       name: 'dashboard',
       component: Dashboard,
       meta: {
-        rule: 'isPublic'
+        requiresAuth: true,
+        roles: ['Role_direct_sale', 'Role_affiliate', 'Role_admin'],
+        // rule: 'isPublic'
       }
     },
     {
@@ -60,7 +62,15 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: Login,
-      meta: { hideNavigation: true }
+      meta: { hideNavigation: true },
+      beforeEnter: async (to, from, next) => {
+        let is_auth = await is_authenticated()
+        if(is_auth){
+          console.log(from.fullPath)
+          next(from.fullPath)
+        }
+        next()
+      }
     },
     {
       path: '/payment-method',
@@ -104,9 +114,11 @@ const router = createRouter({
 })
 
 //register authentication guard for protected routes
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
-    if (!is_authenticated()) {
+    let is_auth = await is_authenticated()
+    if (!is_auth) {
+      console.log('redirecting to login')
       next({
         path: '/login',
         query: { redirect: to.fullPath }

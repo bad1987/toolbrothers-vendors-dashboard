@@ -7,10 +7,12 @@
   onBeforeMount( async () => {
 
       const test = await acl()
-      userRef.value = test
-      userRef.value.user = test
-      userRef.value.isAdmin = test.roles == "Role_admin"
-      console.log("get user information from acl", userRef.value.email );
+      if(test){
+        userRef.value = test
+        userRef.value.user = test
+        userRef.value.isAdmin = test.roles == "Role_admin"
+        console.log("get user information from acl", userRef.value.email );
+      }
   })
 </script>
 

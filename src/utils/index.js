@@ -1,11 +1,17 @@
 import axios from "axios"
 import { createBlock } from "vue"
+import { getUser } from "../api"
 
-export function is_authenticated(){
-    let cookie = document.cookie
-    if(!cookie)
+export async function is_authenticated(){
+    let user = await getUser()
+    // console.log(!user)
+    if(!user)
         return false
     return true
+    // let cookie = document.cookie
+    // if(!cookie)
+    //     return false
+    // return true
 }
 
 export function local_storage_set(key, value){

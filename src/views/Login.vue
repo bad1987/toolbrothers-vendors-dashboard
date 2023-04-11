@@ -1,7 +1,7 @@
 <script setup>
     import { ref, onBeforeMount } from 'vue';
     import axios from 'axios'
-    import { useRouter } from 'vue-router';
+    import { useRoute, useRouter } from 'vue-router';
     import { is_authenticated, local_storage_set } from '../utils';
     
     import { userStore } from '../stores/UserStore';
@@ -17,14 +17,15 @@
     })
     const url = axios.defaults.baseURL + "auth/login"
     const router = useRouter()
+    const route = useRoute()
     const uStore = userStore()
     
     // redirect the user from where he came from if he is authenticated
-    onBeforeMount(()=>{
-        if(is_authenticated()){
-            router.back()
-        }
-    })
+    // onBeforeMount(async ()=>{
+    //     if(await is_authenticated()){
+    //         router.back()
+    //     }
+    // })
 
     function handleSubmit(e) {
         const data = {
@@ -53,18 +54,11 @@
             //TODO::save the user in the store
             const user = data.user
             uStore.setUser(user)
-
-            const admin_roles = ['Role_admin']
-            if(admin_roles.includes(user.roles)){
-                // redirect to admin homepage
-                //router.push('/private')
-                window.location.href = '/private'
-            }
-            else{
-                // redirect to vendors homepage
-                //router.push('/')
-                window.location.href = '/'
-            }
+            
+            if(route.query.redirect)
+                window.location.href = route.query.redirect
+            else
+                window.location.href = "/"
         })
         .catch(err => {
             console.log(err)
