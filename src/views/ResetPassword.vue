@@ -1,7 +1,10 @@
 <script setup>
     import { ref, onBeforeMount } from 'vue';
     import axios from 'axios'
-    console.log(this.$route.params.token);
+    import { useRouter, useRoute } from 'vue-router';
+    let uri = window.location.search.substring(1); 
+    let params = new URLSearchParams(uri);
+    const router = useRouter()
 
     const credentials = ref({
         password: "",
@@ -12,7 +15,7 @@
         show: false,
         loading: false
     })
-    const url = axios.defaults.baseURL + "reset-password"
+    const url = axios.defaults.baseURL + "reset-password/"+params.get("token")
     
     // redirect the user from where he came from if he is authenticated
     onBeforeMount(()=>{
@@ -33,7 +36,8 @@
             }
         )
         .then(response=> {
-
+            console.log("yessssssss");
+            router.push('/login')
         })
         .catch(err => {
             console.log(err)
