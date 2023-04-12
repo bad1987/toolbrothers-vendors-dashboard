@@ -22,9 +22,8 @@ class UserDtoCreate(BaseModel):
     roles: str
 
 class Permission(BaseModel):
-    id: int
-    name: str
-    description: str
+    value: int
+    text: str
 
     class Config:
         orm_mode = True

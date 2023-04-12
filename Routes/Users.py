@@ -92,13 +92,9 @@ def index(type: str, request: Request, db: Session = Depends(get_db)):
     elif type == "admins":
         users = db.query(User).filter(User.roles == UserRoleEnum.ADMIN.value).all()
 
-    res = []
     permissions = db.query(Permission).all()
-
-    for u in users:
-        res.append(UserSchema(**jsonable_encoder(u)))
         
-    return {"users": res, "permissions": permissions}
+    return {"users": users, "permissions": [{"text": perm.name, "value": perm.id} for perm in permissions]}
 
 @route.get('/get-all-users', response_class=JSONResponse)
 async def get_all_users(request: Request, db: Session = Depends(get_db)):
@@ -225,6 +221,7 @@ async def cscart_users(db_cscart: Session = Depends(get_db_cscart), db_local: Se
             db_local.flush(user)
             
             console.log("Add success", user.username)
+        return {'status': True, 'message': 'Finished'}
     except Exception as e:
         console.log("error ...", str(e))
     
