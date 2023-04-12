@@ -9,6 +9,7 @@ from rich.console import Console
 from App.Http.Controllers.ProductController import ProductController
 from Database.Models import Payment_method
 from typing import List
+from Decorators.auth_decorators import requires_vendor_access
 from Security.Acls.RoleChecker import Role_checker
 from fastapi.encoders import jsonable_encoder
 from Routes.Users import is_authenticated
@@ -45,13 +46,8 @@ def timestamp_to_date(s):
     return time.ctime(s)
 
 @route.get('/list')
-async def getProductListByVendor(request: Request, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart), skip: int = 0, limit: int = 10):
-    user = is_authenticated(request, db_local)
-    if not roles_checker.vendors_access(user.roles):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Access forbidden"
-        )
+@requires_vendor_access
+async def getProductListByVendor(request: Request, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart), user: dict = Depends(is_authenticated), skip: int = 0, limit: int = 10):
     result = ProductController.get_product_list_by_vendor(request, db_local, db_cscart, skip, limit)
     
     data = []
