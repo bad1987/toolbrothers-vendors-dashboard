@@ -15,6 +15,8 @@ class User(Base):
     roles = Column(String(255), nullable = False)
     status = Column(String(25), nullable=False)
     parent_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
+
+    permissions = relationship("Permission", secondary='user_permissions')
     
     # payment_method_vendor = relationship("Payment_method_vendor",  back_populates="users", cascade="all, delete")
 
