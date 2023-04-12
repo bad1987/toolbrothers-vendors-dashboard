@@ -17,7 +17,7 @@ const router = useRouter()
 const uStore = userStore()
 
 router.beforeEach(to => {
-    if(to.meta.hideNavigation){
+    if(!to.meta.hideNavigation){
         classes.value = "p-4 sm:ml-64"
     }
 })
