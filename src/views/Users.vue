@@ -24,6 +24,7 @@
     const permissions = ref([])
     const selectedPermissions = ref([])
     const isImporting = ref(false)
+    const selectedUser = ref(null)
     const router = useRouter()
     const route = useRoute()
     const fetchUsers = () => {
@@ -75,8 +76,6 @@
         if (selectedPermissions.value.indexOf(item.value) >= 0) 
             selectedPermissions.value = selectedPermissions.value.filter(x => x != item.value)
         else selectedPermissions.value.push(item.value)
-
-        console.log(selectedPermissions.value)
     }
 
     function changeRole(event) {
@@ -87,7 +86,6 @@
         isImporting.value = true
 
         axios.get('admin/cscart-users').then(response => {
-            console.log("Ok")
             isImporting.value = false
             fetchUsers()
         }).then(() => initFlowbite())
@@ -95,6 +93,18 @@
             console.log("There is some problem")
             isImporting.value = false
         })
+    }
+
+    function changeSelectedUser(email) {
+        selectedUser.value = users.value.find(x => x.email == email)
+
+        console.log(selectedUser.value)
+    }
+
+    function updateUser() {
+        if (selectedUser.value !== undefined) {
+
+        }
     }
 
     watch(() => route.params.type,
@@ -224,7 +234,7 @@
                                 Add user
                             </button>
                             <button href="#"
-                                v-if="!isImporting"
+                                v-if="!isImporting && route.params.type === 'vendors'"
                                 data-modal-toggle="import-modal"
                                 @click="launchUpload"
                                 class="inline-flex items-center justify-center w-1/2 px-3 py-2 text-sm font-medium text-center text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-blue-300 sm:w-auto dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-700">
@@ -236,7 +246,7 @@
                                 </svg>
                                 Import
                             </button>
-                            <svg v-if="isImporting" class="loading w-7 h-7" fill="none" stroke="#75ebeb" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <svg v-if="isImporting && route.params.type === 'vendors'" class="loading w-7 h-7" fill="none" stroke="#75ebeb" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"></path>
                             </svg>
                         </div>
@@ -303,7 +313,7 @@
                                         </td>
                                         <td class="p-4 space-x-2 whitespace-nowrap">
                                             <button type="button" data-modal-toggle="edit-user-modal"
-                                                @click="func"   
+                                                @click="changeSelectedUser(u.email)"   
                                                 class="inline-flex items-center px-3 py-1 text-sm font-medium text-center text-white rounded-lg bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-400 dark:bg-blue-500 dark:hover:bg-blue-800 dark:focus:ring-blue-500">
                                                 <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"
                                                     xmlns="http://www.w3.org/2000/svg">
@@ -382,7 +392,7 @@
             </div>
 
             <!-- Edit User Modal -->
-            <div class="fixed left-0 right-0 z-50 items-center justify-center hidden overflow-x-hidden overflow-y-auto top-4 md:inset-0 h-modal sm:h-full"
+            <div v-if="route.params.type === 'admins'" class="fixed left-0 right-0 z-50 items-center justify-center hidden overflow-x-hidden overflow-y-auto top-4 md:inset-0 h-modal sm:h-full"
                 id="edit-user-modal">
                 <div class="relative w-full h-full max-w-2xl px-4 md:h-auto">
                     <!-- Modal content -->
@@ -403,34 +413,32 @@
                             </button>
                         </div>
                         <!-- Modal body -->
-                        <div class="p-6 space-y-6">
-                            <form action="#">
+                        <div class="p-6 space-y-6" v-if="selectedUser != undefined">
+                            <form action="#" id="add-admin-form">
                                 <div class="grid grid-cols-6 gap-6">
                                     <div class="col-span-6 sm:col-span-3">
                                         <label for="username"
                                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">User Name</label>
-                                        <input type="text" name="username" id="username"
+                                        <input v-model="selectedUser.username" type="text" name="username" id="username"
                                             class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                             placeholder="Bonnie" required="">
                                     </div>
                                     <div class="col-span-6 sm:col-span-3">
                                         <label for="email"
                                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
-                                        <input type="email" name="email" id="email"
+                                        <input v-model="selectedUser.email" type="email" name="email" id="email"
                                             class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                            placeholder="example@company.com" value="user@dinotech.com" required="" disabled>
-                                    </div>
-                                    <div class="col-span-6 sm:col-span-3">
-                                        <label for="role" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select a role</label>
-                                        <select id="role" v-model="role" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                            <option selected>Select a role</option>
-                                            <option value="direct_sale">Direct sale</option>
-                                            <option value="affiliate">Affiliate</option>
-                                        </select>
+                                            placeholder="example@company.com" required="">
                                     </div>
                                     <div class="flex items-center mb-4">
-                                        <input id="checkbox-activate" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <input v-model="selectedUser.status" id="checkbox-activate-create" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                         <label for="checkbox-activate" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Activate</label>
+                                    </div>
+                                    <div class="col-span-6">
+                                        <h4 class="font-bold dark:text-white">Set permissions</h4>
+                                        <div class="permissions-list">
+                                            <CheckboxGroup :selected="selectedUser.permissions" :items="permissions" name="permission" id="checkbox-group-perm" @toggle-value="togglePermissionValue"/>
+                                        </div>
                                     </div>
                                 </div>
                             </form>

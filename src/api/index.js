@@ -43,9 +43,9 @@ export async function getUser(setter = null) {
         const url = axios.defaults.baseURL + 'admin/user'
         const res = await axios.get(url)
         if (setter){
-            setter(res.data.user)
+            setter(res.data)
         }
-        return res.data.user
+        return res.data
     } catch (error) {
         console.log(error)
         return false
