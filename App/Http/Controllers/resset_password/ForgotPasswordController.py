@@ -22,7 +22,7 @@ class ForgotPasswordController:
         user = db_local.query(User).filter(User.email == email).first()
         sender_email = "bruno.mafo@utrains.org"
         password = "mathematique1234./@#"
-        recipient_email = "mafobruno990@gmail.com"
+        recipient_email = "antoine.didier@toolbrothers.com"
         subject = f"{user.username} - Password recovery for user {user.username}"
         body = f"Click this link to reset your password: {link}"
         
