@@ -23,6 +23,10 @@
         if (props['selected'] == null) return false
         return props['selected'].map(x => x.id).includes(val)
     }
+
+    function getSelected() {
+        return selected.value
+    }
 </script>
 
 <template>
