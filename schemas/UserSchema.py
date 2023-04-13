@@ -8,8 +8,8 @@ class UserSchema(BaseModel):
     company_id: Optional[int]
     roles: Optional[str]
     status: Optional[str]
+    permissions: Optional[List]
 
-class PermissionSchema:
-    id = Optional[int]
-    name = Optional[str] 
-    description = Optional[str]
+    class Config:
+        orm_mode = True
+    
