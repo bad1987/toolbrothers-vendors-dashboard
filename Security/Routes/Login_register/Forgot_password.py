@@ -8,7 +8,7 @@ from App.Http.Controllers.resset_password.ForgotPasswordController import Forgot
 import json
 import i18n
 from schemas.UserSchema import UserSchema
-from fastapi.responses import JSONResponse
+
 # instantiate a new translator class
 translator = i18n.Translator('languages/')
 

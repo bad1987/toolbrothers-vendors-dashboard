@@ -68,11 +68,13 @@ class Platform_settings(Base):
 class Permission(Base):
     __tablename__ = "permissions"
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
-    name = Column(String(25), nullable=False) 
+    name = Column(String(25), nullable=False, unique=True) 
+    mode = Column(String(25), nullable=False)
+    model_name = Column(String(25), nullable=False)
     description = Column(Text, nullable=True)
 
 class User_Permission(Base):
     __tablename__ = "user_permissions"
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
-    permission_id = Column(Integer, ForeignKey("permissions.id", ondelete="CASCADE"), nullable=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    permission_id = Column(Integer, ForeignKey("permissions.id", ondelete="CASCADE"), nullable=False)

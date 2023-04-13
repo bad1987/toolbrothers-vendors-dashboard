@@ -1,18 +1,17 @@
-
 from fastapi import HTTPException, status
 from App.Http.Controllers.UserController import UserController
-from Security.DTO.UserDto import UserDto
-from schemas.UserSchema import PermissionSchema
+from schemas.UserSchema import PermissionSchema, UserSchema
 
 
 class Permissions:
-    def __init__(self, user:UserDto):
+    def __init__(self, user:UserSchema):
         self.user = user
         self.userController = UserController()
         self.permissions = self.userController.getPermissions()
     def has_read_permission(self, model_name: str):
         # Check if user has read permission for the specified model
         # Return True if user has permission, False otherwise
+        print(self.user)
         return is_auth(self.permissions, model_name, 'read', self.user.permissions)
         
 
@@ -48,8 +47,7 @@ def filter_permission(mode:str, permissions: list[PermissionSchema], model_name:
         temp.strip()
         if temp.endswith(mode):
             if temp.startswith(startwidth):
-                return p.name
-            
+                return p.name       
     return None
 
 def get_pattern(model_name: str):

@@ -2,7 +2,7 @@ import smtplib
 from email.message import EmailMessage
 
 def send_email(sender_email, password, recipient_email, subject, body):
-    smtp_server = "smtp.gmail.com"
+    smtp_server = "dinotech.net"
     port = 587  # For starttls
     msg = EmailMessage()
     msg.set_content(body)

@@ -27,9 +27,9 @@ class ForgotPasswordController:
         
         console.log("tokennnnnnnnnnnnnnnn : ", jwt.decode(encoded_token, "secret", algorithms=['HS256'], verify=False)['exp'])
         
-        sender_email = "bruno.mafo@utrains.org"
-        password = "mathematique1234./@#"
-        recipient_email = "antoine.didier@toolbrothers.com"
+        sender_email = "no-reply@toolbrothers.com"
+        password = "W6jS7S7xI2qbi8s"
+        recipient_email = "mafobruno990@gmail.com"
         subject = f"{user.username} - Password recovery for user {user.username}"
         body = f"Click this link to reset your password: {link}"
         
