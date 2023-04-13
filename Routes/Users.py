@@ -1,5 +1,5 @@
 import re
-from typing import List, Any
+from typing import List, Any, Dict
 from fastapi import Depends, HTTPException,Request, APIRouter, status
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
@@ -121,7 +121,7 @@ async def delete_user(request: Request, db: Session = Depends(get_db)):
             'message': 'An error occured'
         }
 
-@route.post('/users', response_model= UserDto | Any)
+@route.post('/users', response_model= UserDto | Dict[str, str])
 async def add_user(request: Request, model: UserDtoCreate, db: Session = Depends(get_db)):
     try:
         transaction = db.begin()
@@ -144,7 +144,7 @@ async def add_user(request: Request, model: UserDtoCreate, db: Session = Depends
                 if permission != None: 
                     user.permissions.append(permission)
                 else:
-                    return {"error": True, "message": "Permission doesn't exist"}
+                    continue
         elif model.roles == UserRoleEnum.AFFILIATE.value or model.roles == UserRoleEnum.DIRECT_SALE.value:
             ...
         else:
@@ -155,10 +155,46 @@ async def add_user(request: Request, model: UserDtoCreate, db: Session = Depends
 
         return user
     except Exception as e:
-        # db.delete(user)
         transaction.rollback()
         return {'error': True, 'message': str(e)}
     
+
+@route.put('/users/{id}', response_model=UserSchema | Dict[str, str])
+async def update_user(id: int, model: UserSchema, request: Request,  db: Session = Depends(get_db)):
+    try:
+        transaction = db.begin()
+        current_user = is_authenticated(request, db)
+        user_to_update = db.query(User).filter(User.id == id).first()
+
+        if not user_to_update:
+            return {"status": False, "message": "Invalid user"}
+        
+        for field, value in model.dict(exclude_unset=True, exclude={'permissions'}).items():
+            setattr(user_to_update, field, value)
+
+        console.log(model)
+        user_to_update.status = 'D' if model.status == 'False' else 'A'
+
+        if model.permissions != None:
+            user_to_update.permissions.clear()
+
+            if model.roles == UserRoleEnum.ADMIN.value:
+                for perm_id in model.permissions:
+                    permission = db.query(Permission).filter(Permission.id == int(perm_id)).first()
+
+                    if permission != None: 
+                        user_to_update.permissions.append(permission)
+                    else:
+                        continue
+                
+        db.commit()
+        db.refresh(user_to_update)
+
+        return user_to_update
+    except Exception as e:
+        transaction.rollback()
+        return { "status": False, "message": str(e) }
+
 # Scrap user vendor in cscart database
 @route.get('/cscart-users')
 async def cscart_users(db_cscart: Session = Depends(get_db_cscart), db_local: Session = Depends(get_db)):
