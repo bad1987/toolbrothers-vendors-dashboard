@@ -8,4 +8,8 @@ class UserSchema(BaseModel):
     company_id: Optional[int]
     roles: Optional[str]
     status: Optional[str]
-    
+
+class PermissionSchema:
+    id = Optional[int]
+    name = Optional[str] 
+    description = Optional[str]

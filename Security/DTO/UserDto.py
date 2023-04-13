@@ -9,6 +9,7 @@ class UserDto(BaseModel):
     email: EmailStr
     status: str
     company_id: int | None = None
+    permissions: list | None = None
     roles: str
 
     class Config:
