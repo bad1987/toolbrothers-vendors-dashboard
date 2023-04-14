@@ -106,7 +106,8 @@ async def get_all_users(request: Request, db: Session = Depends(get_db)):
     return {'users': users}
 
 @route.delete('/users', response_class=JSONResponse)
-async def delete_user(request: Request, db: Session = Depends(get_db)):
+@requires_permission('delete', 'user')
+async def delete_user(request: Request, db: Session = Depends(get_db), _user: dict = Depends(is_authenticated)):
     try:
         user = LoginController.get_current_user_from_cookie(request, db)
         datas = await request.json()
@@ -160,7 +161,8 @@ async def add_user(request: Request, model: UserDtoCreate, db: Session = Depends
     
 
 @route.put('/users/{id}', response_model=UserSchema | Dict[str, str])
-async def update_user(id: int, model: UserSchema, request: Request,  db: Session = Depends(get_db)):
+@requires_permission('write', 'user')
+async def update_user(id: int, model: UserSchema, request: Request,  db: Session = Depends(get_db), _user: dict = Depends(is_authenticated)):
     try:
         transaction = db.begin()
         current_user = is_authenticated(request, db)

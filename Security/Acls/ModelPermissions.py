@@ -28,3 +28,36 @@ class ModelPermissions:
             if p.name in permissions:
                 return True
         return False
+    
+    def can_update_user_vendors(self):
+        permissions = ['Acl_vendor_write', 'Acl_admin_write']
+        user_permissions:list[PermissionSchema] = self.user.permissions
+        for p in user_permissions:
+            if p.name in permissions:
+                return True
+        return False
+    
+    def can_update_user_admins(self):
+        permissions = ['Acl_admin_write']
+        user_permissions:list[PermissionSchema] = self.user.permissions
+        for p in user_permissions:
+            if p.name in permissions:
+                return True
+        return False
+        
+    def can_delete_user_vendors(self):
+        permissions = ['Acl_vendor_delete', 'Acl_admin_delete']
+        user_permissions:list[PermissionSchema] = self.user.permissions
+        for p in user_permissions:
+            if p.name in permissions:
+                return True
+        return False
+    
+    def can_delete_user_admins(self):
+        permissions = ['Acl_admin_delete']
+        user_permissions:list[PermissionSchema] = self.user.permissions
+        for p in user_permissions:
+            if p.name in permissions:
+                return True
+        return False
+    

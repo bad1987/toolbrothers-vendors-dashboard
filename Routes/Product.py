@@ -2,6 +2,7 @@ import time
 from fastapi import Depends, HTTPException,Request, APIRouter, status
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
+from App.Enums.UserRoleEnum import ModelNameEnum
 from Database.Connexion import SessionLocal
 from Database.CscartConnexion import CscartSession
 from sqlalchemy.orm import Session
@@ -9,7 +10,7 @@ from rich.console import Console
 from App.Http.Controllers.ProductController import ProductController
 from Database.Models import Payment_method
 from typing import List
-from Decorators.auth_decorators import requires_vendor_access
+from Decorators.auth_decorators import requires_permission, requires_vendor_access
 from Security.Acls.RoleChecker import Role_checker
 from fastapi.encoders import jsonable_encoder
 from Routes.Users import is_authenticated
@@ -46,8 +47,8 @@ def timestamp_to_date(s):
     return time.ctime(s)
 
 @route.get('/list')
-@requires_vendor_access
-async def getProductListByVendor(request: Request, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart), user: dict = Depends(is_authenticated), skip: int = 0, limit: int = 10):
+@requires_permission('read', ModelNameEnum.USER_MODEL.value)
+async def getProductListByVendor(request: Request, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart), _user: dict = Depends(is_authenticated), skip: int = 0, limit: int = 10):
     result = ProductController.get_product_list_by_vendor(request, db_local, db_cscart, skip, limit)
     
     data = []
