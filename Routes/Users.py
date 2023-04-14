@@ -4,6 +4,7 @@ from fastapi import Depends, HTTPException,Request, APIRouter, status
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from Decorators.auth_decorators import requires_permission
+from Security.Acls.ModelPermissions import ModelPermissions
 from Security.Acls.RoleChecker import Role_checker
 from Security.Controllers import LoginController
 from Security.DTO.UserDto import UserDtoCreate, UserDto, UserListDto, Permission
@@ -79,10 +80,16 @@ def get_user(request: Request, db: Session = Depends(get_db)):
 async def index(request: Request, type: str, db: Session = Depends(get_db), _user: dict = Depends(is_authenticated)):
 
     users = []
-    if type == "vendors":
+    model_permissions = ModelPermissions(_user)
+    if type == "vendors" and model_permissions.can_read_user_vendors():
         users = db.query(User).filter(or_(User.roles == UserRoleEnum.AFFILIATE.value, User.roles == UserRoleEnum.DIRECT_SALE.value)).all()
-    elif type == "admins":
+    elif type == "admins" and model_permissions.can_read_user_admins():
         users = db.query(User).filter(User.roles == UserRoleEnum.ADMIN.value).all()
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access forbidden"
+        )
 
     permissions = db.query(Permission).all()
         

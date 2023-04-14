@@ -18,6 +18,13 @@ def get_db():
     finally:
         db.close()
 
+def filter_direct_sale_perm(db: Session):
+    permission_user = db_local.query(Permission).filter(Permission.model_name == "user").all()
+    permission_user = [p for p in permission_user if p.name.startswith('Acl_vendor')]
+    permission_others = db_local.query(Permission)\
+        .filter(Permission.model_name != "user", Permission.mode != "D").all()
+    return permission_user + permission_others
+
 # Create permissions
 permission_data = [
     {'name': "Acl_product_read", 'description': "This user read all products", 'mode': "R", 'model_name': "product"},
@@ -36,9 +43,9 @@ permission_data = [
     {'name': "Acl_vendor_update", 'description': "This vendor update all vendors", 'mode': "W", 'model_name': "user"},
     {'name': "Acl_vendor_delete", 'description': "This vendor delete all vendors", 'mode': "D", 'model_name': "user"},
     
-    {'name': "Acl_admin_read", 'description': "This admin read all admins", 'mode': "R", 'model_name': "admin"},
-    {'name': "Acl_admin_update", 'description': "This admin update all admins", 'mode': "W", 'model_name': "admin"},
-    {'name': "Acl_admin_delete", 'description': "This admin delete all admins", 'mode': "D", 'model_name': "admin"},
+    {'name': "Acl_admin_read", 'description': "This admin read all admins", 'mode': "R", 'model_name': "user"},
+    {'name': "Acl_admin_update", 'description': "This admin update all admins", 'mode': "W", 'model_name': "user"},
+    {'name': "Acl_admin_delete", 'description': "This admin delete all admins", 'mode': "D", 'model_name': "user"},
     
 ]
 
@@ -97,10 +104,10 @@ try:
     # Add User
     console.log('************* Import user in cscart from db local *****************')
     companies = db_cscart.query(CscartCompanies).all()
-    permission_direct_sale = db_local.query(Permission).filter(Permission.model_name != "admin").all()
+    permission_direct_sale = filter_direct_sale_perm(db_local)
     permission_affiliate = db_local.query(Permission)\
         .filter(Permission.mode != "D")\
-        .filter(Permission.model_name != "setting").all()
+        .filter(Permission.model_name != "setting", Permission.model_name != "user").all()
 
     for item in companies:
         payment_method_vendor = db_cscart.query(Cscart_payments).filter(Cscart_payments.company_id == item.company_id).all()

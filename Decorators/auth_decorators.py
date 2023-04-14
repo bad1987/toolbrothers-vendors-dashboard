@@ -47,6 +47,7 @@ def requires_permission(permission_type: str, model_name: str):
             # check if the user has the required permission for the model
             permission_checker = PermissionChecker(user)
             has_permission = getattr(permission_checker, f'has_{permission_type}_permission')(model_name)
+            print(f'permissions: {has_permission}')
             if not has_permission:
                 raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Forbidden')
 

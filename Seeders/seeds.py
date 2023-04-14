@@ -16,11 +16,11 @@ def create_admin():
         db = SessionLocal()
         user = User()
         user.username = 'admin'
-        user.email = "admin@dino.com"
-        user.password = crypto.hash('secret')
+        user.email = "admin@example.com"
+        user.password = crypto.hash('admin')
         user.roles = "Role_admin"
         user.status = "A"
-        user.company_id = -1
+        user.company_id = -2
         permissions = db.query(Permission).filter(Permission.model_name == "user").all()
         permissions = [p for p in permissions if p.name.startswith('Acl_admin')]
         if not len(permissions):

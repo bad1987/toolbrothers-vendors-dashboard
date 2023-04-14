@@ -18,20 +18,20 @@ class PermissionChecker:
         
     def has_read_permission(self, model_name: str) -> bool:
         self.permissions = self.user_controller.getPermissions('R', model_name.lower().strip())
-        if self.permissions and model_name == 'user':
-            self.permissions = self.filter_user_permissions(self.permissions, self.user)
+        # if self.permissions and model_name == 'user':
+        #     self.permissions = self.filter_user_permissions(self.permissions, self.user)
         return self.check_permissions(self.permissions, self.user.permissions)
 
     def has_write_permission(self, model_name: str) -> bool:
         self.permissions = self.user_controller.getPermissions('W', model_name.lower().strip())
-        if self.permissions and model_name == 'user':
-            self.permissions = self.filter_user_permissions(self.permissions, self.user)
+        # if self.permissions and model_name == 'user':
+        #     self.permissions = self.filter_user_permissions(self.permissions, self.user)
         return self.check_permissions(self.permissions, self.user.permissions)
 
     def has_delete_permission(self, model_name: str) -> bool:
         self.permissions = self.user_controller.getPermissions('D', model_name.lower().strip())
-        if self.permissions and model_name == 'user':
-            self.permissions = self.filter_user_permissions(self.permissions, self.user)
+        # if self.permissions and model_name == 'user':
+        #     self.permissions = self.filter_user_permissions(self.permissions, self.user)
         return self.check_permissions(self.permissions, self.user.permissions)
 
     def check_permissions(self, permissions: list[PermissionSchema], user_permissions: list[PermissionSchema]) -> bool:
