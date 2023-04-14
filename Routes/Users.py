@@ -18,6 +18,7 @@ from fastapi.encoders import jsonable_encoder
 from Database.CscartModels import CscartCompanies, Cscart_payments
 from passlib.handlers.sha2_crypt import sha512_crypt as crypto
 from App.Enums.UserRoleEnum import UserRoleEnum
+import traceback, sys
 
 from schemas.UserSchema import UserSchema
 
@@ -126,31 +127,36 @@ async def delete_user(request: Request, db: Session = Depends(get_db), _user: di
 @requires_permission('write', 'user')
 async def add_user(request: Request, model: UserDtoCreate, db: Session = Depends(get_db), _user: dict = Depends(is_authenticated)):
     try:
-        transaction = db.begin()
-        user = User()
+        if db.in_transaction():
+            db.rollback()
+        with db.begin():
+            # transaction = db.begin()
+            # console.log(transaction)
+            user = User()
 
-        user.username = model.username
-        user.email = model.email
-        user.password = crypto.hash("secret") # TODO: Create a random password and send mail
-        user.status = model.status.value
-        user.roles = model.roles.value
+            user.username = model.username
+            user.email = model.email
+            user.password = crypto.hash("secret") # TODO: Create a random password and send mail
+            user.status = model.status.value
+            user.roles = model.roles.value
 
-        db.add(user)
+            db.add(user)
 
-        for perm_id in model.permissions:
-            permission = db.query(Permission).filter(Permission.id == int(perm_id)).first()
+            for perm_id in model.permissions:
+                permission = db.query(Permission).filter(Permission.id == int(perm_id)).first()
 
-            if permission != None: 
-                user.permissions.append(permission)
-            else:
-                continue
+                if permission != None: 
+                    user.permissions.append(permission)
+                else:
+                    continue
 
-        db.commit()
-        db.flush()
+            db.commit()
+            db.flush()
 
-        return user
+            return user
     except Exception as e:
-        transaction.rollback()
+        traceback.print_exc(file=sys.stdout)
+        db.rollback()
         return {'status': False, 'message': str(e)}
     
 
@@ -158,6 +164,8 @@ async def add_user(request: Request, model: UserDtoCreate, db: Session = Depends
 @requires_permission('write', 'user')
 async def update_user(id: int, model: UserSchema, request: Request,  db: Session = Depends(get_db), _user: dict = Depends(is_authenticated)):
     try:
+        if db.in_transaction():
+            db.rollback()
         transaction = db.begin()
         current_user = is_authenticated(request, db)
         user_to_update = db.query(User).filter(User.id == id).first()

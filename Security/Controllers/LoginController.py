@@ -67,7 +67,6 @@ def decode_token(token: str, db: Session) -> UserDto:
         if username is None:
             raise credentials_exception
     except JWTError as e:
-        print(e)
         raise credentials_exception
     
     user = get_user_by_email(db, username)
