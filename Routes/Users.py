@@ -86,7 +86,7 @@ async def index(request: Request, type: str, db: Session = Depends(get_db), _use
 
     permissions = db.query(Permission).all()
         
-    return {"users": users, "permissions": [{"text": perm.name, "value": perm.id} for perm in permissions]}
+    return {"users": users, "permissions": [{"text": perm.name, "value": perm.id, "description": perm.description} for perm in permissions]}
 
 @route.get('/get-all-users', response_class=JSONResponse)
 async def get_all_users(request: Request, db: Session = Depends(get_db)):
@@ -164,9 +164,6 @@ async def update_user(id: int, model: UserSchema, request: Request,  db: Session
         
         for field, value in model.dict(exclude_unset=True, exclude={'permissions'}).items():
             setattr(user_to_update, field, value)
-
-        console.log(model)
-        user_to_update.status = 'D' if model.status == 'False' else 'A'
 
         if model.permissions != None:
             user_to_update.permissions.clear()
