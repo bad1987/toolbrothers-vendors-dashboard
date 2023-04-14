@@ -16,8 +16,8 @@ def create_admin():
         db = SessionLocal()
         user = User()
         user.username = 'admin'
-        user.email = "admin@example.com"
-        user.password = crypto.hash('admin')
+        user.email = "admin@dino.com"
+        user.password = crypto.hash('secret')
         user.roles = "Role_admin"
         user.status = "A"
         user.company_id = -1
@@ -36,6 +36,7 @@ def create_admin():
             user.permissions.append(p)
         db.add(user)
         db.commit()
+        print("Okay...")
     except Exception as e:
         print(str(e))
     finally:

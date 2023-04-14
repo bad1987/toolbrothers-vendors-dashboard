@@ -9,6 +9,7 @@ from schemas.UserSchema import UserSchema
 class Permission(BaseModel):
     value: Optional[int]
     text: Optional[str]
+    description: Optional[str]
 
     class Config:
         orm_mode = True
