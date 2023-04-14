@@ -29,12 +29,7 @@
     const route = useRoute()
     const fetchUsers = () => {
         axios.get(`/admin/users/${route.params.type}/list`).then((response) => {
-            console.log(response.data)
             users.value = response.data.users
-            users.value.forEach(x => {
-                if (x.status == "A") x.status = true
-                else x.status = false
-            })
             permissions.value = response.data.permissions
         }).then(() => {
             initFlowbite()
@@ -106,7 +101,12 @@
 
     function updateUser(obj = null) {
         if (selectedUser.value !== undefined && obj == null) {
-            axios.put("admin/users/" + selectedUser.value.id, {...selectedUser.value, permissions: selectedPermissions.value})
+            const datas = {...selectedUser.value,
+                 permissions: selectedPermissions.value,
+                 status: selectedUser.value.status
+                }
+            console.log('datas',datas)
+            axios.put("admin/users/" + selectedUser.value.id, datas)
             .then(response => {
                 console.log('reponse', response.data)
                 let ans = users.value.map(x => x.id === selectedUser.value.id ? response.data : x)
@@ -130,7 +130,12 @@
     function deactivateUser(id) {
         selectedUser.value = users.value.find(x => x.id == id)
 
-        updateUser({status: !selectedUser.value.status, permissions: null})
+        updateUser({status: selectedUser.value.status == 'A' ? 'D' : 'A', permissions: null})
+    }
+
+    function changeSelectedStatus() {
+        selectedUser.value.status = selectedUser.value.status == true ? 'D' : (selectedUser.value.status == 'A' ? 'D' : 'A')
+        console.log(selectedUser.value.status)
     }
 
     watch(() => route.params.type,
@@ -249,7 +254,9 @@
                             </div>
                         </div>
                         <div class="flex items-center ml-auto space-x-2 sm:space-x-3">
-                            <button type="button" data-modal-toggle="add-user-modal"
+                            <button 
+                                @click="selectedPermissions = []"
+                                type="button" data-modal-toggle="add-user-modal"
                                 class="inline-flex items-center justify-center w-1/2 px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 sm:w-auto dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                                 <svg class="w-5 h-5 mr-2 -ml-1" fill="currentColor" viewBox="0 0 20 20"
                                     xmlns="http://www.w3.org/2000/svg">
@@ -257,7 +264,7 @@
                                         d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
                                         clip-rule="evenodd"></path>
                                 </svg>
-                                Add user
+                                Add &nbsp;<span v-if="route.params.type === 'vendors'">user</span> <span v-if="route.params.type === 'admins'">Admin</span>
                             </button>
                             <button href="#"
                                 v-if="!isImporting && route.params.type === 'vendors'"
@@ -333,10 +340,10 @@
                                         <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                             United States</td>
                                         <td class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
-                                            <div v-if="u.status" class="flex items-center">
+                                            <div v-if="u.status == 'A'" class="flex items-center">
                                                 <div class="h-2.5 w-2.5 rounded-full bg-green-400 mr-2"></div> Active
                                             </div>
-                                            <div v-if="!u.status" class="flex items-center">
+                                            <div v-if="u.status == 'D'" class="flex items-center">
                                                 <div class="h-2.5 w-2.5 rounded-full bg-red-400 mr-2"></div> Inactive
                                             </div>
                                         </td>
@@ -355,7 +362,7 @@
                                                 </svg>
                                                 Edit
                                             </button>
-                                            <button @click="deactivateUser(u.id)" type="button"
+                                            <button v-if="u.status == 'A'" @click="deactivateUser(u.id)" type="button"
                                                 class="inline-flex items-center px-3 py-1 text-sm font-medium text-center text-white bg-red-400 rounded-lg hover:bg-red-600 focus:ring-4 focus:ring-red-300 dark:focus:ring-red-900">
                                                 <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"
                                                     xmlns="http://www.w3.org/2000/svg">
@@ -367,6 +374,19 @@
                                                         clip-rule="evenodd"></path>
                                                 </svg>
                                                 Deactivate
+                                            </button>
+                                            <button v-if="u.status !== 'A'" @click="deactivateUser(u.id)" type="button"
+                                                class="inline-flex items-center px-3 py-1 text-sm font-medium text-center text-white bg-green-400 rounded-lg hover:bg-green-600 focus:ring-4 focus:ring-green-300 dark:focus:ring-green-900">
+                                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z">
+                                                    </path>
+                                                    <path fill-rule="evenodd"
+                                                        d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                                                        clip-rule="evenodd"></path>
+                                                </svg>
+                                                Activate
                                             </button>
                                         </td>
                                     </tr>
@@ -463,12 +483,12 @@
                                             placeholder="example@company.com" required="">
                                     </div>
                                     <div class="flex items-center mb-4">
-                                        <input v-model="selectedUser.status" id="checkbox-activate-create" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <input @change="changeSelectedStatus" :checked="selectedUser.status == 'A'" id="checkbox-activate-create" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                         <label for="checkbox-activate" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Activate</label>
                                     </div>
                                     <div class="col-span-6">
                                         <h4 class="font-bold dark:text-white">Set permissions</h4>
-                                        <div class="permissions-list">
+                                        <div class="permissions-list grid grid-cols-2 gap-4">
                                             <CheckboxGroup :selected="selectedUser.permissions" :items="permissions" name="permission" id="checkbox-group-perm" @toggle-value="togglePermissionValue"/>
                                         </div>
                                     </div>
@@ -478,7 +498,7 @@
                         <!-- Modal footer -->
                         <div class="items-center p-6 border-t border-gray-200 rounded-b dark:border-gray-700">
                             <button
-                                @click="updateUser"
+                                @click="updateUser(null)"
                                 class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                                 type="submit">Save all</button>
                         </div>
@@ -537,6 +557,12 @@
                                     <div class="col-span-6 sm:col-span-3 flex items-center">
                                         <input v-model="newUser.status" id="checkbox-activate-create" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                         <label for="checkbox-activate-create" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Activate</label>
+                                    </div>
+                                    <div class="col-span-6">
+                                        <h4 class="font-bold dark:text-white">Set permissions</h4>
+                                        <div class="permissions-list grid grid-cols-2 gap-4">
+                                            <CheckboxGroup :items="permissions" name="permission" id="checkbox-group-perm" @toggle-value="togglePermissionValue"/>
+                                        </div>
                                     </div>
                                 </div>
                             </form>
@@ -597,7 +623,7 @@
                                     </div>
                                     <div class="col-span-6">
                                         <h4 class="font-bold dark:text-white">Set permissions</h4>
-                                        <div class="permissions-list">
+                                        <div class="permissions-list grid grid-cols-2 gap-4">
                                             <CheckboxGroup :items="permissions" name="permission" id="checkbox-group-perm" @toggle-value="togglePermissionValue"/>
                                         </div>
                                     </div>
