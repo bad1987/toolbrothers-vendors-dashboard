@@ -46,7 +46,7 @@ def get_db_cscart():
 
 #check if user is connected
 # @route.get("/user/auth", response_class=JSONResponse)
-def is_authenticated(request: Request, db: Session = Depends(get_db)):
+async def is_authenticated(request: Request, db: Session = Depends(get_db)):
     user = LoginController.get_current_user_from_cookie(request, db)
     if not user:
         raise HTTPException(
@@ -76,16 +76,7 @@ def get_user(request: Request, db: Session = Depends(get_db)):
 
 @route.get("/users/{type}/list", response_model=UserListDto, responses={200:{"model": UserSchema}})#, response_model=list(UserSchema)
 @requires_permission('read', 'user')
-def index(type: str, request: Request, db: Session = Depends(get_db), user: dict = Depends(is_authenticated)):
-    # first check if the user is authenticated
-    user = is_authenticated(request, db)
-    # then check if the user has the right permissions(admin only)
-    if not roles_checker.admin_access(user.roles):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Access forbidden"
-        )
-    
+async def index(request: Request, type: str, db: Session = Depends(get_db), _user: dict = Depends(is_authenticated)):
 
     users = []
     if type == "vendors":

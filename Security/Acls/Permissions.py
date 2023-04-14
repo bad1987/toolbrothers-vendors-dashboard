@@ -1,52 +1,49 @@
 from fastapi import HTTPException, status
 from App.Http.Controllers.UserController import UserController
 from schemas.UserSchema import PermissionSchema, UserSchema
+from fastapi.encoders import jsonable_encoder
 
 
-class Permissions:
+class PermissionChecker:
     def __init__(self, user:UserSchema):
-        self.user = user
-        self.userController = UserController()
+        self.user = self.to_user_schema(user)
+        self.user_controller = UserController()
         self.permissions = []
-    def has_read_permission(self, model_name: str):
-        # Check if user has read permission for the specified model
-        # Return True if user has permission, False otherwise
-        self.permissions = self.userController.getPermissions('R', model_name.lower().strip())
-        if self.permissions and model_name=='user':
-            self.permissions = admin_or_vendor_alc_user(self.permissions, self.user)
-        return is_auth(self.permissions, self.user.permissions)
+    
+    def to_user_schema(self, user: UserSchema) -> UserSchema:
+        user_dict = jsonable_encoder(user)
+        user_dict.pop('permissions', None)
+        permissions = [PermissionSchema(**jsonable_encoder(p)) for p in user.permissions]
+        return UserSchema(**user_dict, permissions=permissions)
         
+    def has_read_permission(self, model_name: str) -> bool:
+        self.permissions = self.user_controller.getPermissions('R', model_name.lower().strip())
+        if self.permissions and model_name == 'user':
+            self.permissions = self.filter_user_permissions(self.permissions, self.user)
+        return self.check_permissions(self.permissions, self.user.permissions)
 
-    def has_write_permission(self, model_name):
-        # Check if user has write permission for the specified model
-        # Return True if user has permission, False otherwise
-        self.permissions = self.userController.getPermissions('W', model_name.lower().strip())
-        if self.permissions and model_name=='user':
-            self.permissions = admin_or_vendor_alc_user(self.permissions, self.user)
-        return is_auth(self.permissions, self.user.permissions)
+    def has_write_permission(self, model_name: str) -> bool:
+        self.permissions = self.user_controller.getPermissions('W', model_name.lower().strip())
+        if self.permissions and model_name == 'user':
+            self.permissions = self.filter_user_permissions(self.permissions, self.user)
+        return self.check_permissions(self.permissions, self.user.permissions)
 
-    def has_delete_permission(self, model_name):
-        # Check if user has delete permission for the specified model
-        # Return True if user has permission, False otherwise
-        self.permissions = self.userController.getPermissions('D', model_name.lower().strip())
-        if self.permissions and model_name=='user':
-            self.permissions = admin_or_vendor_alc_user(self.permissions, self.user)
-        return is_auth(self.permissions, self.user.permissions)
+    def has_delete_permission(self, model_name: str) -> bool:
+        self.permissions = self.user_controller.getPermissions('D', model_name.lower().strip())
+        if self.permissions and model_name == 'user':
+            self.permissions = self.filter_user_permissions(self.permissions, self.user)
+        return self.check_permissions(self.permissions, self.user.permissions)
 
-def is_auth(permissions: list, user_permissions: list[PermissionSchema]):
-    if permissions == None or not len(permissions):
-            print('No permissions found')
+    def check_permissions(self, permissions: list[PermissionSchema], user_permissions: list[PermissionSchema]) -> bool:
+        if not permissions:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Internal Server Error"
+                detail="No permissions found"
             )
-    user_permissions = [p.name for p in user_permissions]
-    permissions = permissions[0]
-    return permissions in user_permissions
+        permission_names = [p.name for p in permissions]
+        user_permission_names = [p.name for p in user_permissions]
+        return any(p in user_permission_names for p in permission_names)
 
-
-def admin_or_vendor_alc_user(permissions: list[PermissionSchema], user: UserSchema):
-    pattern = 'Acl_admin' if user.roles == 'Role_admin' else 'Acl_vendor'
-    permissions = [p for p in permissions if p.name.startswith(pattern)]
-
-    return permissions
+    def filter_user_permissions(self, permissions: list[PermissionSchema], user: UserSchema) -> list[PermissionSchema]:
+        pattern = 'Acl_admin' if user.roles == 'Role_admin' else 'Acl_vendor'
+        return [p for p in permissions if p.name.startswith(pattern)]
