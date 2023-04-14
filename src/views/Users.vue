@@ -1,6 +1,6 @@
 <script setup>
     import axios from 'axios';
-    import { ref, onMounted, onBeforeMount, onUpdated, watch } from 'vue';
+    import { ref, onMounted, onBeforeMount, onUpdated, watch, resolveComponent } from 'vue';
     import { initFlowbite, initModals, Modal } from 'flowbite'
     import { useRouter, useRoute } from 'vue-router';
     import { acl } from '../router/acl';
@@ -60,7 +60,7 @@
         axios.post('admin/users', {
             username: newUser.value.username,
             email: newUser.value.email,
-            status: newUser.value.status,
+            status: newUser.value.status == true ? 'A' : 'D',
             permissions: newUser.value.permissions,
             roles: newUser.value.roles
         }).then(response => {
@@ -79,6 +79,7 @@
 
     function changeRole(event) {
         newUser.value.roles = event.target.value
+        selectedUser.value.roles = event.target.value
     }
 
     function startUpload() {
@@ -306,7 +307,7 @@
                                         </th>
                                         <th scope="col"
                                             class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
-                                            Country
+                                            Role
                                         </th>
                                         <th scope="col"
                                             class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
@@ -338,12 +339,15 @@
                                             </div>
                                         </td>
                                         <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                            United States</td>
+                                            <span v-if="u.roles == 'Role_admin'">Admin</span>
+                                            <span v-if="u.roles == 'Role_affiliate'">Affiliate</span>
+                                            <span v-if="u.roles == 'Role_direct_sale'">Direct Sale</span>
+                                        </td>
                                         <td class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
                                             <div v-if="u.status == 'A'" class="flex items-center">
                                                 <div class="h-2.5 w-2.5 rounded-full bg-green-400 mr-2"></div> Active
                                             </div>
-                                            <div v-if="u.status == 'D'" class="flex items-center">
+                                            <div v-if="u.status !== 'A'" class="flex items-center">
                                                 <div class="h-2.5 w-2.5 rounded-full bg-red-400 mr-2"></div> Inactive
                                             </div>
                                         </td>
@@ -444,7 +448,7 @@
             </div>
 
             <!-- Edit User Modal -->
-            <div v-if="route.params.type === 'admins'" class="fixed left-0 right-0 z-50 items-center justify-center hidden overflow-x-hidden overflow-y-auto top-4 md:inset-0 h-modal sm:h-full"
+            <div class="fixed left-0 right-0 z-50 items-center justify-center hidden overflow-x-hidden overflow-y-auto top-4 md:inset-0 h-modal sm:h-full"
                 id="edit-user-modal">
                 <div class="relative w-full h-full max-w-2xl px-4 md:h-auto">
                     <!-- Modal content -->
@@ -481,6 +485,14 @@
                                         <input v-model="selectedUser.email" type="email" name="email" id="email"
                                             class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                             placeholder="example@company.com" required="">
+                                    </div>
+                                    <div class="col-span-6 sm:col-span-3" v-if="route.params.type == 'vendors'">
+                                        <label for="role" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select a role</label>
+                                        <select @change="changeRole" id="role" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                            <option value="">Select a role</option>
+                                            <option :selected="selectedUser.roles == 'Role_affiliate'" value="Role_affiliate">Affiliate</option>
+                                            <option :selected="selectedUser.roles == 'Role_direct_sale'" value="Role_direct_sale">Direct sale</option>
+                                        </select>
                                     </div>
                                     <div class="flex items-center mb-4">
                                         <input @change="changeSelectedStatus" :checked="selectedUser.status == 'A'" id="checkbox-activate-create" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
