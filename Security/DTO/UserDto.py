@@ -1,6 +1,8 @@
 from pydantic import BaseModel, EmailStr
 from typing import List, Optional
 from schemas.UserSchema import UserSchema
+from App.Enums.UserEnums import UserStatusEnum
+from App.Enums.UserRoleEnum import UserRoleEnum
 # --------------------------------------------------------------------------
 # Models and Data
 # --------------------------------------------------------------------------
@@ -17,10 +19,10 @@ class UserDto(BaseModel):
     id: int
     username: str
     email: EmailStr
-    status: str
+    status: UserStatusEnum
     company_id: int | None = None
     permissions: list | None = None
-    roles: str
+    roles: UserRoleEnum
     permissions: Optional[List[Permission]]
 
     class Config:
@@ -29,9 +31,9 @@ class UserDto(BaseModel):
 class UserDtoCreate(BaseModel):
     username: str
     email: EmailStr
-    status: bool | str = False
+    status: UserStatusEnum
     permissions: list | None = None
-    roles: str
+    roles: UserRoleEnum
 
 
 class UserListDto(BaseModel):

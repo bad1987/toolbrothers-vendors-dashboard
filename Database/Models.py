@@ -1,7 +1,9 @@
-from sqlalchemy import TIMESTAMP, Column, ForeignKey, Integer, String, text, BigInteger
+from sqlalchemy import TIMESTAMP, Column, ForeignKey, Integer, String, text, BigInteger, Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy.types import Text
 from Database.Connexion import Base
+from App.Enums.UserRoleEnum import UserRoleEnum
+from App.Enums.UserEnums import UserStatusEnum
 
 
 class User(Base):
@@ -12,8 +14,8 @@ class User(Base):
     username = Column(String(255), unique=False, index=True, nullable=False)
     company_id = Column(Integer, unique=True, index=True, nullable=True)
     password = Column(String(255), nullable=False)
-    roles = Column(String(255), nullable = False)
-    status = Column(String(25), nullable=False)
+    roles = Column(Enum(UserRoleEnum, values_callable=lambda obj: [e.value for e in obj]), nullable = False)
+    status = Column(Enum(UserStatusEnum, values_callable=lambda obj: [e.value for e in obj]), nullable=False)
     parent_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
 
     permissions = relationship("Permission", secondary='user_permissions')

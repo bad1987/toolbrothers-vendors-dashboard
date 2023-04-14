@@ -123,33 +123,27 @@ async def delete_user(request: Request, db: Session = Depends(get_db), _user: di
         }
 
 @route.post('/users', response_model= UserDto | Dict[str, str])
-async def add_user(request: Request, model: UserDtoCreate, db: Session = Depends(get_db)):
+@requires_permission('write', 'user')
+async def add_user(request: Request, model: UserDtoCreate, db: Session = Depends(get_db), _user: dict = Depends(is_authenticated)):
     try:
         transaction = db.begin()
-        current_user = is_authenticated(request, db)
         user = User()
-        # If role is admin
 
         user.username = model.username
         user.email = model.email
-        user.password = crypto.hash("secret")
-        user.status = "A" if model.status == True else "D"
-        user.roles = model.roles
+        user.password = crypto.hash("secret") # TODO: Create a random password and send mail
+        user.status = model.status.value
+        user.roles = model.roles.value
 
         db.add(user)
 
-        if model.roles == UserRoleEnum.ADMIN.value:
-            for perm_id in model.permissions:
-                permission = db.query(Permission).filter(Permission.id == int(perm_id)).first()
+        for perm_id in model.permissions:
+            permission = db.query(Permission).filter(Permission.id == int(perm_id)).first()
 
-                if permission != None: 
-                    user.permissions.append(permission)
-                else:
-                    continue
-        elif model.roles == UserRoleEnum.AFFILIATE.value or model.roles == UserRoleEnum.DIRECT_SALE.value:
-            ...
-        else:
-            return {"error": True, "message": "Role doesn't exist"}
+            if permission != None: 
+                user.permissions.append(permission)
+            else:
+                continue
 
         db.commit()
         db.flush()
@@ -157,7 +151,7 @@ async def add_user(request: Request, model: UserDtoCreate, db: Session = Depends
         return user
     except Exception as e:
         transaction.rollback()
-        return {'error': True, 'message': str(e)}
+        return {'status': False, 'message': str(e)}
     
 
 @route.put('/users/{id}', response_model=UserSchema | Dict[str, str])
@@ -177,14 +171,13 @@ async def update_user(id: int, model: UserSchema, request: Request,  db: Session
         if model.permissions != None:
             user_to_update.permissions.clear()
 
-            if model.roles == UserRoleEnum.ADMIN.value:
-                for perm_id in model.permissions:
-                    permission = db.query(Permission).filter(Permission.id == int(perm_id)).first()
+            for perm_id in model.permissions:
+                permission = db.query(Permission).filter(Permission.id == int(perm_id)).first()
 
-                    if permission != None: 
-                        user_to_update.permissions.append(permission)
-                    else:
-                        continue
+                if permission != None: 
+                    user_to_update.permissions.append(permission)
+                else:
+                    continue
                 
         db.commit()
         db.refresh(user_to_update)

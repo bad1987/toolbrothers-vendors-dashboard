@@ -39,13 +39,13 @@ permission_data = [
     {'name': "Acl_setting_update", 'description': "This user update all settings", 'mode': "W", 'model_name': "setting"},
     {'name': "Acl_setting_delete", 'description': "This user delete all settings", 'mode': "D", 'model_name': "setting"},
     
-    {'name': "Acl_vendor_read", 'description': "This vendor read all vendors", 'mode': "R", 'model_name': "user"},
-    {'name': "Acl_vendor_update", 'description': "This vendor update all vendors", 'mode': "W", 'model_name': "user"},
-    {'name': "Acl_vendor_delete", 'description': "This vendor delete all vendors", 'mode': "D", 'model_name': "user"},
+    {'name': "Acl_vendor_read", 'description': "This user read all vendors", 'mode': "R", 'model_name': "user"},
+    {'name': "Acl_vendor_update", 'description': "This user update all vendors", 'mode': "W", 'model_name': "user"},
+    {'name': "Acl_vendor_delete", 'description': "This user delete all vendors", 'mode': "D", 'model_name': "user"},
     
-    {'name': "Acl_admin_read", 'description': "This admin read all admins", 'mode': "R", 'model_name': "user"},
-    {'name': "Acl_admin_update", 'description': "This admin update all admins", 'mode': "W", 'model_name': "user"},
-    {'name': "Acl_admin_delete", 'description': "This admin delete all admins", 'mode': "D", 'model_name': "user"},
+    {'name': "Acl_admin_read", 'description': "This user read all admins", 'mode': "R", 'model_name': "user"},
+    {'name': "Acl_admin_update", 'description': "This user update all admins", 'mode': "W", 'model_name': "user"},
+    {'name': "Acl_admin_delete", 'description': "This user delete all admins", 'mode': "D", 'model_name': "user"},
     
 ]
 
