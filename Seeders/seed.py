@@ -1,6 +1,6 @@
 import mariadb
 import sys
-sys.path.append('./')
+sys.path.append('../')
 from sqlalchemy.orm import Session
 from Database.Connexion import SessionLocal
 from Database.Models import Permission, Payment_method, User, Payment_method_vendor, User_Permission

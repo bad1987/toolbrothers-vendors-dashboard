@@ -3,6 +3,7 @@ from typing import List, Any
 from fastapi import Depends, HTTPException,Request, APIRouter, status
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
+from Decorators.auth_decorators import requires_permission
 from Security.Acls.RoleChecker import Role_checker
 from Security.Controllers import LoginController
 from Security.DTO.UserDto import UserDtoCreate, UserDto, UserListDto, Permission
@@ -74,7 +75,8 @@ def get_user(request: Request, db: Session = Depends(get_db)):
 
 
 @route.get("/users/{type}/list", response_model=UserListDto, responses={200:{"model": UserSchema}})#, response_model=list(UserSchema)
-def index(type: str, request: Request, db: Session = Depends(get_db)):
+@requires_permission('read', 'user')
+def index(type: str, request: Request, db: Session = Depends(get_db), user: dict = Depends(is_authenticated)):
     # first check if the user is authenticated
     user = is_authenticated(request, db)
     # then check if the user has the right permissions(admin only)

@@ -6,9 +6,9 @@ from passlib.handlers.sha2_crypt import sha512_crypt as crypto
 
 user = User()
 permissions = [
-    {'name': "Acl_adm_read", 'description': "Read a vendor or an administrator"},
-    {'name': "Acl_adm_create", 'description': "Create a vendor or an administrator"},
-    {'name': "Acl_adm_delete", 'description': "Delete a vendor or an administrator"},
+    {'name': "Acl_adm_read", 'description': "Read a vendor or an administrator", 'mode':'R', 'model_name': 'user'},
+    {'name': "Acl_adm_create", 'description': "Create a vendor or an administrator", 'mode':'W', 'model_name': 'user'},
+    {'name': "Acl_adm_delete", 'description': "Delete a vendor or an administrator", 'mode':'D', 'model_name': 'user'},
 ]
 
 def create_admin():
@@ -21,12 +21,19 @@ def create_admin():
         user.roles = "Role_admin"
         user.status = "A"
         user.company_id = -1
+        permissions = db.query(Permission).filter(Permission.model_name == "user").all()
+        permissions = [p for p in permissions if p.name.startswith('Acl_admin')]
+        if not len(permissions):
+            print("No permissions found in the permission table")
+            exit()
         for p in permissions:
-            permission = Permission()
-            permission.name = p['name']
-            permission.description = p['description']
-            db.add(permission)
-            user.permissions.append(permission)
+            # permission = Permission()
+            # permission.name = p['name']
+            # permission.description = p['description']
+            # permission.mode = p['mode']
+            # permission.model_name = p['model_name']
+            # db.add(permission)
+            user.permissions.append(p)
         db.add(user)
         db.commit()
     except Exception as e:
