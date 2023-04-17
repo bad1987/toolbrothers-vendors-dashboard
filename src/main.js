@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import { createI18n } from 'vue-i18n'
 import axios from 'axios'
 
 import App from './App.vue'
@@ -7,11 +8,19 @@ import router from './router'
 
 import './assets/main.css'
 import './index.css'
+import  { messages }  from './lang/messages'
  
+const i18n = createI18n({
+    locale: 'en',
+    fallbackLocale: 'en',
+    messages
+})
+
 const app = createApp(App)
 
 app.use(createPinia())
 app.use(router)
+app.use(i18n)
 
 axios.defaults.withCredentials = true
 axios.defaults.baseURL = 'http://localhost:8000/'
