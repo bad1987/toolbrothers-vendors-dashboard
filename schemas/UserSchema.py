@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from typing import Text, List, Optional
 from App.Enums.UserEnums import UserStatusEnum
 from App.Enums.UserRoleEnum import UserRoleEnum
+from App.Enums.LanguageEnum import LanguageEnum
 
 class UserSchema(BaseModel):
     id: Optional[int]
@@ -11,7 +12,7 @@ class UserSchema(BaseModel):
     roles: Optional[UserRoleEnum]
     status: Optional[UserStatusEnum]
     permissions: Optional[List]
-    default_language: Optional[str]
+    default_language: Optional[LanguageEnum]
 
     class Config:
         orm_mode = True
