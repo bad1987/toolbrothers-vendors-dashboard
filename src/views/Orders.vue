@@ -96,9 +96,9 @@ fetchOrders()
       <!-- Card header -->
       <div class="items-center justify-between lg:flex">
           <div class="mb-4 lg:mb-0">
-          <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">Orders</h3>
-          <span class="text-base font-normal text-gray-500 dark:text-gray-400">This is a list of latest
-              orders</span>
+          <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">{{$t("orders")}}</h3>
+          <span class="text-base font-normal text-gray-500 dark:text-gray-400">{{ $t("order_description") }}
+          </span>
           </div>
           <div class="items-center sm:flex">
           <div class="flex items-center">
