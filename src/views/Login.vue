@@ -54,6 +54,7 @@
             //TODO::save the user in the store
             const user = data.user
             uStore.setUser(user)
+            local_storage_set('locale', user.default_language)
             
             if(route.query.redirect)
                 window.location.href = route.query.redirect

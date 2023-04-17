@@ -9,10 +9,12 @@ import router from './router'
 import './assets/main.css'
 import './index.css'
 import  { messages }  from './lang/messages'
+import { local_storage_set, local_storage_get } from './utils/index'
  
 const i18n = createI18n({
-    locale: 'de',
+    locale: local_storage_get('locale') ?? 'de',
     fallbackLocale: 'en',
+    legacy: false,
     messages
 })
 
