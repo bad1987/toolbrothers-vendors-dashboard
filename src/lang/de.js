@@ -1,5 +1,5 @@
 const de = {
-    users: 'Benutzer'
+    "users": 'Benutzer'
 }
 
 export default de
