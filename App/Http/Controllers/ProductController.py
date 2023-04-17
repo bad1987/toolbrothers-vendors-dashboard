@@ -18,7 +18,7 @@ class ProductController:
             query(Cscart_products, Cscart_product_prices).\
             join(Cscart_product_prices, Cscart_product_prices.product_id == Cscart_products.product_id).\
             join(Cscart_product_descriptions).\
-            filter(Cscart_product_descriptions.lang_code == "de").\
+            filter(Cscart_product_descriptions.lang_code == user.default_language).\
             filter(Cscart_products.company_id == user.company_id).\
             order_by(Cscart_products.status)
                     
