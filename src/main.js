@@ -11,7 +11,7 @@ import './index.css'
 import  { messages }  from './lang/messages'
  
 const i18n = createI18n({
-    locale: 'en',
+    locale: 'de',
     fallbackLocale: 'en',
     messages
 })

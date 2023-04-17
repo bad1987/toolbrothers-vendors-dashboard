@@ -1,8 +1,7 @@
+import de from './de'
+import en from './en'
+
 export const messages = {
-    de: {
-        users: 'Benutzer'
-    },
-    en: {
-        users: 'Users'
-    }
+    de,
+    en
 }
