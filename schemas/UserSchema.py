@@ -11,6 +11,7 @@ class UserSchema(BaseModel):
     roles: Optional[UserRoleEnum]
     status: Optional[UserStatusEnum]
     permissions: Optional[List]
+    default_language: Optional[str]
 
     class Config:
         orm_mode = True

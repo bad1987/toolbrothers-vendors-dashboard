@@ -10,6 +10,7 @@ class CscartCompanies(CscartBase):
     company_id = Column(Integer, primary_key=True, index=True)
     email = Column(String(255), unique=True, index=True, nullable=False)
     company = Column(String(255), nullable=False)
+    lang_code = Column(String(255), nullable=False)
     status = Column(String(25), nullable=False)
     
 class CscartOrders(CscartBase):

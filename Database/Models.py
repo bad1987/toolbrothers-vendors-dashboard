@@ -14,6 +14,7 @@ class User(Base):
     username = Column(String(255), unique=False, index=True, nullable=False)
     company_id = Column(Integer, unique=True, index=True, nullable=True)
     password = Column(String(255), nullable=False)
+    default_language = Column(String(255), nullable=False, default='de')
     roles = Column(Enum(UserRoleEnum, values_callable=lambda obj: [e.value for e in obj]), nullable = False)
     status = Column(Enum(UserStatusEnum, values_callable=lambda obj: [e.value for e in obj]), nullable=False)
     parent_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True)

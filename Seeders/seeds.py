@@ -21,6 +21,7 @@ def create_admin():
         user.roles = "Role_admin"
         user.status = "A"
         user.company_id = -2
+        user.default_language = "en"
         permissions = db.query(Permission).filter(Permission.model_name == "user").all()
         permissions = [p for p in permissions if p.name.startswith('Acl_admin')]
         if not len(permissions):

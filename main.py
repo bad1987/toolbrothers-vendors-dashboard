@@ -13,11 +13,11 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 from fastapi.staticfiles import StaticFiles
 
-Models.Base.metadata.create_all(bind=engine)  
+Models.Base.metadata.create_all(bind=engine)   
 app = FastAPI()
  
 origins = [
-    "http://localhost:5173"
+    "http://localhost:5173" 
 ]
  
 app.include_router(Login_register.route) 

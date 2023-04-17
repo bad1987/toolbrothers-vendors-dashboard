@@ -1,6 +1,6 @@
 import mariadb
 import sys
-sys.path.append('../')
+sys.path.append('./')
 from sqlalchemy.orm import Session
 from Database.Connexion import SessionLocal
 from Database.Models import Permission, Payment_method, User, Payment_method_vendor, User_Permission
@@ -122,6 +122,7 @@ try:
         
         user.company_id = item.company_id
         user.username = item.company
+        user.default_language = item.lang_code
         user.email = item.email
         user.password = crypto.hash(f"{item.email}".split("@")[0]+"@!"+str(item.company_id))
         user.roles = "Role_direct_sale" if (item.company_id == 4 or item.company_id ==205) else "Role_affiliate"
