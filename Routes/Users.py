@@ -1,6 +1,6 @@
 import re
 from typing import List, Any, Dict
-from fastapi import Depends, HTTPException,Request, APIRouter, status
+from fastapi import Depends, HTTPException,Request, APIRouter, Response, status
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from Decorators.auth_decorators import requires_permission
@@ -18,7 +18,9 @@ from fastapi.encoders import jsonable_encoder
 from Database.CscartModels import CscartCompanies, Cscart_payments
 from passlib.handlers.sha2_crypt import sha512_crypt as crypto
 from App.Enums.UserRoleEnum import UserRoleEnum
-import traceback, sys
+from App.Enums.LanguageEnum import LanguageEnum
+from Services.SendEmail import send_email
+import traceback, sys, random, string
 
 from schemas.UserSchema import UserSchema
 
@@ -123,9 +125,11 @@ async def delete_user(request: Request, db: Session = Depends(get_db), _user: di
             'message': 'An error occured'
         }
 
-@route.post('/users', response_model= UserDto | Dict[str, str])
+@route.post('/users', response_model= UserSchema | Dict[str, str], status_code=201)
 @requires_permission('write', 'user')
-async def add_user(request: Request, model: UserDtoCreate, db: Session = Depends(get_db), _user: dict = Depends(is_authenticated)):
+async def add_user(request: Request, model: UserDtoCreate, response: Response, db: Session = Depends(get_db), _user: dict = Depends(is_authenticated)):
+    resolved = None
+    is_resolved = False
     try:
         if db.in_transaction():
             db.rollback()
@@ -133,12 +137,15 @@ async def add_user(request: Request, model: UserDtoCreate, db: Session = Depends
             # transaction = db.begin()
             # console.log(transaction)
             user = User()
+            pwd_pattern = string.ascii_letters + string.digits + "@#$%^&*()./+-!"
+            pwd = ''.join(random.choices(pwd_pattern, k = random.randrange(8, 18)))
 
             user.username = model.username
             user.email = model.email
-            user.password = crypto.hash("secret") # TODO: Create a random password and send mail
+            user.password = crypto.hash(pwd) # TODO: Create a random password and send mail
             user.status = model.status.value
             user.roles = model.roles.value
+            user.default_language = LanguageEnum.DE.value
 
             db.add(user)
 
@@ -151,13 +158,27 @@ async def add_user(request: Request, model: UserDtoCreate, db: Session = Depends
                     continue
 
             db.commit()
-            db.flush()
 
-            return user
+             ## send email to the user
+            
+            resolved = user
+            is_resolved = True
+           
     except Exception as e:
-        traceback.print_exc(file=sys.stdout)
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         db.rollback()
-        return {'status': False, 'message': str(e)}
+        resolved = {'status': False, 'message': str(e)}
+
+    if is_resolved:
+        send_email(user.email, 'New account infos', 
+                f"""
+                    Login to your vendor dashboard
+                    Your infos\n\n
+                    email: {user.email}\n
+                    password: {pwd}\n\n
+                """
+            )
+    return resolved
     
 
 @route.put('/users/{id}', response_model=UserSchema | Dict[str, str])
