@@ -1,20 +1,20 @@
 import smtplib
 from email.message import EmailMessage
+import Setting
 
-def send_email(sender_email, password, recipient_email, subject, body):
-    smtp_server = "dinotech.net"
-    port = 587  # For starttls
+def send_email(recipient_email, subject, body):
+    print(Setting.SMTP_SERVER_HOST, Setting.SMTP_PORT)
     msg = EmailMessage()
     msg.set_content(body)
     msg['Subject'] = subject
-    msg['From'] = sender_email
+    msg['From'] = Setting.SMTP_SENDER_MAIL
     msg['To'] = recipient_email
 
     # Login to the Gmail SMTP server
-    with smtplib.SMTP(smtp_server, port) as server:
+    with smtplib.SMTP(Setting.SMTP_SERVER, Setting.SMTP_PORT) as server:
         server.ehlo()  # Can be omitted
         server.starttls()
-        server.login(sender_email, password)
+        server.login(Setting.SMTP_SENDER_MAIL, Setting.SMTP_PASSWORD)
 
         # Send the email
         server.send_message(msg)

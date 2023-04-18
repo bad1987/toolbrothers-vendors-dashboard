@@ -23,17 +23,13 @@ class ForgotPasswordController:
         expire_time = datetime.utcnow() + timedelta(minutes=1)
         expired_ad = {"user_id": user.id, "exp": expire_time, "email": user.email}
         encoded_token = jwt.encode(expired_ad, "secret", algorithm="HS256")
-        link = f"{Setting.SERVER_HOST}/reset-password?token={encoded_token}"
+        link = f"{Setting.SMTP_SERVER_HOST}/reset-password?token={encoded_token}"
         
-        console.log("tokennnnnnnnnnnnnnnn : ", jwt.decode(encoded_token, "secret", algorithms=['HS256'], verify=False)['exp'])
-        
-        sender_email = "no-reply@toolbrothers.com"
-        password = "W6jS7S7xI2qbi8s"
         recipient_email = "mafobruno990@gmail.com"
         subject = f"{user.username} - Password recovery for user {user.username}"
         body = f"Click this link to reset your password: {link}"
         
-        email = SendEmail.send_email(sender_email, password, recipient_email, subject, body)
+        email = SendEmail.send_email(recipient_email, subject, body)
         return JSONResponse(status_code=status.HTTP_200_OK, content='The email was sent successfully !!')
         
     
