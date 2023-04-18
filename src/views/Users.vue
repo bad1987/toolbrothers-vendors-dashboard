@@ -5,70 +5,56 @@
     import { useRouter, useRoute } from 'vue-router';
     import { acl } from '../router/acl';
     import CheckboxGroup from './components/CheckboxGroup.vue';
+    import { userApi } from '../api/api'
+    import { useI18n } from 'vue-i18n'
 
-  const userRef = ref({user: null, isAdmin: false})
+    const userRef = ref({user: null, isAdmin: false})
+    const { t, locale } = useI18n()
 
-  onMounted(() => {
-    initFlowbite()
-  })
 
-  onBeforeMount( async () => {
-
-      const test = await acl()
-      userRef.value = test
-      userRef.value.user = test
-      userRef.value.isAdmin = test.roles == "Role_admin"
-      console.log("get user information from acl", userRef.value.email );
-  })
     const users = ref([])
     const permissions = ref([])
     const selectedPermissions = ref([])
     const isImporting = ref(false)
     const selectedUser = ref(null)
+    const addUserModal = ref(null)
+    const inputRef = ref(null)
     const router = useRouter()
     const route = useRoute()
-    const fetchUsers = () => {
-        axios.get(`/admin/users/${route.params.type}/list`).then((response) => {
-            users.value = response.data.users
-            permissions.value = response.data.permissions
-        }).then(() => {
-            initFlowbite()
-        })
-        .catch(err => {
-            if (err.response) {
-                let status = err.response.status
-                if (status) {
-                    if (status == 403) {
-                        // console.log(err.response.status);
-                        router.push('/error/403')
-                    }
-                    else if (status == 401) {
-                        router.push('/login')
-                    }
-                }
-            }
-        })
-    }
+
+    onMounted(() => {
+    initFlowbite()
+
+        console.log(inputRef.value)
+    })
+
+    onUpdated(() => {
+    initFlowbite()
+    })
+
+    onBeforeMount( async () => {
+
+        const test = await acl()
+        userRef.value = test
+        userRef.value.user = test
+        userRef.value.isAdmin = test.roles == "Role_admin"
+        console.log("get user information from acl", userRef.value.email );
+    })
+
+    //  users apis
+    const fetchUsers = () => userApi.fetchUsers(users, permissions, router, route)
 
     function addUser() {
-        newUser.value.permissions = selectedPermissions
+        // userApi.addUser(newUser, selectedPermissions, route).then((response) => { fetchUsers(); console.log(response) })
+        // .catch(err => {
+        //     console.log(err)
+        // })
+        console.log(addUserModal.value)
+    }
 
-        if (route.params.type === 'admins') {
-            newUser.value.roles = 'Role_admin'
-        }
 
-        axios.post('admin/users', {
-            username: newUser.value.username,
-            email: newUser.value.email,
-            status: newUser.value.status == true ? 'A' : 'D',
-            permissions: newUser.value.permissions,
-            roles: newUser.value.roles
-        }).then(response => {
-            console.log(response.data)
-            fetchUsers()
-        }).catch(err => {
-            console.log(err)
-        })
+    function updateUser(obj = null) {
+        userApi.updateUser(obj, users, selectedUser, selectedPermissions)
     }
 
     function togglePermissionValue(item) {
@@ -100,34 +86,6 @@
         selectedPermissions.value = selectedUser.value.permissions.map(x => x.id)
     }
 
-    function updateUser(obj = null) {
-        if (selectedUser.value !== undefined && obj == null) {
-            const datas = {...selectedUser.value,
-                 permissions: selectedPermissions.value,
-                 status: selectedUser.value.status
-                }
-            console.log('datas',datas)
-            axios.put("admin/users/" + selectedUser.value.id, datas)
-            .then(response => {
-                console.log('reponse', response.data)
-                let ans = users.value.map(x => x.id === selectedUser.value.id ? response.data : x)
-                users.value = ans
-            })
-            .catch(err => {
-                console.log(err)
-            })
-        } else if (obj != null) {
-            axios.put("admin/users/" + selectedUser.value.id, obj)
-            .then(response => {
-                let ans = users.value.map(x => x.id === selectedUser.value.id ? response.data : x)
-                users.value = ans
-            }).then()
-            .catch(err => {
-                console.log(err)
-            })
-        }
-    }
-
     function deactivateUser(id) {
         selectedUser.value = users.value.find(x => x.id == id)
 
@@ -142,6 +100,7 @@
     watch(() => route.params.type,
         () => {
             fetchUsers()
+            initFlowbite()
         }
     )
 
@@ -152,7 +111,7 @@
         email: null,
         status: false,
         roles: null,
-        permissions: null
+        permissions: null,
     })
 </script>
 
@@ -210,9 +169,9 @@
                             <form class="lg:pr-3" action="#" method="GET">
                                 <label for="users-search" class="sr-only">Search</label>
                                 <div class="relative mt-1 lg:w-64 xl:w-96">
-                                    <input type="text" name="email" id="users-search"
+                                    <input ref="inputRef" type="text" name="email" id="users-search"
                                         class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        placeholder="Search for users">
+                                        placeholder="Search for users"/>
                                 </div>
                             </form>
                             <div class="flex pl-0 mt-3 space-x-1 sm:pl-2 sm:mt-0">
@@ -256,6 +215,7 @@
                         </div>
                         <div class="flex items-center ml-auto space-x-2 sm:space-x-3">
                             <button 
+                                v-if="route.params.type === 'vendors'"
                                 @click="selectedPermissions = []"
                                 type="button" data-modal-toggle="add-user-modal"
                                 class="inline-flex items-center justify-center w-1/2 px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 sm:w-auto dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
@@ -265,7 +225,20 @@
                                         d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
                                         clip-rule="evenodd"></path>
                                 </svg>
-                                Add &nbsp;<span v-if="route.params.type === 'vendors'">user</span> <span v-if="route.params.type === 'admins'">Admin</span>
+                                Add user
+                            </button>
+                            <button 
+                                v-if="route.params.type === 'admins'"
+                                @click="selectedPermissions = []"
+                                type="button" data-modal-toggle="add-user-modal"
+                                class="inline-flex items-center justify-center w-1/2 px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 sm:w-auto dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                <svg class="w-5 h-5 mr-2 -ml-1" fill="currentColor" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                Add Admin
                             </button>
                             <button href="#"
                                 v-if="!isImporting && route.params.type === 'vendors'"
@@ -494,14 +467,19 @@
                                             <option :selected="selectedUser.roles == 'Role_direct_sale'" value="Role_direct_sale">Direct sale</option>
                                         </select>
                                     </div>
-                                    <div class="flex items-center mb-4">
+                                    <div class="mt-9">
                                         <input @change="changeSelectedStatus" :checked="selectedUser.status == 'A'" id="checkbox-activate-create" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                        <label for="checkbox-activate" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Activate</label>
+                                        <label for="checkbox-activate-create" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Activate</label>
                                     </div>
                                     <div class="col-span-6">
                                         <h4 class="font-bold dark:text-white">Set permissions</h4>
-                                        <div class="permissions-list grid grid-cols-2 gap-4">
-                                            <CheckboxGroup :selected="selectedUser.permissions" :items="permissions" name="permission" id="checkbox-group-perm" @toggle-value="togglePermissionValue"/>
+                                        <div class="permissions-list">
+                                            <CheckboxGroup :selected="selectedUser.permissions" 
+                                            :items="permissions" 
+                                            :is-grouped="true"
+                                            name="permission" 
+                                            id="checkbox-group-perm" 
+                                            @toggle-value="togglePermissionValue"/>
                                         </div>
                                     </div>
                                 </div>
@@ -520,7 +498,7 @@
             </div>
 
             <!-- Add User Modal -->
-            <div v-if="route.params.type == 'vendors'" class="fixed left-0 right-0 z-50 items-center justify-center hidden overflow-x-hidden overflow-y-auto top-4 md:inset-0 h-modal sm:h-full"
+            <div ref="addUserModal" v-if="route.params.type == 'vendors'" class="fixed left-0 right-0 z-50 items-center justify-center hidden overflow-x-hidden overflow-y-auto top-4 md:inset-0 h-modal sm:h-full"
                 id="add-user-modal">
                 <div class="relative w-full h-full max-w-2xl px-4 md:h-auto">
                     <!-- Modal content -->
@@ -566,14 +544,18 @@
                                             <option value="Role_direct_sale">Direct sale</option>
                                         </select>
                                     </div>
-                                    <div class="col-span-6 sm:col-span-3 flex items-center">
-                                        <input v-model="newUser.status" id="checkbox-activate-create" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                        <label for="checkbox-activate-create" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Activate</label>
+                                    <div class="mt-9">
+                                        <input v-model="newUser.status" id="checkbox-activate-create-vendor" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <label for="checkbox-activate-create-vendor" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Activate</label>
                                     </div>
                                     <div class="col-span-6">
                                         <h4 class="font-bold dark:text-white">Set permissions</h4>
-                                        <div class="permissions-list grid grid-cols-2 gap-4">
-                                            <CheckboxGroup :items="permissions" name="permission" id="checkbox-group-perm" @toggle-value="togglePermissionValue"/>
+                                        <div class="permissions-list">
+                                            <CheckboxGroup :is-grouped="true"
+                                             :items="permissions" 
+                                             name="permission" 
+                                             id="checkbox-group-perm" 
+                                             @toggle-value="togglePermissionValue"/>
                                         </div>
                                     </div>
                                 </div>
@@ -630,13 +612,17 @@
                                             placeholder="example@company.com" required="">
                                     </div>
                                     <div class="flex items-center mb-4">
-                                        <input v-model="newUser.status" id="checkbox-activate-create" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                        <label for="checkbox-activate" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Activate</label>
+                                        <input v-model="newUser.status" id="checkbox-activate-create-admin" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <label for="checkbox-activate-create-admin" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Activate</label>
                                     </div>
                                     <div class="col-span-6">
                                         <h4 class="font-bold dark:text-white">Set permissions</h4>
-                                        <div class="permissions-list grid grid-cols-2 gap-4">
-                                            <CheckboxGroup :items="permissions" name="permission" id="checkbox-group-perm" @toggle-value="togglePermissionValue"/>
+                                        <div class="permissions-list">
+                                            <CheckboxGroup :is-grouped="true" 
+                                            :items="permissions" 
+                                            name="permission" 
+                                            id="checkbox-group-perm" 
+                                            @toggle-value="togglePermissionValue"/>
                                         </div>
                                     </div>
                                 </div>
