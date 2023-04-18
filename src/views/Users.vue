@@ -5,6 +5,7 @@
     import { useRouter, useRoute } from 'vue-router';
     import { acl } from '../router/acl';
     import CheckboxGroup from './components/CheckboxGroup.vue';
+    import ButtonComponent from './components/ButtonComponent.vue';
     import { userApi } from '../api/api'
     import { useI18n } from 'vue-i18n'
 
@@ -16,20 +17,23 @@
     const permissions = ref([])
     const selectedPermissions = ref([])
     const isImporting = ref(false)
+    const isLoading = ref(false)
     const selectedUser = ref(null)
-    const addUserModal = ref(null)
     const inputRef = ref(null)
     const router = useRouter()
     const route = useRoute()
 
     onMounted(() => {
-    initFlowbite()
+        initFlowbite()
 
         console.log(inputRef.value)
+
     })
 
     onUpdated(() => {
-    initFlowbite()
+        initFlowbite()
+
+
     })
 
     onBeforeMount( async () => {
@@ -45,16 +49,24 @@
     const fetchUsers = () => userApi.fetchUsers(users, permissions, router, route)
 
     function addUser() {
-        // userApi.addUser(newUser, selectedPermissions, route).then((response) => { fetchUsers(); console.log(response) })
-        // .catch(err => {
-        //     console.log(err)
-        // })
-        console.log(addUserModal.value)
+        isLoading.value = true
+        userApi.addUser(newUser, selectedPermissions, route).then((response) => { 
+            fetchUsers();
+            isLoading.value = false 
+
+            document.getElementById('add-user-modal')?.click()
+        })
+        .catch(err => {
+            console.log(err)
+            isLoading.value = false
+        })
     }
 
 
     function updateUser(obj = null) {
-        userApi.updateUser(obj, users, selectedUser, selectedPermissions)
+        isLoading.value = true
+        userApi.updateUser(obj, users, selectedUser, selectedPermissions, isLoading)
+        isLoading.value = false
     }
 
     function togglePermissionValue(item) {
@@ -303,7 +315,7 @@
                                         </td>
                                         <td class="flex items-center p-4 mr-12 space-x-6 whitespace-nowrap">
                                             <img class="w-10 h-10 rounded-full"
-                                                src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="Neil Sims avatar">
+                                                src="../assets/images/user-bg.png" :alt="u.username + ' avatar'">
                                             <div class="text-sm font-normal text-gray-500 dark:text-gray-400">
                                                 <div class="text-base font-semibold text-gray-900 dark:text-white">{{u.username}}
                                                 </div>
@@ -424,6 +436,7 @@
             <div class="fixed left-0 right-0 z-50 items-center justify-center hidden overflow-x-hidden overflow-y-auto top-4 md:inset-0 h-modal sm:h-full"
                 id="edit-user-modal">
                 <div class="relative w-full h-full max-w-2xl px-4 md:h-auto">
+                    <div v-if="isLoading" class="absolute top-5 bottom-5 left-5 right-5 z-[10000] opacity-50 bg-white"></div>
                     <!-- Modal content -->
                     <div class="relative bg-white rounded-lg shadow dark:bg-gray-800">
                         <!-- Modal header -->
@@ -455,7 +468,7 @@
                                     <div class="col-span-6 sm:col-span-3">
                                         <label for="email"
                                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
-                                        <input v-model="selectedUser.email" type="email" name="email" id="email"
+                                        <input disabled v-model="selectedUser.email" type="email" name="email" id="email"
                                             class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                             placeholder="example@company.com" required="">
                                     </div>
@@ -487,20 +500,22 @@
                         </div>
                         <!-- Modal footer -->
                         <div class="items-center p-6 border-t border-gray-200 rounded-b dark:border-gray-700">
-                            <button
+                            <ButtonComponent
                                 @click="updateUser(null)"
-                                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                                type="submit">Save all</button>
+                                text="Save all"
+                                classes="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                                :loading="isLoading"
+                            />
                         </div>
-
                     </div>
                 </div>
             </div>
 
             <!-- Add User Modal -->
-            <div ref="addUserModal" v-if="route.params.type == 'vendors'" class="fixed left-0 right-0 z-50 items-center justify-center hidden overflow-x-hidden overflow-y-auto top-4 md:inset-0 h-modal sm:h-full"
+            <div v-if="route.params.type == 'vendors'" class="fixed left-0 right-0 z-50 items-center justify-center hidden overflow-x-hidden overflow-y-auto top-4 md:inset-0 h-modal sm:h-full"
                 id="add-user-modal">
                 <div class="relative w-full h-full max-w-2xl px-4 md:h-auto">
+                    <div v-if="isLoading" class="absolute top-5 bottom-5 left-5 right-5 z-[10000] opacity-50 bg-white"></div>
                     <!-- Modal content -->
                     <div class="relative bg-white rounded-lg shadow dark:bg-gray-800">
                         <!-- Modal header -->
@@ -576,6 +591,7 @@
             <div v-if="route.params.type == 'admins'" class="fixed left-0 right-0 z-50 items-center justify-center hidden overflow-x-hidden overflow-y-auto top-4 md:inset-0 h-modal sm:h-full"
                 id="add-user-modal">
                 <div class="relative w-full h-full max-w-2xl px-4 md:h-auto">
+                    <div v-if="isLoading" class="absolute top-5 bottom-5 left-5 right-5 z-[10000] opacity-50 bg-white"></div>
                     <!-- Modal content -->
                     <div class="relative bg-white rounded-lg shadow dark:bg-gray-800">
                         <!-- Modal header -->

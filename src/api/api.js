@@ -42,7 +42,8 @@ const userApi = {
         })
     },
 
-    updateUser: (obj, users, selectedUser, selectedPermissions) => {
+    updateUser: (obj, users, selectedUser, selectedPermissions, loading) => {
+        loading.value = true
         if (selectedUser.value !== undefined && obj == null) {
             const datas = {...selectedUser.value,
                  permissions: selectedPermissions.value,
@@ -52,8 +53,12 @@ const userApi = {
             .then(response => {
                 let ans = users.value.map(x => x.id === selectedUser.value.id ? response.data : x)
                 users.value = ans
+
+                document.getElementById('edit-user-modal')?.click()
+
             })
             .catch(err => {
+                loading.value = false
                 console.log(err)
             })
         } else if (obj != null) {
@@ -61,8 +66,12 @@ const userApi = {
             .then(response => {
                 let ans = users.value.map(x => x.id === selectedUser.value.id ? response.data : x)
                 users.value = ans
+
+                document.getElementById('edit-user-modal')?.click()
+
             }).then()
             .catch(err => {
+                loading.value = false
                 console.log(err)
             })
         }
