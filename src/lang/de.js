@@ -5,7 +5,8 @@ const de = {
     "products": "Produkte",
     "settings": "Einstellungen",
     "payment_method": "Bezahlverfahren",
-    "order_description": "Dies ist eine Liste der letzten Bestellungen"
+    "order_description": "Dies ist eine Liste der letzten Bestellungen",
+    "message": "Mitteilungen"
   }
 
 export default de

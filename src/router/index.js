@@ -8,6 +8,7 @@ import ResetPassword from '../views/ResetPassword.vue'
 import Payment_method from '../views/Settings/Payment_method/index.vue'
 import Plenty_market from '../views/Settings/Plenty_market/index.vue'
 import Product from '../views/Products/index.vue'
+import Message from '../views/messages/Index.vue'
 import Error403 from '../components/erros/Error403.vue'
 import Error404 from '../components/erros/Error404.vue'
 import { is_authenticated } from '../utils'
@@ -94,6 +95,15 @@ const router = createRouter({
       path: '/products',
       name: 'products',
       component: Product,
+      meta: {
+        requiresAuth: true,
+        roles: ['Role_direct_sale', 'Role_affiliate']
+      },
+    },
+    {
+      path: '/messages',
+      name: 'messages',
+      component: Message,
       meta: {
         requiresAuth: true,
         roles: ['Role_direct_sale', 'Role_affiliate']
