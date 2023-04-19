@@ -17,7 +17,7 @@ from rich.console import Console
 from fastapi.encoders import jsonable_encoder
 from Database.CscartModels import CscartCompanies, Cscart_payments
 from passlib.handlers.sha2_crypt import sha512_crypt as crypto
-from App.Enums.UserRoleEnum import UserRoleEnum
+from App.Enums.UserRoleEnum import ModelNameEnum, UserRoleEnum
 from App.Enums.LanguageEnum import LanguageEnum
 from Services.SendEmail import send_email
 import traceback, sys, random, string
@@ -79,7 +79,7 @@ def get_user(request: Request, db: Session = Depends(get_db)):
 
 
 @route.get("/users/{type}/list", response_model=UserListDto, responses={200:{"model": UserSchema}})#, response_model=list(UserSchema)
-@requires_permission('read', 'user')
+@requires_permission('read', ModelNameEnum.USER_MODEL.value)
 async def index(request: Request, type: str, db: Session = Depends(get_db), _user: dict = Depends(is_authenticated)):
 
     users = []
@@ -109,7 +109,7 @@ async def get_all_users(request: Request, db: Session = Depends(get_db)):
     return {'users': users}
 
 @route.delete('/users', response_class=JSONResponse)
-@requires_permission('delete', 'user')
+@requires_permission('delete', ModelNameEnum.USER_MODEL.value)
 async def delete_user(request: Request, db: Session = Depends(get_db), _user: dict = Depends(is_authenticated)):
     try:
         user = LoginController.get_current_user_from_cookie(request, db)
@@ -126,7 +126,7 @@ async def delete_user(request: Request, db: Session = Depends(get_db), _user: di
         }
 
 @route.post('/users', response_model= UserSchema | Dict[str, str], status_code=201)
-@requires_permission('write', 'user')
+@requires_permission('write', ModelNameEnum.USER_MODEL.value)
 async def add_user(request: Request, model: UserDtoCreate, response: Response, db: Session = Depends(get_db), _user: dict = Depends(is_authenticated)):
     resolved = None
     is_resolved = False
@@ -182,7 +182,7 @@ async def add_user(request: Request, model: UserDtoCreate, response: Response, d
     
 
 @route.put('/users/{id}', response_model=UserSchema | Dict[str, str])
-@requires_permission('write', 'user')
+@requires_permission('write', ModelNameEnum.USER_MODEL.value)
 async def update_user(id: int, model: UserSchema, request: Request,  db: Session = Depends(get_db), _user: dict = Depends(is_authenticated)):
     try:
         if db.in_transaction():

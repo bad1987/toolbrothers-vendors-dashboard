@@ -48,7 +48,7 @@ def get_db_cscart():
 def timestamp_to_date(s):
     return time.ctime(s)
 
-@route.get('/list', response_model=ProductListSchemaOut)
+@route.get('/list')
 @requires_permission('read', ModelNameEnum.PRODUCT_MODEL.value)
 async def getProductListByVendor(request: Request, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart), _user: dict = Depends(is_authenticated), skip: int = 0, limit: int = 10):
     result = ProductController.get_product_list_by_vendor(request, db_local, db_cscart, skip, limit)
