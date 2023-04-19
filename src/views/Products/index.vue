@@ -1,8 +1,10 @@
 <script setup>
 import axios from 'axios'
 import { useRouter } from 'vue-router';
-import { ref, onMounted, onBeforeMount } from 'vue'
+import { ref, onMounted, onBeforeMount, onUpdated } from 'vue'
+import ButtonComponent from '../components/ButtonComponent.vue'
 import { acl } from '../../router/acl';
+import { initFlowbite } from 'flowbite'
 
   const userRef = ref({user: null, isAdmin: false})
 
@@ -21,6 +23,12 @@ const actuaLimit = ref(5)
 const totalProducts = ref(0)
 const availableLimits = [5, 10, 25, 50, 75, 100]
 const skeletonCnt = ref(5)
+const isLoading = ref(false)
+const selectedProduct = ref({
+  product_id: null,
+  amount: null,
+  price: null
+})
 
 const router = useRouter()
 
@@ -37,6 +45,8 @@ const fetchProducts = () => {
     })
     totalProducts.value = resp.data.total
     skeletonCnt.value = 0
+
+    initFlowbite()
   })
     .catch(err => {
       if (err.response) {
@@ -53,6 +63,21 @@ const fetchProducts = () => {
       }
       skeletonCnt.value = 0;
     })
+}
+
+function updateProduct() {
+  isLoading.value = true
+  axios.put("/products/" + selectedProduct.value.product_id, selectedProduct.value)
+        .then(response => {
+          document.getElementById("edit-product-modal")?.click()
+
+          fetchProducts()
+          isLoading.value = false
+        })
+        .catch(err => {
+          console.log("Error: ", err)
+          isLoading.value = false
+        })
 }
 
 function nextPage() {
@@ -84,7 +109,18 @@ function fastBackward() {
   fetchProducts()
 }
 
+function changeSelectedProduct(id){
+  const tmp = products.value.find(x => x.product_id == id)
+
+  Object.assign(selectedProduct.value, tmp)
+}
+
 onMounted(() => {
+  initFlowbite()
+})
+
+onUpdated(() => {
+  initFlowbite()
 })
 
 fetchProducts()
@@ -169,16 +205,13 @@ fetchProducts()
                       Product code
                     </th>
                     <th scope="col" class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
-                      Product type
-                    </th>
-                    <th scope="col" class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
-                      Weight
-                    </th>
-                    <th scope="col" class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
                       Amount
                     </th>
                     <th scope="col" class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
                       Price
+                    </th>
+                    <th scope="col" class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
+                      Action
                     </th>
                   </tr>
                 </thead>
@@ -201,45 +234,45 @@ fetchProducts()
                       <td v-if="product.status == 'A'" class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
                         <span
                         
-                          class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-gray-700 dark:text-green-400 border border-green-100 dark:border-green-500">
+                          class="cursor-pointer bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-gray-700 dark:text-green-400 border border-green-100 dark:border-green-500">
                           Online
                         </span>
                       </td>
-                      <td v-if="product.status == 'D'" class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
+                      <td v-else class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
                         <span
-                          class="bg-green-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-gray-700 dark:text-red-400 border border-red-100 dark:border-red-500">
-                          Disable
-                        </span>
-                      </td>
-                      <td v-if="product.status == 'H'" class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
-                        <span
-                          class="bg-green-100 text-red-500 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-gray-700 dark:text-red-300 border border-red-100 dark:border-red-400">
+                          class="cursor-pointer bg-green-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-gray-700 dark:text-red-400 border border-red-100 dark:border-red-500">
                           Offline
                         </span>
                       </td>
-                      <td v-if="!product.status == 'H' && !product.status == 'D' && !product.status == 'A'" class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
-                        <span
-                          class="bg-green-100 text-grey-300 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-gray-700 dark:text-grey-300 border border-grey-100 dark:border-grey-400">
-                          {{ product.status }}
-                        </span>
-                      </td>
+                      
                       <td class="p-4 !w-32 line-clamp-1 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
                         {{ product.product }}
                       </td>
                       <td class="p-4 text-sm text-gray-900 whitespace-nowrap dark:text-white">
                         {{ product.product_code }}
                       </td>
-                      <td class="inline-flex items-center p-4 space-x-2 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
-                        <span>{{ product.product_type }}</span>
-                      </td>
-                      <td class="p-4 text-gray-500 whitespace-nowrap dark:text-gray-400">
-                        {{ product.weight }}
-                      </td>
                       <td class="p-4 text-gray-500 whitespace-nowrap dark:text-gray-400">
                         {{ product.amount }}
                       </td>
                       <td class="p-4 text-sm text-gray-900 whitespace-nowrap dark:text-white">
-                        {{ product.cscart_product_prices.price }} $
+                        {{ product.cscart_product_prices.price }} EUR
+                      </td>
+                      <td>
+                        <button type="button" data-modal-toggle="edit-product-modal"
+                            data-modal-taget="edit-product-modal"
+                            @click="changeSelectedProduct(product.product_id)"   
+                            class="inline-flex items-center px-3 py-1 text-sm font-medium text-center text-white rounded-lg bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-400 dark:bg-blue-500 dark:hover:bg-blue-800 dark:focus:ring-blue-500">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z">
+                                </path>
+                                <path fill-rule="evenodd"
+                                    d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            Edit
+                        </button>
                       </td>
                     </tr>
                 </tbody>
@@ -278,6 +311,52 @@ fetchProducts()
           <svg @click="fastForward()" class="text-gray-500 cursor-pointer" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 4.5l7.5 7.5-7.5 7.5m-6-15l7.5 7.5-7.5 7.5"></path>
           </svg>
+          </div>
+      </div>
+    </div>
+    <div class="fixed left-0 right-0 z-50 items-center justify-center hidden overflow-x-hidden overflow-y-auto top-4 md:inset-0 h-modal sm:h-full"
+      id="edit-product-modal">
+      <div class="relative w-full h-full max-w-2xl px-4 md:h-auto">
+          <div v-if="isLoading" class="absolute top-5 bottom-5 left-5 right-5 z-[10000] opacity-50 bg-white"></div>
+          <!-- Modal content -->
+          <div class="relative bg-white rounded-lg shadow dark:bg-gray-800">
+              <!-- Modal header -->
+              <div class="flex items-start justify-between p-5 border-b rounded-t dark:border-gray-700">
+                  <h3 class="text-xl font-semibold dark:text-white">
+                      Edit product
+                  </h3>
+                  <button type="button"
+                      class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-700 dark:hover:text-white"
+                      data-modal-toggle="edit-product-modal">
+                      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                          <path fill-rule="evenodd"
+                              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                              clip-rule="evenodd"></path>
+                      </svg>
+                  </button>
+              </div>
+              <!-- Modal body -->
+              <div class="p-6 space-y-6" v-if="selectedProduct != undefined">
+                  <form action="#" id="update-product-form">
+                      <div class="grid grid-cols-6 gap-6">
+                          <div class="col-span-6 sm:col-span-3">
+                              <label for="amount"
+                                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Amount</label>
+                              <input v-model="selectedProduct.amount" type="number" name="username" id="amount"
+                                  class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                  placeholder="Bonnie" required="">
+                          </div>
+                      </div>
+                  </form>
+              </div>
+              <!-- Modal footer -->
+              <div class="items-center p-6 border-t border-gray-200 rounded-b dark:border-gray-700">
+                  <ButtonComponent
+                      @click="updateProduct"
+                      text="Save all"
+                      classes="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                  />
+              </div>
           </div>
       </div>
     </div>
