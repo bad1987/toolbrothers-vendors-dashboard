@@ -23,5 +23,12 @@ class ProductSchema(BaseModel):
     class Config:
         orm_mode = True
 
+class ProductUpdateSchema(BaseModel):
+    id: int
+    product: Optional[str]
+    status: Optional[str]
+    amount: Optional[int]
+    price: Optional[float]
+
     
     
