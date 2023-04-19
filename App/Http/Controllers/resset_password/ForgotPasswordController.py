@@ -25,8 +25,8 @@ class ForgotPasswordController:
         encoded_token = jwt.encode(expired_ad, "secret", algorithm="HS256")
         link = f"{Setting.SMTP_SERVER_HOST}/reset-password?token={encoded_token}"
         
-        recipient_email = "mafobruno990@gmail.com"
-        subject = f"{user.username} - Password recovery for user {user.username}"
+        recipient_email = "b.mafo@toolbrothers.com"
+        subject = f"{user.username} - Password recovery"
         body = f"Click this link to reset your password: {link}"
         
         email = SendEmail.send_email(recipient_email, subject, body)

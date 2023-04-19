@@ -12,6 +12,8 @@ class UserSchema(BaseModel):
     roles: Optional[UserRoleEnum]
     status: Optional[UserStatusEnum]
     permissions: Optional[List]
+    firstname: Optional[str]
+    lastname: Optional[str]
     default_language: Optional[LanguageEnum]
 
     class Config:

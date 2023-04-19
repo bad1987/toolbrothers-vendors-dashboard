@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from Database.Connexion import SessionLocal
 from Database.Models import Permission, Payment_method, User, Payment_method_vendor, User_Permission
 from Database.CscartConnexion import CscartSession
-from Database.CscartModels import CscartCompanies, Cscart_payments
+from Database.CscartModels import CscartCompanies, Cscart_payments, CscartUsers
 from rich.console import Console
 from passlib.handlers.sha2_crypt import sha512_crypt as crypto
 from Routes.Users import extract_credentials
@@ -113,15 +113,18 @@ try:
         payment_method_vendor = db_cscart.query(Cscart_payments).filter(Cscart_payments.company_id == item.company_id).all()
 
         is_exist = db_local.query(User).filter(User.email == item.email).first()
+        # cscart_user = db_cscart.query(CscartUsers).filter(CscartUsers.email == item.email).first()
         
         if is_exist:
             console.log("This user exist", item.company)    
             continue
         
-        user = User()
+        user = User() 
         
-        user.company_id = item.company_id
+        user.company_id = item.company_id 
         user.username = item.company
+        # user.firstname = cscart_user.firstname
+        # user.lastname = cscart_user.lastname
         user.default_language = item.lang_code
         user.email = item.email
         user.password = crypto.hash(f"{item.email}".split("@")[0]+"@!"+str(item.company_id))

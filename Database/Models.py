@@ -15,6 +15,8 @@ class User(Base):
     username = Column(String(255), unique=False, index=True, nullable=False)
     company_id = Column(Integer, unique=True, index=True, nullable=True)
     password = Column(String(255), nullable=False)
+    firstname = Column(String(255), nullable=True)
+    lastname = Column(String(255), nullable=True)
     default_language = Column(Enum(LanguageEnum, values_callable=lambda obj: [e.value for e in obj]), nullable=False)
     roles = Column(Enum(UserRoleEnum, values_callable=lambda obj: [e.value for e in obj]), nullable = False)
     status = Column(Enum(UserStatusEnum, values_callable=lambda obj: [e.value for e in obj]), nullable=False)

@@ -4,7 +4,7 @@ from Database.Connexion import engine
 import uvicorn
 from Routes.settings import Payments, PlentyMarket
 from Security.Routes.Login_register import Login_register, Forgot_password
-from Routes import Users, Orders, Product, Errors
+from Routes import Users, Orders, Product, Errors, Message
 from fastapi.middleware.cors import CORSMiddleware
 
 from middlewares.FirewallMiddleware import firewall_middleware
@@ -14,7 +14,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi.staticfiles import StaticFiles
 
 Models.Base.metadata.create_all(bind=engine)   
-app = FastAPI()
+app = FastAPI() 
  
 origins = [
     "http://localhost:5173" 
@@ -28,6 +28,7 @@ app.include_router(Errors.route)
 app.include_router(Payments.route)
 app.include_router(PlentyMarket.route)
 app.include_router(Product.route)
+app.include_router(Message.route)
  
 # static files
 app.mount("/static", StaticFiles(directory="static"), name="static")

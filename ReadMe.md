@@ -15,3 +15,12 @@ localhost:8000/payment/payment-method-system
 
  ## Create file Setting.py
  ## add variable SERVER_HOST in this file, create this variable in .env file and give value 'http://localhost:5173'
+
+ # Using SMTP SERVER
+ # add variables 
+ - SMTP_SERVER_HOST,
+ - SMTP_SENDER_MAIL,
+ - SMTP_PASSWORD,
+ - SMTP_SERVER
+ - SMTP_PORT
+ # in Setting.py file, create this variable in .env file and give value

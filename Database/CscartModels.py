@@ -1,4 +1,4 @@
-from sqlalchemy import Float, Text, TIMESTAMP, Column, ForeignKey, Integer, String, BigInteger
+from sqlalchemy import Float, Text, TIMESTAMP, Column, ForeignKey, Integer, String, text
 from sqlalchemy.orm import relationship
 
 from Database.CscartConnexion import CscartBase
@@ -12,7 +12,7 @@ class CscartCompanies(CscartBase):
     company = Column(String(255), nullable=False)
     lang_code = Column(String(255), nullable=False)
     status = Column(String(25), nullable=False)
-    
+
 class CscartOrders(CscartBase):
     __tablename__ = "cscart_orders"
 
@@ -69,3 +69,33 @@ class Cscart_product_prices(CscartBase):
     product_id = Column(Integer, ForeignKey("cscart_products.product_id"))
     
     cscart_products = relationship("Cscart_products",  back_populates="cscart_product_prices")
+   
+
+class CscartUsers(CscartBase):
+    __tablename__ = "cscart_users"
+
+    user_id = Column(Integer, primary_key=True, index=True)
+    email = Column(String(255), unique=True, index=True, nullable=False)
+    firstname = Column(String(255), nullable=False)
+    lastname = Column(String(255), nullable=False)
+    
+    
+    
+class Cscart_vendor_communications(CscartBase):
+    __tablename__ = "cscart_vendor_communications"
+    thread_id = Column(Integer, primary_key=True, nullable=False)
+    company_id = Column(Integer, nullable=False)
+    object_id = Column(Integer, nullable=False)
+    object_type = Column(Integer, nullable=False)
+    status = Column(String(25), nullable=False)
+    last_message = Column(String(255), nullable=False)
+    last_message_user_id = Column(Integer, nullable=False)
+    last_message_user_type = Column(String(255), nullable=False)
+    communication_type = Column(String(255), nullable=False)
+    last_updated = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"), nullable=True)
+    created_at = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"), nullable=True)
+    user_id = Column(Integer, ForeignKey("cscart_users.user_id", ondelete="CASCADE"), nullable=False)
+    
+    cscart_users = relationship("Cscart_vendor_communications", secondary='cscart_users') 
+    
+    
