@@ -3,7 +3,6 @@ from email.message import EmailMessage
 import Setting
 
 def send_email(recipient_email, subject, body):
-    print(Setting.SMTP_SERVER_HOST, Setting.SMTP_PORT)
     msg = EmailMessage()
     msg.set_content(body)
     msg['Subject'] = subject

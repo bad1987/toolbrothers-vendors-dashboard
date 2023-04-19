@@ -23,7 +23,7 @@ class ForgotPasswordController:
         expire_time = datetime.utcnow() + timedelta(minutes=1)
         expired_ad = {"user_id": user.id, "exp": expire_time, "email": user.email}
         encoded_token = jwt.encode(expired_ad, "secret", algorithm="HS256")
-        link = f"{Setting.SMTP_SERVER_HOST}/reset-password?token={encoded_token}"
+        link = f"{Setting.SERVER_HOST}/reset-password?token={encoded_token}"
         
         recipient_email = "b.mafo@toolbrothers.com"
         subject = f"{user.username} - Password recovery"
