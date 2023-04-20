@@ -42,33 +42,34 @@ class Cscart_products(CscartBase):
     product_code = Column(Integer)
     company_id = Column(Integer)
     weight = Column(Integer)
-    amount = Column(Float, nullable=True)
+    amount = Column(Integer, nullable=True)
     master_product_id = Column(Integer)
     product_type = Column(String(25))
     master_product_status = Column(String(25))
+    timestamp = Column(Integer)
     status = Column(String(25))
-    
-    cscart_product_prices = relationship("Cscart_product_prices", lazy="joined", back_populates="cscart_products")
-    cscart_product_descriptions = relationship("Cscart_product_descriptions", lazy="joined", back_populates="cscart_products")
+
+    price = relationship("Cscart_product_prices", back_populates="product", uselist=False)
+    description = relationship("Cscart_product_descriptions", back_populates="linkedProduct")
 
 class Cscart_product_descriptions(CscartBase):
     __tablename__ = "cscart_product_descriptions"
-    shortname = Column(Integer, primary_key=True, nullable=True)
+    shortname = Column(String(100), nullable=False)
     full_description = Column(Text, nullable=True)
     short_description = Column(Text, nullable=True)
     product = Column(String(100), nullable=True)
-    lang_code = Column(String(100), nullable=True)
-    product_id = Column(Integer, ForeignKey("cscart_products.product_id"))
+    lang_code = Column(String(100), primary_key=True, index=True)
+    product_id = Column(Integer, ForeignKey("cscart_products.product_id"), primary_key=True, index=True)
     
-    cscart_products = relationship("Cscart_products",  back_populates="cscart_product_descriptions")
+    linkedProduct = relationship("Cscart_products",  back_populates="description")
     
 class Cscart_product_prices(CscartBase):
     __tablename__ = "cscart_product_prices"
     usergroup_id = Column(Integer, primary_key=True, nullable=True)
     price = Column(Float, nullable=True)
-    product_id = Column(Integer, ForeignKey("cscart_products.product_id"))
+    product_id = Column(Integer, ForeignKey("cscart_products.product_id"), primary_key=True)
     
-    cscart_products = relationship("Cscart_products",  back_populates="cscart_product_prices")
+    product = relationship("Cscart_products",  back_populates="price")
    
 
 class CscartUsers(CscartBase):

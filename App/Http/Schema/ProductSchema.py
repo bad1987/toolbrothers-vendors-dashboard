@@ -6,29 +6,26 @@ from App.Http.Schema.ProductPriceSchema import ProductPriceSchema
 class ProductSchema(BaseModel):
     product_id: Optional[int]
     product_code: Optional[str]
-    product: Optional[str]
-    product_type: Optional[str]
+    price: Optional[float]
     status: Optional[str]
-    weight: Optional[int]
     amount: Optional[int]
-    cscart_product_descriptions: Optional[ProductDescriptionSchema] = {}
-    cscart_product_prices: Optional[ProductPriceSchema] = {}
-    
-    def setPrices(self, price):
-        self.cscart_product_prices = price
-    
-    def setProductName(self, name):
-        self.product = name
-    
-    class Config:
-        orm_mode = True
-
-class ProductUpdateSchema(BaseModel):
-    id: int
+    product_type: Optional[str]
+    weight: Optional[int]
     product: Optional[str]
+
+class ProductUpdateSchemaIn(BaseModel):
+    product_id: int
     status: Optional[str]
     amount: Optional[int]
     price: Optional[float]
+
+    class Config:
+        orm_mode = True
+
+class ProductListSchemaOut(BaseModel):
+    products: List[ProductSchema]
+    total: Optional[int]
+
 
     
     
