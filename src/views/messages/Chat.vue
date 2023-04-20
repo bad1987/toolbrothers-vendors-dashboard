@@ -83,12 +83,12 @@ getChatByThread()
                       <div class="" v-for="p=0 in 10" :key="p">
                           <div class="flex items-center">
                             <svg class="w-10 h-32 mr-2 text-gray-200 dark:text-gray-700" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd"></path></svg>
-                            <div class="w-1/3 h-8 bg-gray-200 rounded-full dark:bg-gray-700 mr-3"></div>
+                            <div class="w-1/3 h-8 bg-gray-200 rounded-lg dark:bg-gray-700 mr-3"></div>
                           </div>
-                          <div class="w-32 h-3 bg-gray-200 ml-16 rounded-full dark:bg-gray-700 -mt-6"></div>
+                          <div class="w-32 h-3 bg-gray-200 ml-16 rounded-lg dark:bg-gray-700 -mt-6"></div>
                           <div class="float-right m-auto w-1/3">
-                            <div class="h-8 bg-gray-200 rounded-full dark:bg-gray-700 "></div>
-                            <div class="w-24 h-3 bg-gray-200 rounded-full dark:bg-gray-700 mt-5 -mr-5"></div>
+                            <div class="h-8 bg-gray-200 rounded-lg dark:bg-gray-700 "></div>
+                            <div class="w-24 h-3 bg-gray-200 rounded-lg dark:bg-gray-700 mt-5 -mr-5"></div>
                           </div>
                       </div>
                   </div>
@@ -102,15 +102,15 @@ getChatByThread()
                                 </div>
                             </div>
                             <div class="flex-1 px-2">
-                                <div class="inline-block bg-gray-300 dark:bg-gray-400 rounded-full p-2 px-6 text-gray-700">
-                                    <span>{{ item.message }}</span>
+                                <div class="inline-block bg-gray-300 dark:bg-gray-400 rounded-lg p-2 px-6 text-gray-700 md:w-2/3">
+                                    <span>{{ item.message }} {{ item.message }}</span>
                                 </div>
                                 <div class="pl-4"><small class="text-gray-500">15 April</small></div>
                             </div>
                         </div>
                         <div class="message me mb-4 flex text-right" v-if="item.user_type == 'V' ">
                             <div class="flex-1 px-2">
-                                <div class="inline-block bg-blue-600 rounded-full p-2 px-6 text-white">
+                                <div class="inline-block bg-sky-800 rounded-lg p-2 px-6 text-white md:w-2/3">
                                     <span>{{ item.message }}</span>
                                 </div>
                                 <div class="pr-4"><small class="text-gray-500">15 April</small></div>

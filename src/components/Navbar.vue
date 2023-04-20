@@ -59,7 +59,8 @@ const handleLogout = event => {
             </svg>
           </button>
           <a href="https://toolbrothers.com/" class="flex ml-2 md:mr-24">
-            <img src="https://toolbrothers.com/images/toolbrothers_logo.jpeg" class="h-6 mr-3" alt="FlowBite Logo">
+            <img src="https://toolbrothers.com/images/toolbrothers_logo.jpeg" class="h-6 mr-3 dark:hidden block" alt="FlowBite Logo">
+            <img src="/logo.png" class="mr-3 dark:block hidden" alt="FlowBite Logo">
           </a>
         </div>
         <div class="flex items-center">
