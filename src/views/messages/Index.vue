@@ -22,6 +22,8 @@ const totalMessages = ref(0)
 const availableLimits = [5, 10, 25, 50, 75, 100]
 const skeletonCnt = ref(5)
 
+const is_data = ref(false)
+
 const router = useRouter()
 
 
@@ -30,6 +32,8 @@ const fetchMessages = () => {
     params: { skip: actualSkip.value, limit: actuaLimit.value }
   }).then(resp => {
     messages.value = resp.data.messages
+    is_data.value = true
+    console.log(resp.data.messages);
     messages.value.map(message => {
       message.created_at = new Date(message.created_at * 1000).toLocaleString("en-US")
 
@@ -39,6 +43,7 @@ const fetchMessages = () => {
     skeletonCnt.value = 0
   })
     .catch(err => {
+        is_data.value = false
       if (err.response) {
         let status = err.response.status
         if (status) {
@@ -91,7 +96,7 @@ fetchMessages()
 </script>
 
 <template>
-    <div className="flex  md:px-10 mb-10">
+    <div  className="flex  md:px-10 mb-10">
         <div className="w-96 my-12 h-auto bg-gray-100 dark:bg-gray-700 transition-all rounded-lg  md:w-full p-4">
             
             <section class="bg-gray-50 flex items-center dark:bg-gray-700">
@@ -111,7 +116,7 @@ fetchMessages()
                                     </div>
                                 </form>
                             </div>
-                            <div class="flex flex-col items-stretch justify-end flex-shrink-0 w-full space-y-2 md:w-auto md:flex-row md:space-y-0 md:items-center md:space-x-3">
+                            <div  class="flex flex-col items-stretch justify-end flex-shrink-0 w-full space-y-2 md:w-auto md:flex-row md:space-y-0 md:items-center md:space-x-3">
                                 <div class="flex items-center w-full space-x-3 md:w-auto">
                                     <button id="actionsDropdownButton" data-dropdown-toggle="actionsDropdown" class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg md:w-auto focus:outline-none hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" type="button">
                                     <svg class="-ml-1 mr-1.5 w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -180,27 +185,30 @@ fetchMessages()
                     </div>
                 </div>
             </section>
-            <div v-for="items in messages" :key="items.id" className="md:flex md:justify-center md:flex-wrap gap-6">
-                <div className="w-full h-84 p-3 border bg-white dark:bg-gray-600 dark:border-gray-500 mt-5 rounded-lg md:w-80">
-                    <div className="flex items-center gap-1">
-                        <svg fill="currentColor" class="h-6 w-6 text-gray-300" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                        <path clip-rule="evenodd" fill-rule="evenodd" d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"></path>
-                        </svg>
-                        <p className="text-gray-500 dark:text-gray-300 font-semibold text-sm ">{{ items.cscart_users.firstname }} {{ items.cscart_users.lastname }}</p>
-                    </div>
-                    <p className="text-lg font-semibold mt-1 dark:text-gray-300">Increase confidence with TrustPilot reviews</p>
-                    <p className="text-sm mt-3 text-gray-500 dark:text-gray-300">{{ items.last_message }}</p>
-                    <span className="h-8 mt-5 w-32 cursor-pointer font-semibold transition-all hover:text-blue-700 dark:bg-gray-500 bg-gray-300 dark:text-gray-300 flex justify-center items-center text-sm rounded-full">Read message</span>
-                    <div className="flex justify-between items-center mt-6">
-                        <div className="flex items-center gap-2">
-                            <i className="cursor-pointer text-gray-400 fa fa-calendar-o" />
-                            <p className="text-gray-400 font-semibold text-xs dark:text-gray-300">{{ items.created_at }}</p>
+            
+            <div v-if="!is_data" class="grid grid-cols-2 md:grid-cols-3">
+                <div v-for="skel=0 in 6" :key="skel" role="status" class="animate-pulse mt-5 hover:scale-100 scale-90 transition-all duration-500">
+                    <div class="h-56 bg-white rounded-md  dark:bg-gray-600 mb-2.5 mx-auto"></div>
+                </div>
+            </div>
+
+            <div v-if="is_data" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ">
+                <div v-for="items in messages" :key="items.id" className="md:flex md:justify-center md:flex-wrap hover:shadow-lg hover:scale-100 scale-90 transition-all duration-500">
+                    <div className="w-full h-84 p-3 border bg-white dark:bg-gray-600 dark:border-gray-500 mt-5 rounded-lg md:w-80">
+                        <div className="flex items-center gap-1">
+                            <svg fill="currentColor" class="h-6 w-6 text-gray-300" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path clip-rule="evenodd" fill-rule="evenodd" d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"></path>
+                            </svg>
+                            <p className="text-gray-500 dark:text-gray-300 font-semibold text-sm ">{{ items.cscart_users.firstname }} {{ items.cscart_users.lastname }}</p>
                         </div>
-                        <div className="flex cursor-pointer dark:text-gray-300">
-                            <span className="h-9 w-9 border-2 rounded-full flex border-white dark:border-gray-400"><img className="rounded-full object-cover" src="https://imgur.com/s1Y39Um.png" height="100%" width="100%" /></span>
-                            <span className="-ml-3 border-2 h-9 w-9 rounded-full flex border-white dark:border-gray-400"><img className="rounded-full object-cover" src="https://imgur.com/s1Y39Um.png" height="100%" width="100%" /></span>
-                            <span className=" -ml-3 h-9 w-9 border-2 rounded-full flex border-white dark:border-gray-400"><img className="rounded-full object-cover" src="https://imgur.com/s1Y39Um.png" height="100%" width="100%" /></span>
-                            <span className="h-9 w-9 justify-center items-center rounded-full flex border text-blue-500 font-semibold dark:border-gray-400">16</span>
+                        <p className="text-lg font-semibold mt-5 dark:text-gray-300">Thread # {{ items.thread_id }}</p>
+                        <p className="text-sm mt-3 text-gray-500 dark:text-gray-300 line-clamp-4">{{ items.last_message }}</p>
+                        <RouterLink :to="`/chat/${items.thread_id}/${items.user_id}/${items.cscart_users.lastname}`" className="h-8 mt-5 w-32 cursor-pointer font-semibold transition-all hover:text-gray-700 dark:bg-gray-500 bg-gray-300 dark:text-gray-300 flex justify-center items-center text-sm rounded-full">Open chat</RouterLink>
+                        <div className="flex justify-between items-center mt-6">
+                            <div className="flex items-center gap-2">
+                                <i className="cursor-pointer text-gray-400 fa fa-calendar-o" />
+                                <p className="text-gray-400 font-semibold text-xs dark:text-gray-300">{{ items.created_at }}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -211,7 +219,7 @@ fetchMessages()
                 <select id="limits"
                     @change="changeLimit()"
                     v-model="actuaLimit"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
                     <!-- <option selected>Limit to</option> -->
                     <option v-for="limit in availableLimits" :key="limit" :selected="limit == 5" :value="limit">{{ limit }} Elements</option>
                 </select>

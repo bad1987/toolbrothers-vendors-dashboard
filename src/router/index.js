@@ -9,6 +9,7 @@ import Payment_method from '../views/Settings/Payment_method/index.vue'
 import Plenty_market from '../views/Settings/Plenty_market/index.vue'
 import Product from '../views/Products/index.vue'
 import Message from '../views/messages/Index.vue'
+import Chat from '../views/messages/Chat.vue'
 import Error403 from '../components/erros/Error403.vue'
 import Error404 from '../components/erros/Error404.vue'
 import { is_authenticated } from '../utils'
@@ -104,6 +105,15 @@ const router = createRouter({
       path: '/messages',
       name: 'messages',
       component: Message,
+      meta: {
+        requiresAuth: true,
+        roles: ['Role_direct_sale', 'Role_affiliate']
+      },
+    },
+    {
+      path: '/chat/:threat_id/:user_id/:username',
+      name: 'chat',
+      component: Chat,
       meta: {
         requiresAuth: true,
         roles: ['Role_direct_sale', 'Role_affiliate']
