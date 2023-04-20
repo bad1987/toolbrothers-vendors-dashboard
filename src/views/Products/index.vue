@@ -24,11 +24,7 @@ const totalProducts = ref(0)
 const availableLimits = [5, 10, 25, 50, 75, 100]
 const skeletonCnt = ref(5)
 const isLoading = ref(false)
-const selectedProduct = ref({
-  product_id: null,
-  amount: null,
-  price: null
-})
+const selectedProduct = ref({})
 
 const router = useRouter()
 
@@ -38,11 +34,6 @@ const fetchProducts = () => {
     params: { skip: actualSkip.value, limit: actuaLimit.value }
   }).then(resp => {
     products.value = resp.data.products
-    products.value.map(product => {
-      product.timestamp = new Date(product.timestamp * 1000).toLocaleString("en-US")
-      console.log("all product", resp.data.products, product);
-      return product
-    })
     totalProducts.value = resp.data.total
     skeletonCnt.value = 0
 
@@ -70,12 +61,14 @@ function updateProduct() {
   axios.put("/products/" + selectedProduct.value.product_id, selectedProduct.value)
         .then(response => {
           document.getElementById("edit-product-modal")?.click()
+          // let ans = products.value.map(x => x.product_id === selectedProduct.value.product_id ? response.data : x)
+          // products.value = ans
+          console.log(response.data)
 
           fetchProducts()
           isLoading.value = false
         })
         .catch(err => {
-          console.log("Error: ", err)
           isLoading.value = false
         })
 }
@@ -255,7 +248,7 @@ fetchProducts()
                         {{ product.amount }}
                       </td>
                       <td class="p-4 text-sm text-gray-900 whitespace-nowrap dark:text-white">
-                        {{ product.cscart_product_prices.price }} EUR
+                        {{ product.price }} EUR
                       </td>
                       <td>
                         <button type="button" data-modal-toggle="edit-product-modal"
