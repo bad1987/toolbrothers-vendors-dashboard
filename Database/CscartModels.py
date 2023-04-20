@@ -8,10 +8,10 @@ class CscartCompanies(CscartBase):
     __tablename__ = "cscart_companies"
 
     company_id = Column(Integer, primary_key=True, index=True)
-    email = Column(String(255), unique=True, index=True, nullable=False)
-    company = Column(String(255), nullable=False)
-    lang_code = Column(String(255), nullable=False)
-    status = Column(String(25), nullable=False)
+    email = Column(String(255), unique=True, index=True, nullable=True)
+    company = Column(String(255), nullable=True)
+    lang_code = Column(String(255), nullable=True)
+    status = Column(String(25), nullable=True)
 
 class CscartOrders(CscartBase):
     __tablename__ = "cscart_orders"
@@ -32,13 +32,13 @@ class Cscart_payments(CscartBase):
     __tablename__ = "cscart_payments"
     payment_id = Column(Integer, primary_key=True, index=True)
     processor_params = Column(Text, nullable=True)
-    company_id = Column(Integer, nullable=False)
-    processor_id = Column(Integer, nullable=False)
-    status = Column(String(25), nullable=False)
+    company_id = Column(Integer, nullable=True)
+    processor_id = Column(Integer, nullable=True)
+    status = Column(String(25), nullable=True)
     
 class Cscart_products(CscartBase):
     __tablename__ = "cscart_products"
-    product_id = Column(Integer, primary_key=True, nullable=False)
+    product_id = Column(Integer, primary_key=True, nullable=True)
     product_code = Column(Integer)
     company_id = Column(Integer)
     weight = Column(Integer)
@@ -53,7 +53,7 @@ class Cscart_products(CscartBase):
 
 class Cscart_product_descriptions(CscartBase):
     __tablename__ = "cscart_product_descriptions"
-    shortname = Column(Integer, primary_key=True, nullable=False)
+    shortname = Column(Integer, primary_key=True, nullable=True)
     full_description = Column(Text, nullable=True)
     short_description = Column(Text, nullable=True)
     product = Column(String(100), nullable=True)
@@ -64,7 +64,7 @@ class Cscart_product_descriptions(CscartBase):
     
 class Cscart_product_prices(CscartBase):
     __tablename__ = "cscart_product_prices"
-    usergroup_id = Column(Integer, primary_key=True, nullable=False)
+    usergroup_id = Column(Integer, primary_key=True, nullable=True)
     price = Column(Float, nullable=True)
     product_id = Column(Integer, ForeignKey("cscart_products.product_id"))
     
@@ -75,27 +75,33 @@ class CscartUsers(CscartBase):
     __tablename__ = "cscart_users"
 
     user_id = Column(Integer, primary_key=True, index=True)
-    email = Column(String(255), unique=True, index=True, nullable=False)
-    firstname = Column(String(255), nullable=False)
-    lastname = Column(String(255), nullable=False)
-    
-    
+    email = Column(String(255), unique=True, index=True, nullable=True)
+    firstname = Column(String(255), nullable=True)
+    lastname = Column(String(255), nullable=True)
     
 class Cscart_vendor_communications(CscartBase):
     __tablename__ = "cscart_vendor_communications"
-    thread_id = Column(Integer, primary_key=True, nullable=False)
-    company_id = Column(Integer, nullable=False)
-    object_id = Column(Integer, nullable=False)
-    object_type = Column(Integer, nullable=False)
-    status = Column(String(25), nullable=False)
-    last_message = Column(String(255), nullable=False)
-    last_message_user_id = Column(Integer, nullable=False)
-    last_message_user_type = Column(String(255), nullable=False)
-    communication_type = Column(String(255), nullable=False)
+    thread_id = Column(Integer, primary_key=True, nullable=True)
+    company_id = Column(Integer, nullable=True)
+    object_id = Column(Integer, nullable=True)
+    object_type = Column(Integer, nullable=True)
+    status = Column(String(25), nullable=True)
+    last_message = Column(String(255), nullable=True)
+    last_message_user_id = Column(Integer, nullable=True)
+    last_message_user_type = Column(String(255), nullable=True)
+    communication_type = Column(String(255), nullable=True)
     last_updated = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"), nullable=True)
     created_at = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"), nullable=True)
-    user_id = Column(Integer, ForeignKey("cscart_users.user_id", ondelete="CASCADE"), nullable=False)
-    
-    cscart_users = relationship("Cscart_vendor_communications", secondary='cscart_users') 
+    user_id = Column(Integer, ForeignKey("cscart_users.user_id", ondelete="CASCADE"), nullable=True)
     
     
+class Cscart_vendor_communication_messages(CscartBase):
+    __tablename__ = "cscart_vendor_communication_messages"
+    message_id = Column(Integer, primary_key=True, nullable=True)
+    thread_id = Column(Integer, nullable=True)
+    user_id = Column(Integer, ForeignKey("cscart_users.user_id", ondelete="CASCADE"), nullable=True)
+    user_type = Column(String(25), nullable=True)
+    timestamp = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"), nullable=True)
+    message = Column(Text, nullable=True)
+    
+    cscart_users = relationship("Cscart_vendor_communication_messages", secondary='cscart_users') 

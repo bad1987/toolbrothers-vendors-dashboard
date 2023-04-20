@@ -5,6 +5,7 @@ class CscartUserSchema(BaseModel):
     firstname: Optional[str]
     lastname: Optional[str]
     email: Optional[str]
+    user_id: Optional[int]
     
     
 class MessageSchema(BaseModel):
@@ -22,6 +23,18 @@ class MessageSchema(BaseModel):
     created_at: Optional[int]
     cscart_users: Optional[CscartUserSchema] = {}
     
+    
+    def setUser(self, user):
+        self.cscart_users = user
+        
+class ChatSchema(BaseModel):
+    thread_id: Optional[int]
+    message_id: Optional[int]
+    user_id: Optional[int]
+    user_type: Optional[str]
+    timestamp: Optional[int]
+    message: Optional[str]
+    cscart_users: Optional[CscartUserSchema] = {}
     
     def setUser(self, user):
         self.cscart_users = user

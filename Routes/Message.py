@@ -2,7 +2,7 @@ import time
 from fastapi import Depends,Request, APIRouter
 from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
-from App.Http.Schema.MessageSchema import CscartUserSchema, MessageSchema
+from App.Http.Schema.MessageSchema import CscartUserSchema, MessageSchema, ChatSchema
 from Security.Acls.RoleChecker import Role_checker
 from Database.Connexion import SessionLocal
 from Database.CscartConnexion import CscartSession
@@ -52,3 +52,15 @@ async def get_last_message(request: Request, db_local: Session = Depends(get_db)
         data.append(temp)
         
     return {"messages": data, "total": result["total"]}
+
+@route.get('/message/chat/{thread_id}/{user_id}', response_class=JSONResponse)
+async def get_all_message_by_thread(request: Request, thread_id: int, user_id: int, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart)):
+    result = MessageController.get_all_message_with_thread(request, thread_id, user_id, db_local, db_cscart)
+    
+    data = []
+    for p in result:
+        temp = ChatSchema(**jsonable_encoder(p[0]))
+        temp.setUser(CscartUserSchema(**jsonable_encoder(p[1])))
+        data.append(temp)
+        
+    return data
