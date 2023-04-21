@@ -14,7 +14,6 @@ import { initFlowbite } from 'flowbite'
       userRef.value = test
       userRef.value.user = test
       userRef.value.isAdmin = test.roles == "Role_admin"
-      // console.log("get user information from acl", userRef.value.email );
   })
 
 const products = ref([])
@@ -30,6 +29,7 @@ const router = useRouter()
 
 
 const fetchProducts = () => {
+  isLoading.value = true
   axios.get('/products/list', {
     params: { skip: actualSkip.value, limit: actuaLimit.value }
   }).then(resp => {
@@ -53,24 +53,29 @@ const fetchProducts = () => {
         }
       }
       skeletonCnt.value = 0;
-    })
+    }).finally(() => isLoading.value = false)
 }
 
-function updateProduct() {
+function updateProduct(obj = null) {
   isLoading.value = true
-  axios.put("/products/" + selectedProduct.value.product_id, selectedProduct.value)
+  const datas = obj == null ? selectedProduct.value : obj
+  console.log(obj, datas)
+  axios.put("/products/" + selectedProduct.value.product_id, datas)
         .then(response => {
           document.getElementById("edit-product-modal")?.click()
-          // let ans = products.value.map(x => x.product_id === selectedProduct.value.product_id ? response.data : x)
-          // products.value = ans
-          console.log(response.data)
-
-          fetchProducts()
+          let ans = products.value.map(x => x.product_id === selectedProduct.value.product_id ? response.data : x)
+          products.value = ans
           isLoading.value = false
         })
         .catch(err => {
           isLoading.value = false
         })
+}
+
+function deactivateProduct(id) {
+  Object.assign(selectedProduct.value, products.value.find(x => x.product_id == id))
+
+  updateProduct({ status: selectedProduct.value.status == 'A' ? 'D' : 'A', product_id: selectedProduct.value.product_id })
 }
 
 function nextPage() {
@@ -178,7 +183,8 @@ fetchProducts()
           </div>
       </div>
       <!-- Table -->
-      <div class="flex flex-col mt-6">
+      <div class="flex flex-col mt-6 relative">
+        <div v-if="isLoading" class="absolute top-0 left-0 w-full h-full bg-white opacity-50"></div>
       <div class="overflow-x-auto rounded-lg">
         <div class="inline-block min-w-full align-middle">
           <div class="overflow-hidden shadow sm:rounded-lg">
@@ -226,20 +232,25 @@ fetchProducts()
                       </td>
                       <td v-if="product.status == 'A'" class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
                         <span
-                        
+                          @click="deactivateProduct(product.product_id)"
                           class="cursor-pointer bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-gray-700 dark:text-green-400 border border-green-100 dark:border-green-500">
                           Online
                         </span>
                       </td>
                       <td v-else class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
                         <span
-                          class="cursor-pointer bg-green-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-gray-700 dark:text-red-400 border border-red-100 dark:border-red-500">
+                          @click="deactivateProduct(product.product_id)"
+                          class="cursor-pointer bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-gray-700 dark:text-red-400 border border-red-100 dark:border-red-500">
                           Offline
                         </span>
                       </td>
                       
                       <td class="p-4 !w-32 line-clamp-1 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
-                        {{ product.product }}
+                        <span :data-tooltip-target="`tooltip-right-${product.product_id}`" data-tooltip-placement="right" class="w-full block overflow-ellipsis">{{ product.product }}</span>
+                        <div :id="`tooltip-right-${product.product_id}`" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                            {{ product.product }}
+                            <div class="tooltip-arrow" data-popper-arrow></div>
+                        </div>
                       </td>
                       <td class="p-4 text-sm text-gray-900 whitespace-nowrap dark:text-white">
                         {{ product.product_code }}
@@ -335,7 +346,14 @@ fetchProducts()
                           <div class="col-span-6 sm:col-span-3">
                               <label for="amount"
                                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Amount</label>
-                              <input v-model="selectedProduct.amount" type="number" name="username" id="amount"
+                              <input v-model="selectedProduct.amount" type="number" name="amount" id="amount"
+                                  class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                  placeholder="Bonnie" required="">
+                          </div>
+                          <div class="col-span-6 sm:col-span-3">
+                              <label for="price"
+                                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">price</label>
+                              <input v-model="selectedProduct.price" type="number" name="price" id="price"
                                   class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                   placeholder="Bonnie" required="">
                           </div>
@@ -345,7 +363,7 @@ fetchProducts()
               <!-- Modal footer -->
               <div class="items-center p-6 border-t border-gray-200 rounded-b dark:border-gray-700">
                   <ButtonComponent
-                      @click="updateProduct"
+                      @click="updateProduct(null)"
                       text="Save all"
                       classes="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                   />
