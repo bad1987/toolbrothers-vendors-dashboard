@@ -32,12 +32,24 @@ class ProductController:
 
         return {"products": products, "total": total}
 
-    def get_product_by_id(product_id: int, request: Request, db_cscart: Session, user: UserSchema):
+    def get_product_by_id(product_id: int, request: Request, db_cscart: Session, user: UserSchema) -> ProductSchema:
         query = select(Cscart_products,Cscart_product_descriptions, Cscart_product_prices, Cscart_product_descriptions).where(Cscart_products.company_id == user.company_id).\
                 where(Cscart_products.product_id == product_id).\
+                where(Cscart_product_descriptions.lang_code == user.default_language.value).\
                 select_from(join(Cscart_products, Cscart_product_descriptions, Cscart_product_descriptions.product_id == Cscart_products.product_id)).\
                 join(Cscart_product_prices, Cscart_product_prices.product_id == Cscart_products.product_id)
 
-        product = db_cscart.execute(query).first()
+        result = db_cscart.execute(query).first()
+
+        product = ProductSchema(
+            product=result.Cscart_product_descriptions.product,
+            product_id=result.Cscart_products.product_id,
+            product_code=result.Cscart_products.product_code,
+            amount=result.Cscart_products.amount,
+            product_type=result.Cscart_products.product_type,
+            status=result.Cscart_products.status,
+            weight=result.Cscart_products.weight,
+            price=result.Cscart_product_prices.price,
+        )
 
         return product

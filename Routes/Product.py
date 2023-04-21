@@ -83,20 +83,19 @@ async def update_product(request: Request,model: ProductUpdateSchemaIn, product_
                 setattr(price, field, value)
 
         # Modify the product
-        for field, value in model.dict(exclude_unset=True, exclude={"product_id", "status", "price"}, exclude_none=True).items():
+        for field, value in model.dict(exclude_unset=True, exclude={"product_id", "price"}, exclude_none=True).items():
             if hasattr(product, field):
-                console.log({**product.__dict__})
                 setattr(product, field, value)
 
         product_model = ProductController.get_product_by_id(product_id, request, db_cscart, user)
 
         db_cscart.commit()
 
-        return {**product_model[0].__dict__, **product_model[1].__dict__, **product_model[2].__dict__}
+        return product_model
     
     except Exception as e:
         # traceback.print_exc(file=sys.stdout)
         
         transaction.rollback()
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        return { 'status': False, 'message': str(e) }
+        return { 'status': False, 'message': "An error occured" }
