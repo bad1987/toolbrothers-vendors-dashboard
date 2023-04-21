@@ -30,7 +30,7 @@ const router = createRouter({
       }
     },
     {
-      path: '/users/:type',
+      path: '/admin/users/:type',
       name: 'users',
       component: Users,
       meta: {

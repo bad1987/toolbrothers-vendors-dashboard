@@ -18,7 +18,7 @@
     const selectedPermissions = ref([])
     const isImporting = ref(false)
     const isLoading = ref(false)
-    const selectedUser = ref(null)
+    const selectedUser = ref({})
     const inputRef = ref(null)
     const router = useRouter()
     const route = useRoute()
@@ -42,7 +42,6 @@
         userRef.value = test
         userRef.value.user = test
         userRef.value.isAdmin = test.roles == "Role_admin"
-        console.log("get user information from acl", userRef.value.email );
     })
 
     //  users apis
@@ -57,7 +56,6 @@
             document.getElementById('add-user-modal')?.click()
         })
         .catch(err => {
-            console.log(err)
             isLoading.value = false
         })
     }
@@ -88,13 +86,12 @@
             fetchUsers()
         }).then(() => initFlowbite())
         .catch(err => {
-            console.log("There is some problem")
             isImporting.value = false
         })
     }
 
     function changeSelectedUser(email) {
-        selectedUser.value = users.value.find(x => x.email == email)
+        Object.assign(selectedUser.value, users.value.find(x => x.email == email))
         selectedPermissions.value = selectedUser.value.permissions.map(x => x.id)
     }
 
@@ -106,7 +103,6 @@
 
     function changeSelectedStatus() {
         selectedUser.value.status = selectedUser.value.status == true ? 'D' : (selectedUser.value.status == 'A' ? 'D' : 'A')
-        console.log(selectedUser.value.status)
     }
 
     watch(() => route.params.type,

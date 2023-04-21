@@ -37,12 +37,12 @@
                   </button>
                   <ul id="dropdown-example" class="hidden py-2 space-y-2">
                       <li>
-                          <RouterLink to="/users/vendors" v-if="userRef.isAdmin" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                          <RouterLink to="admin/users/vendors" v-if="userRef.isAdmin" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
                             <span class="flex-1 ml-3 whitespace-nowrap">Vendors</span>
                           </RouterLink>
                       </li>
                       <li>
-                          <RouterLink to="/users/admins" v-if="userRef.isAdmin" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                          <RouterLink to="admin/users/admins" v-if="userRef.isAdmin" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
                             <span class="flex-1 ml-3 whitespace-nowrap">System administrators</span>
                           </RouterLink>
                       </li>
