@@ -58,9 +58,7 @@ const fetchProducts = () => {
 
 function updateProduct(obj = null) {
   isLoading.value = true
-  const datas = obj == null ? selectedProduct.value : obj
-  console.log(obj, datas)
-  axios.put("/products/" + selectedProduct.value.product_id, datas)
+  axios.put("/products/" + selectedProduct.value.product_id, obj == null ? selectedProduct.value : obj)
         .then(response => {
           document.getElementById("edit-product-modal")?.click()
           let ans = products.value.map(x => x.product_id === selectedProduct.value.product_id ? response.data : x)
