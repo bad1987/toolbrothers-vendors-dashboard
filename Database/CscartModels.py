@@ -84,6 +84,7 @@ class Cscart_vendor_communications(CscartBase):
     __tablename__ = "cscart_vendor_communications"
     thread_id = Column(Integer, primary_key=True, nullable=True)
     company_id = Column(Integer, nullable=True)
+    storefront_id = Column(Integer, nullable=True)
     object_id = Column(Integer, nullable=True)
     object_type = Column(Integer, nullable=True)
     status = Column(String(25), nullable=True)

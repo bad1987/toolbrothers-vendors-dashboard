@@ -64,3 +64,8 @@ async def get_all_message_by_thread(request: Request, thread_id: int, user_id: i
         data.append(temp)
         
     return data
+
+
+@route.post('/chat/send')
+async def send_message(request: Request, chatSchema: ChatSchema, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart)):
+    return MessageController.send_message(request, chatSchema, db_local, db_cscart)
