@@ -12,6 +12,11 @@ const thread_id = router.params.threat_id
 const user_id = router.params.user_id
 const username = router.params.username
 const userRef = ref({user: null, isAdmin: false})
+const chat = ref([]);
+const skeletonCnt = ref(5);
+const isSuccess = ref("")
+const isError = ref("")
+let is_valid = ref(false)
 
 onBeforeMount( async () => {
 
@@ -22,11 +27,6 @@ onBeforeMount( async () => {
     console.log("get user information from acl", userRef.value.email );
 })
 
-const chat = ref([]);
-const skeletonCnt = ref(5);
-const isSuccess = ref("")
-const isError = ref("")
-let is_valid = ref(false)
 
 const getChatByThread = () => {
   axios
@@ -40,6 +40,8 @@ const getChatByThread = () => {
     })
     .then(() => {
       initFlowbite()
+
+      document.getElementById("end").scrollIntoView()
     })
     .catch(err => {
       if (err.response) {
@@ -59,6 +61,28 @@ const getChatByThread = () => {
       skeletonCnt.value = 0;
     })
 };
+
+const handlerSubmit = (e) => {
+  const data = {
+    user_id: user_id,
+    thread_id: thread_id,
+    message: e.target["message"].value,
+    message_id: 1,
+    timestamp: 325465
+  }
+
+  axios
+    .post("/chat/send", data)
+    .then((res) => {
+      getChatByThread()
+    })
+    .catch((err) => {
+      console.log("this error", err);
+    })
+}
+
+onMounted(() => {
+})
 
 getChatByThread()
 
@@ -101,27 +125,28 @@ getChatByThread()
                                     <span class="absolute w-4 h-4 bg-gray-400 rounded-full right-0 bottom-0 border-2 border-white"></span>
                                 </div>
                             </div>
-                            <div class="flex-1 px-2">
-                                <div class="inline-block bg-gray-300 dark:bg-gray-400 rounded-lg p-2 px-6 text-gray-700 md:w-2/3">
-                                    <span>{{ item.message }} {{ item.message }}</span>
-                                </div>
-                                <div class="pl-4"><small class="text-gray-500">15 April</small></div>
-                            </div>
-                        </div>
-                        <div class="message me mb-4 flex text-right" v-if="item.user_type == 'V' ">
-                            <div class="flex-1 px-2">
-                                <div class="inline-block bg-sky-800 rounded-lg p-2 px-6 text-white md:w-2/3">
+                            <div class="flex-1 px-2 max-w-2xl">
+                                <div class="inline-block bg-gray-300 dark:bg-gray-400 rounded-lg p-2 px-6 text-gray-700">
                                     <span>{{ item.message }}</span>
                                 </div>
-                                <div class="pr-4"><small class="text-gray-500">15 April</small></div>
+                                <div class="pl-4"><small class="text-gray-500"><span class="font-semibold">{{ item.cscart_users.lastname }} {{ item.cscart_users.firstname }}</span> 15 April </small></div>
+                            </div>
+                        </div>
+                        <div class="message me mb-4 flex text-right " v-if="item.user_type == 'V'">
+                            <div class="flex-1 px-2 ">
+                                <div class="inline-block bg-sky-800 rounded-lg p-2 px-6 text-white">
+                                    <span>{{ item.message }}</span>
+                                </div>
+                                <div class="pr-4"><small class="text-gray-500"><span class="font-semibold"> {{ item.cscart_users.lastname }} {{ item.cscart_users.firstname }}</span> 15 April</small></div>
                             </div>
                         </div>
                     </div>
+                    <div id="end"></div>
                 </div>
               </ul>
             </div>
 
-            <div class="flex items-center justify-between w-full p-3 border-t border-gray-300 dark:border-gray-600">
+            <form @submit.prevent="handlerSubmit($event)" class="flex items-center justify-between w-full p-3 border-t border-gray-300 dark:border-gray-600">
               <button>
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-500" fill="none" viewBox="0 0 24 24"
                   stroke="currentColor">
@@ -139,22 +164,17 @@ getChatByThread()
 
               <input type="text" placeholder="Message"
                 class="block w-full py-2 pl-4 mx-3 bg-gray-100 dark:bg-gray-400 rounded-full outline-none focus:text-gray-700"
-                name="message" required />
-              <button>
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24"
-                  stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                </svg>
-              </button>
-              <button type="submit">
-                <svg class="w-5 h-5 text-gray-500 origin-center transform rotate-90" xmlns="http://www.w3.org/2000/svg"
+                name="message" 
+                v-model="message"
+                required />
+              <button @click="handlerSubmit">
+                <svg class="w-8 h-8 text-gray-500 origin-center transform rotate-90" xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20" fill="currentColor">
                   <path
                     d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
                 </svg>
               </button>
-            </div>
+            </form>
           </div>
         </div>
       </div>
