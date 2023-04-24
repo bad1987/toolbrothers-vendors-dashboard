@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Dashboard from '../views/Dashboard.vue'
 import Users from '../views/Users.vue'
+import Vendors from '../views/Vendors.vue'
 import Orders from '../views/Orders.vue'
 import Login from '../views/Login.vue'
 import ForgotPassword from '../views/ForgotPassword.vue'
@@ -31,11 +32,20 @@ const router = createRouter({
     },
     {
       path: '/admin/users/:type',
-      name: 'users',
+      name: 'admin users',
       component: Users,
       meta: {
         requiresAuth: true,
         roles: ['Role_admin']
+      }
+    },
+    {
+      path: '/users',
+      name: 'users',
+      component: Vendors,
+      meta: {
+        requiresAuth: true,
+        roles: ['Role_affiliate']
       }
     },
     {
