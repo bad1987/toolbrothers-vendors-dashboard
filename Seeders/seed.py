@@ -114,13 +114,15 @@ try:
 
         is_exist = db_local.query(User).filter(User.email == item.email).first()
         # cscart_user = db_cscart.query(CscartUsers).filter(CscartUsers.email == item.email).first()
-        
+         
         if is_exist:
             console.log("This user exist", item.company)    
             continue
-        
+        userCscart = db_cscart.query(CscartUsers).filter(CscartUsers.company_id == item.company_id).first()
         user = User() 
         
+        if userCscart:
+            user.user_id = userCscart.user_id
         user.company_id = item.company_id 
         user.username = item.company
         # user.firstname = cscart_user.firstname

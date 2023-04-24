@@ -19,7 +19,7 @@ class MessageSchema(BaseModel):
     last_message_user_type: Optional[str]
     communication_type: Optional[str]
     user_id: Optional[int]
-    last_update: Optional[int]
+    last_updated: Optional[int]
     created_at: Optional[int]
     cscart_users: Optional[CscartUserSchema] = {}
     
@@ -34,6 +34,7 @@ class ChatSchema(BaseModel):
     user_type: Optional[str]
     timestamp: Optional[int]
     message: Optional[str]
+    role: Optional[str]
     cscart_users: Optional[CscartUserSchema] = {}
     
     def setUser(self, user):

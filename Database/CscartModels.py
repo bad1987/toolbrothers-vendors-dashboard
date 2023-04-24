@@ -79,6 +79,7 @@ class CscartUsers(CscartBase):
     email = Column(String(255), unique=True, index=True, nullable=True)
     firstname = Column(String(255), nullable=True)
     lastname = Column(String(255), nullable=True)
+    company_id = Column(String(255), nullable=False)
     
 class Cscart_vendor_communications(CscartBase):
     __tablename__ = "cscart_vendor_communications"

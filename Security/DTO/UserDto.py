@@ -18,11 +18,14 @@ class Permission(BaseModel):
 class UserDto(BaseModel):
     id: int
     username: str
+    firstname: str
+    lastname: str
     email: EmailStr
     status: UserStatusEnum
     company_id: int | None = None
     permissions: list | None = None
     roles: UserRoleEnum
+    user_id: Optional[int]
     permissions: Optional[List[Permission]]
 
     class Config:
