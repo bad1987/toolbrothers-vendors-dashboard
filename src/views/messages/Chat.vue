@@ -1,5 +1,6 @@
 <script setup>
   import { useRoute } from 'vue-router';
+  import { userStore } from './../../stores/UserStore'
   import axios from "axios";
   import { ref, onMounted, onBeforeMount } from "vue";
   import { initDrawers, initFlowbite } from 'flowbite'
@@ -18,15 +19,18 @@ const isSuccess = ref("")
 const isError = ref("")
 let is_valid = ref(false)
 
+const input = ref("")
+
+const uStore = userStore()
+
 onBeforeMount( async () => {
+    uStore.init() 
 
     const test = await acl()
     userRef.value = test
     userRef.value.user = test
     userRef.value.isAdmin = test.roles == "Role_admin"
-    console.log("get user information from acl", userRef.value.email );
 })
-
 
 const getChatByThread = () => {
   axios
@@ -34,9 +38,13 @@ const getChatByThread = () => {
     .then((response) => {
       chat.value = response.data;
       skeletonCnt.value = 0;
-
-      console.log(chat.value);
       isSuccess.value = true
+
+      chat.value.map(chat => {
+        chat.timestamp =  new Date(chat.timestamp * 1000).toUTCString()
+
+        return chat
+      })
     })
     .then(() => {
       initFlowbite()
@@ -68,13 +76,15 @@ const handlerSubmit = (e) => {
     thread_id: thread_id,
     message: e.target["message"].value,
     message_id: 1,
-    timestamp: 325465
+    timestamp: 325465,
+    role: uStore.user.roles
   }
 
   axios
     .post("/chat/send", data)
     .then((res) => {
       getChatByThread()
+      input.value = ""
     })
     .catch((err) => {
       console.log("this error", err);
@@ -95,9 +105,10 @@ getChatByThread()
         <div class="">
           <div class="w-full ">
             <div class="relative flex items-center p-3 border-b border-gray-300 dark:border-gray-600">
-              <img class="object-cover w-10 h-10 rounded-full"
-                src="https://cdn.pixabay.com/photo/2018/01/15/07/51/woman-3083383__340.jpg" alt="username" />
-              <span class="block ml-2 font-bold text-gray-600 dark:text-gray-300">{{ username }}</span>
+              <svg class="object-cover w-10 h-10 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+              <span class="block ml-2 font-bold text-gray-600 dark:text-gray-300">{{ uStore.user.username }}</span>
               <span class="absolute w-3 h-3 bg-green-600 rounded-full left-10 top-3">
               </span>
             </div>
@@ -121,7 +132,11 @@ getChatByThread()
                         <div class="message mb-4 flex" v-if="item.user_type != 'V'">
                             <div class="flex-2">
                                 <div class="w-12 h-12 relative">
-                                    <img class="w-12 h-12 rounded-full mx-auto" src="https://cdn.pixabay.com/photo/2018/01/15/07/51/woman-3083383__340.jpg" alt="chat-user" />
+                                  <svg class="object-cover w-10 h-10 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"></path>
+                                  </svg>
+                                  
+                           
                                     <span class="absolute w-4 h-4 bg-gray-400 rounded-full right-0 bottom-0 border-2 border-white"></span>
                                 </div>
                             </div>
@@ -129,7 +144,7 @@ getChatByThread()
                                 <div class="inline-block bg-gray-300 dark:bg-gray-400 rounded-lg p-2 px-6 text-gray-700">
                                     <span>{{ item.message }}</span>
                                 </div>
-                                <div class="pl-4"><small class="text-gray-500"><span class="font-semibold">{{ item.cscart_users.lastname }} {{ item.cscart_users.firstname }}</span> 15 April </small></div>
+                                <div class="pl-4"><small class="text-gray-500 text-[10px]"><span class="font-semibold">{{ item.cscart_users.lastname }} {{ item.cscart_users.firstname }}</span> {{item.timestamp}} </small></div>
                             </div>
                         </div>
                         <div class="message me mb-4 flex text-right " v-if="item.user_type == 'V'">
@@ -137,7 +152,7 @@ getChatByThread()
                                 <div class="inline-block bg-sky-800 rounded-lg p-2 px-6 text-white">
                                     <span>{{ item.message }}</span>
                                 </div>
-                                <div class="pr-4"><small class="text-gray-500"><span class="font-semibold"> {{ item.cscart_users.lastname }} {{ item.cscart_users.firstname }}</span> 15 April</small></div>
+                                <div class="pr-4"><small class="text-gray-500 text-[10px]"><span class="font-semibold"> {{ item.cscart_users.lastname }} {{ item.cscart_users.firstname }}</span> {{item.timestamp}}</small></div>
                             </div>
                         </div>
                     </div>
@@ -165,7 +180,7 @@ getChatByThread()
               <input type="text" placeholder="Message"
                 class="block w-full py-2 pl-4 mx-3 bg-gray-100 dark:bg-gray-400 rounded-full outline-none focus:text-gray-700"
                 name="message" 
-                v-model="message"
+                v-model="input"
                 required />
               <button @click="handlerSubmit">
                 <svg class="w-8 h-8 text-gray-500 origin-center transform rotate-90" xmlns="http://www.w3.org/2000/svg"

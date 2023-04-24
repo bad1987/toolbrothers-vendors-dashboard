@@ -35,7 +35,7 @@ const fetchMessages = () => {
     is_data.value = true
     console.log(resp.data.messages);
     messages.value.map(message => {
-      message.created_at = new Date(message.created_at * 1000).toLocaleString("en-US")
+      message.last_updated = new Date(message.last_updated * 1000).toUTCString()
 
       return message
     })
@@ -201,13 +201,13 @@ fetchMessages()
                             </svg>
                             <p className="text-gray-500 dark:text-gray-300 font-semibold text-sm ">{{ items.cscart_users.firstname }} {{ items.cscart_users.lastname }}</p>
                         </div>
-                        <p className="text-lg font-semibold mt-5 dark:text-gray-300">Thread # {{ items.thread_id }}</p>
+                        <p className="text-lg font-semibold mt-5 dark:text-gray-300">Thread #{{ items.thread_id }}</p>
                         <p className="text-sm mt-3 text-gray-500 dark:text-gray-300 line-clamp-4">{{ items.last_message }}</p>
                         <RouterLink :to="`/chat/${items.thread_id}/${items.user_id}/${items.cscart_users.lastname}`" className="h-8 mt-5 w-32 cursor-pointer font-semibold transition-all hover:text-gray-700 dark:bg-gray-500 bg-gray-300 dark:text-gray-300 flex justify-center items-center text-sm rounded-full">Open chat</RouterLink>
                         <div className="flex justify-between items-center mt-6">
                             <div className="flex items-center gap-2">
                                 <i className="cursor-pointer text-gray-400 fa fa-calendar-o" />
-                                <p className="text-gray-400 font-semibold text-xs dark:text-gray-300">{{ items.created_at }}</p>
+                                <p className="text-gray-400 font-semibold text-xs dark:text-gray-300">{{ items.last_updated }}</p>
                             </div>
                         </div>
                     </div>
