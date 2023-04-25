@@ -149,7 +149,7 @@ getChatByThread()
                         </div>
                         <div class="message me mb-4 flex text-right " v-if="item.user_type == 'V'">
                             <div class="flex-1 px-2 ">
-                                <div class="inline-block bg-sky-800 rounded-lg p-2 px-6 text-white">
+                                <div class="inline-block max-w-3xl text-left bg-sky-800 rounded-lg p-2 px-6 text-white">
                                     <span>{{ item.message }}</span>
                                 </div>
                                 <div class="pr-4"><small class="text-gray-500 text-[10px]"><span class="font-semibold"> {{ item.cscart_users.lastname }} {{ item.cscart_users.firstname }}</span> {{item.timestamp}}</small></div>
