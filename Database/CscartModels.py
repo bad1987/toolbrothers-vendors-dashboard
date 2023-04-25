@@ -90,7 +90,7 @@ class Cscart_vendor_communications(CscartBase):
     object_id = Column(Integer, nullable=True)
     object_type = Column(Integer, nullable=True)
     status = Column(String(25), nullable=True)
-    last_message = Column(String(255), nullable=True)
+    last_message = Column(Text, nullable=True)
     last_message_user_id = Column(Integer, nullable=True)
     last_message_user_type = Column(String(255), nullable=True)
     communication_type = Column(String(255), nullable=True)
@@ -108,4 +108,4 @@ class Cscart_vendor_communication_messages(CscartBase):
     timestamp = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"), nullable=True)
     message = Column(Text, nullable=True)
     
-    cscart_users = relationship("Cscart_vendor_communication_messages", secondary='cscart_users') 
+    cscart_users = relationship("Cscart_vendor_communication_messages", secondary='cscart_users')   
