@@ -1,7 +1,7 @@
 <script setup>
   import { onBeforeMount, ref, onMounted } from "vue";
   import { acl } from '../router/acl';
-
+  
   const userRef = ref({user: null, isAdmin: false})
 
   onBeforeMount( async () => {

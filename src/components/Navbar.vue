@@ -6,7 +6,13 @@ import { userStore } from '../stores/UserStore'
 import { local_storage_get } from '../utils';
 import { useI18n } from 'vue-i18n'
 import axios from 'axios'
+import { initFlowbite } from 'flowbite'
+import { onMounted } from 'vue';
 
+// initialize components based on data attribute selectors
+  onMounted(() => {
+      initFlowbite();
+  })
 const themeStore = useThemeStore()
 const langStore = useLanguageStore()
 const usStore = userStore()
