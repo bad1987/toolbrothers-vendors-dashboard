@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import select, join
+from sqlalchemy import and_, func, literal_column, select, join
 from sqlalchemy.sql import text
 from fastapi import Request, status, HTTPException
 from Security.Controllers import LoginController
@@ -53,3 +53,17 @@ class ProductController:
         )
 
         return product
+
+    def get_product_stats(db_cscart: Session, company_id):
+        # count the number of active products and out of stock products based on connected vendor
+        active_products = db_cscart.query(func.sum(func.if_(Cscart_products.status == 'A', 1, None))).filter(Cscart_products.company_id == company_id).scalar()
+        out_of_stock_products = db_cscart.query(func.sum(func.if_(Cscart_products.amount == 0, 1, None))).filter(Cscart_products.company_id == company_id).scalar()
+
+        # replace None with 0 for active_products and out_of_stock_products
+        active_products = active_products or 0
+        out_of_stock_products = out_of_stock_products or 0
+
+        return {
+            'active_products': active_products,
+            'out_of_stock': out_of_stock_products
+        }

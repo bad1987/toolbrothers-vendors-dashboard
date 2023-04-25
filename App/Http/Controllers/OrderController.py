@@ -1,3 +1,4 @@
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from fastapi import Request
 from Security.Controllers import LoginController
@@ -14,3 +15,29 @@ class OrderController:
         orders = query.offset(skip).limit(limit).all()
         
         return {"user": user, "orders": orders, "total": total}
+    
+    def get_order_stats(db_cscart: Session, start_date: str, end_date: str, company_id):
+        # get the number of orders and total revenue for March 25 to April 25, 2023
+        num_orders = db_cscart.query(func.count(CscartOrders.order_id))\
+            .filter(CscartOrders.company_id == company_id, CscartOrders.timestamp >= func.unix_timestamp(start_date), CscartOrders.timestamp <= func.unix_timestamp(end_date))\
+            .scalar()
+        # total_revenue = db_cscart.query(func.sum(CscartOrders.total)).filter(CscartOrders.timestamp >= start_date, CscartOrders.timestamp <= end_date).scalar()
+        total_sales = db_cscart.query(func.sum(CscartOrders.total).label('total_sales')) \
+            .filter(CscartOrders.company_id == company_id) \
+            .filter(CscartOrders.status.in_(['C', 'P'])) \
+            .filter(CscartOrders.timestamp >= func.unix_timestamp(start_date)) \
+            .filter(CscartOrders.timestamp <= func.unix_timestamp(end_date)) \
+            .one()
+
+        total_income = db_cscart.query(func.sum(CscartOrders.total).label('total_income')) \
+            .filter(CscartOrders.company_id == company_id) \
+            .filter(CscartOrders.status.in_(['C', 'P', 'O'])) \
+            .filter(CscartOrders.timestamp >= func.unix_timestamp(start_date)) \
+            .filter(CscartOrders.timestamp <= func.unix_timestamp(end_date)) \
+            .one()
+
+        return {
+            'orders': num_orders,
+            'revenue': total_income.total_income,
+            'sales': total_sales.total_sales
+        }

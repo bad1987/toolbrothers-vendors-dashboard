@@ -99,3 +99,7 @@ async def update_product(request: Request,model: ProductUpdateSchemaIn, product_
         transaction.rollback()
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return { 'status': False, 'message': "An error occured" }
+
+@route.get("/stats")
+async def get_product_stats(request: Request, db_cscart: Session = Depends(get_db_cscart)):
+    ProductController.get_product_stats(db_cscart, 4)
