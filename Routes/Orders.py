@@ -74,3 +74,10 @@ async def get_orders_stats(request: Request, start_date: str, end_date: str, db_
     res.update(p_res)
 
     return res
+@route.get('/orders/grouped')
+async def get_grouped_orders(request: Request, db_cscart: Session = Depends(get_db_cscart), db_local: Session = Depends(get_db)):
+    user = LoginController.get_current_user_from_cookie(request, db_local)
+
+    orders = OrderController.get_grouped_orders(db_cscart, user)
+
+    return orders

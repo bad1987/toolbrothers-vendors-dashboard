@@ -1,8 +1,11 @@
 from sqlalchemy import func
 from sqlalchemy.orm import Session
+from sqlalchemy import func, select, text, Date
 from fastapi import Request
 from Security.Controllers import LoginController
 from Database.CscartModels import CscartOrders
+from schemas.UserSchema import UserSchema
+from datetime import datetime
 
 class OrderController:
     def get_orders_by_vendor_connected(request: Request, db_local: Session, db_cscart: Session, skip: int, limit: int):
@@ -41,3 +44,31 @@ class OrderController:
             'revenue': total_income.total_income,
             'sales': total_sales.total_sales
         }
+
+    def get_grouped_orders(db_cscart: Session, user: UserSchema):
+        # query = select(func.from_unixtime(CscartOrders.timestamp, '%D %M %Y').label('date'), func.count(CscartOrders.order_id).label('order_count'))\
+        #         .where(CscartOrders.company_id == user.company_id)\
+        #         .offset(0)\
+        #         .limit(5)\
+        #         .group_by('date')
+
+
+        # start = datetime.strptime("22-02-01", '%y-%m-%d')
+        # end = datetime.strptime("22-04-01", '%y-%m-%d')
+
+
+        query = text(f""" 
+                SELECT FROM_UNIXTIME(cscart_orders.timestamp, '%y-%m-%d') AS date, sum(cscart_orders.total) AS order_total 
+                FROM cscart_orders 
+                WHERE company_id={user.company_id} and
+                status in ('C', 'P') 
+                GROUP BY date
+            """)
+
+        # print(str(query))
+
+        result = db_cscart.execute(query)
+
+        ans = [{ "date": row[0], "count": row[1] } for row in result]
+
+        return ans
