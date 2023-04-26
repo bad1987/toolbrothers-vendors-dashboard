@@ -64,7 +64,7 @@ async def get_all_orders(request: Request, db_local: Session = Depends(get_db), 
 
 @route.get('/orders/stats')
 @requires_permission('read', ModelNameEnum.ORDER_MODEL.value)
-async def get_orders_stats(request: Request, start_date: str = "2020-01-01", end_date: str = "2023-01-01", db_cscart: Session = Depends(get_db_cscart), _user: dict = Depends(is_authenticated)):
+async def get_orders_stats(request: Request, start_date: str, end_date: str, db_cscart: Session = Depends(get_db_cscart), _user: dict = Depends(is_authenticated)):
     start_date_string = f"{start_date} 00:00:00"
     end_date_string = f"{end_date} 23:59:59"
     company_id=_user.company_id
@@ -78,7 +78,19 @@ async def get_orders_stats(request: Request, start_date: str = "2020-01-01", end
     res.update(p_res)
     res.update({ "chart_datas": chart_datas })
 
+    prev_period = OrderController.get_previous_interval([start_date, end_date])
+    p_stats = OrderController.get_order_stats(db_cscart, prev_period[0], prev_period[1], company_id)
+    p_stats.update({
+        'percent_income': OrderController.progression_percentage(res['income'], p_stats['income']),
+        'percent_sales': OrderController.progression_percentage(res['sales'], p_stats['sales']),
+        'percent_orders': OrderController.progression_percentage(res['orders'], p_stats['orders']),
+        'label': "previous period"
+    })
+    res.update({
+        'prev_period': p_stats
+    })
     return res
+
 @route.get('/orders/grouped')
 async def get_grouped_orders(request: Request, db_cscart: Session = Depends(get_db_cscart), db_local: Session = Depends(get_db)):
     user = LoginController.get_current_user_from_cookie(request, db_local)
