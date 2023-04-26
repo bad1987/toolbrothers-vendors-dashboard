@@ -78,6 +78,7 @@ async def get_orders_stats(request: Request, start_date: str, end_date: str, db_
     res.update(p_res)
     res.update({ "chart_datas": chart_datas })
 
+    res.update(p_res)
     prev_period = OrderController.get_previous_interval([start_date, end_date])
     p_stats = OrderController.get_order_stats(db_cscart, prev_period[0], prev_period[1], company_id)
     p_stats.update({
