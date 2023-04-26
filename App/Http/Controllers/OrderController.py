@@ -53,7 +53,7 @@ class OrderController:
 
 
         query = text(f""" 
-                SELECT FROM_UNIXTIME(cscart_orders.timestamp, '%y-%m-%d') AS date, sum(cscart_orders.total) AS order_total 
+                SELECT FROM_UNIXTIME(cscart_orders.timestamp, '%Y-%m-%d') AS date, sum(cscart_orders.total) AS order_total 
                 FROM cscart_orders 
                 WHERE company_id={user.company_id} and
                 timestamp >= {start} and timestamp <= {end} and
