@@ -18,6 +18,42 @@ const dataState = ref(_statstore.stats)
 console.log("Statistic ", dataState.value);
 
 Chart.register(...registerables)
+  const chartData = ref([
+      ['Date', 'Nombre'],
+      [new Date(2023, 0, 1), 100],
+      [new Date(2023, 0, 2), 150],
+      [new Date(2023, 0, 3), 200],
+      [new Date(2023, 0, 4), 250],
+      [new Date(2023, 0, 5), 300],
+      [new Date(2023, 0, 6), 300],
+      [new Date(2023, 0, 7), 300],
+      [new Date(2023, 0, 8), 300],
+      [new Date(2023, 0, 9), 300],
+      [new Date(2023, 0, 10), 300],
+      [new Date(2023, 0, 11), 300],
+      [new Date(2023, 0, 12), 300],
+      [new Date(2023, 0, 13), 300],
+      [new Date(2023, 0, 14), 300],
+      [new Date(2023, 0, 15), 300],
+      [new Date(2023, 0, 16), 300],
+      [new Date(2023, 0, 17), 300],
+      [new Date(2023, 0, 18), 300],
+      [new Date(2023, 0, 19), 300],
+      [new Date(2023, 0, 20), 300],
+      [new Date(2023, 0, 21), 300],
+      [new Date(2023, 0, 22), 300],
+      [new Date(2023, 0, 23), 300],
+      [new Date(2023, 0, 24), 300],
+    ]);
+
+  const chartOptions = ref({
+    title: 'Nombre de ventes par jour',
+    curveType: 'function',
+    height: 500,
+    width: '100%'
+  });
+
+  Chart.register(...registerables)
 
 const handleSubmitDate = async (e) => {
   const today = new Date();
