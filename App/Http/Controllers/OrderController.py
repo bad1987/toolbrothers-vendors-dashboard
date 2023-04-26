@@ -53,14 +53,17 @@ class OrderController:
         #         .group_by('date')
 
 
-        # start = datetime.strptime("22-02-01", '%y-%m-%d')
-        # end = datetime.strptime("22-04-01", '%y-%m-%d')
+        start = datetime.strptime("22-02-01 00:00:00", "%y-%m-%d %H:%M:%S").timestamp()
+        end = datetime.strptime("22-04-01 23:59:59", "%y-%m-%d %H:%M:%S").timestamp()
 
+
+        print(start, end)
 
         query = text(f""" 
                 SELECT FROM_UNIXTIME(cscart_orders.timestamp, '%y-%m-%d') AS date, sum(cscart_orders.total) AS order_total 
                 FROM cscart_orders 
                 WHERE company_id={user.company_id} and
+                timestamp >= {start} and timestamp <= {end} and
                 status in ('C', 'P') 
                 GROUP BY date
             """)
