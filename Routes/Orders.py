@@ -64,14 +64,19 @@ async def get_all_orders(request: Request, db_local: Session = Depends(get_db), 
 
 @route.get('/orders/stats')
 @requires_permission('read', ModelNameEnum.ORDER_MODEL.value)
-async def get_orders_stats(request: Request, start_date: str, end_date: str, db_cscart: Session = Depends(get_db_cscart), _user: dict = Depends(is_authenticated)):
+async def get_orders_stats(request: Request, start_date: str = "2020-01-01", end_date: str = "2023-01-01", db_cscart: Session = Depends(get_db_cscart), _user: dict = Depends(is_authenticated)):
     start_date_string = f"{start_date} 00:00:00"
     end_date_string = f"{end_date} 23:59:59"
     company_id=_user.company_id
 
     res = OrderController.get_order_stats(db_cscart, start_date_string, end_date_string, company_id)
     p_res = ProductController.get_product_stats(db_cscart, company_id)
+
+    # Chart datas
+    chart_datas = OrderController.get_grouped_orders(db_cscart, _user, start_date, end_date)
+
     res.update(p_res)
+    res.update({ "chart_datas": chart_datas })
 
     return res
 @route.get('/orders/grouped')

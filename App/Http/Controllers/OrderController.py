@@ -45,19 +45,10 @@ class OrderController:
             'sales': total_sales.total_sales
         }
 
-    def get_grouped_orders(db_cscart: Session, user: UserSchema):
-        # query = select(func.from_unixtime(CscartOrders.timestamp, '%D %M %Y').label('date'), func.count(CscartOrders.order_id).label('order_count'))\
-        #         .where(CscartOrders.company_id == user.company_id)\
-        #         .offset(0)\
-        #         .limit(5)\
-        #         .group_by('date')
+    def get_grouped_orders(db_cscart: Session, user: UserSchema, start_date: str, end_date: str):
+        start = datetime.strptime(f"{start_date} 00:00:00", "%Y-%m-%d %H:%M:%S").timestamp()
+        end = datetime.strptime(f"{end_date} 23:59:59", "%Y-%m-%d %H:%M:%S").timestamp()
 
-
-        start = datetime.strptime("22-02-01 00:00:00", "%y-%m-%d %H:%M:%S").timestamp()
-        end = datetime.strptime("22-04-01 23:59:59", "%y-%m-%d %H:%M:%S").timestamp()
-
-
-        print(start, end)
 
         query = text(f""" 
                 SELECT FROM_UNIXTIME(cscart_orders.timestamp, '%y-%m-%d') AS date, sum(cscart_orders.total) AS order_total 
@@ -67,8 +58,6 @@ class OrderController:
                 status in ('C', 'P') 
                 GROUP BY date
             """)
-
-        # print(str(query))
 
         result = db_cscart.execute(query)
 
