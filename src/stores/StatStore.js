@@ -3,13 +3,7 @@ import { getStats } from '../api'
 
 export let statStore = defineStore("stats", {
     state: () => ({
-        stats: {
-            "income": null,
-            "sales": null,
-            "out_of_stock": null,
-            "active_products": null,
-            "orders": null
-        }
+        stats: null
     }),
 
     // actions
