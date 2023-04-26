@@ -14,3 +14,4 @@ aiofiles
 babel
 Flask-Script
 pydantic[email]
+python-dateutil

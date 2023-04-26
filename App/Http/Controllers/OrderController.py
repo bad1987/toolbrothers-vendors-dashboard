@@ -5,7 +5,9 @@ from fastapi import Request
 from Security.Controllers import LoginController
 from Database.CscartModels import CscartOrders
 from schemas.UserSchema import UserSchema
-from datetime import datetime
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
+from dateutil.parser import parse
 
 class OrderController:
     def get_orders_by_vendor_connected(request: Request, db_local: Session, db_cscart: Session, skip: int, limit: int):
@@ -72,3 +74,36 @@ class OrderController:
         ans = [{ "date": row[0], "count": row[1] } for row in result]
 
         return ans
+
+    def get_previous_interval(date_range):
+        # Parse the input dates into datetime objects
+        start_date = parse(date_range[0])
+        end_date = parse(date_range[1])
+
+        # Compute the number of years between the start and end years
+        num_years = relativedelta(end_date, start_date).years
+
+        # Compute the year of the previous period
+        prev_year_end = start_date.year - 1
+        prev_year_start = prev_year_end - num_years
+
+        # Compute the start and end dates of the previous period
+        prev_start_date = start_date.replace(year=prev_year_start)
+        prev_end_date = end_date.replace(year=prev_year_end)
+
+        # Adjust end date for leap years
+        if prev_end_date.year % 4 == 0 and (prev_end_date.year % 100 != 0 or prev_end_date.year % 400 == 0):
+            prev_end_date += relativedelta(days=1)
+
+        # Format output dates as strings in the desired format
+        start_date_prev_str = prev_start_date.strftime('%Y-%m-%d')
+        end_date_prev_str = prev_end_date.strftime('%Y-%m-%d')
+
+        res = [start_date_prev_str, end_date_prev_str]
+        print(res)
+        return res
+
+    def progression_percentage(current, previous):
+        percent = ((current - previous) / previous) * 100
+        percent = f"{percent:.2f}%"
+        return percent
