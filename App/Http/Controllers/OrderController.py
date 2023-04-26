@@ -41,7 +41,7 @@ class OrderController:
 
         return {
             'orders': num_orders,
-            'revenue': total_income.total_income,
+            'income': total_income.total_income,
             'sales': total_sales.total_sales
         }
 
