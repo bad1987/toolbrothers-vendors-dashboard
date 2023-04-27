@@ -148,7 +148,6 @@ router.beforeEach(async (to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     let is_auth = await is_authenticated()
     if (!is_auth) {
-      console.log('redirecting to login')
       next({
         path: '/login',
         query: { redirect: to.fullPath }
@@ -159,7 +158,6 @@ router.beforeEach(async (to, from, next) => {
       if(!userRole){
         getUser(uStore.setUser)
         userRole = uStore.user
-        console.log(userRole)
       }
       else{
         userRole = userRole.roles
