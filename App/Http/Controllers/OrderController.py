@@ -42,9 +42,9 @@ class OrderController:
             .one()
 
         return {
-            'orders': num_orders,
-            'income': total_income.total_income,
-            'sales': total_sales.total_sales
+            'orders': num_orders or 0,
+            'income': total_income.total_income or 0,
+            'sales': total_sales.total_sales or 0
         }
 
     def get_grouped_orders(db_cscart: Session, user: UserSchema, start_date: str, end_date: str):
@@ -96,6 +96,14 @@ class OrderController:
         return res
 
     def progression_percentage(current, previous):
+        if current is None:
+            current = 0
+        if previous is None:
+            previous = 0
+        
+        if previous == 0:
+            return f"{current:.2f}%"
+        
         percent = ((current - previous) / previous) * 100
         percent = f"{percent:.2f}%"
         return percent

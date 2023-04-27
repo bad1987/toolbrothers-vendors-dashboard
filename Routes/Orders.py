@@ -79,13 +79,17 @@ async def get_orders_stats(request: Request, start_date: str, end_date: str, db_
     res.update({ "chart_datas": chart_datas })
 
     res.update(p_res)
+
+    # dealing with the previous period
     prev_period = OrderController.get_previous_interval([start_date, end_date])
     p_stats = OrderController.get_order_stats(db_cscart, prev_period[0], prev_period[1], company_id)
+    p_chart_datas = OrderController.get_grouped_orders(db_cscart, _user, prev_period[0], prev_period[1])
     p_stats.update({
         'percent_income': OrderController.progression_percentage(res['income'], p_stats['income']),
         'percent_sales': OrderController.progression_percentage(res['sales'], p_stats['sales']),
         'percent_orders': OrderController.progression_percentage(res['orders'], p_stats['orders']),
-        'label': "previous period"
+        'label': "previous period",
+        'prev_chart': p_chart_datas
     })
     res.update({
         'prev_period': p_stats
