@@ -291,7 +291,7 @@ function initChart(datas) {
                         <p class="font-medium text-gray-900 truncate dark:text-white">
                           {{$t("income")}}
                         </p>
-                        <div v-if="parseFloat(_statstore.stats.prev_period.percent_income.slice(0, -1)) < 0" class="flex items-center justify-end flex-1 text-sm text-red-600 dark:text-red-500">
+                        <div v-if="_statstore.stats && parseFloat(_statstore.stats.prev_period.percent_income.slice(0, -1)) < 0" class="flex items-center justify-end flex-1 text-sm text-red-600 dark:text-red-500">
                           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"
                             aria-hidden="true">
                             <path clip-rule="evenodd" fill-rule="evenodd"
@@ -301,7 +301,7 @@ function initChart(datas) {
                           {{ parseFloat(_statstore.stats.prev_period.percent_income.slice(0, -1)) }} %
                           <span class="ml-2 text-gray-500">{{_statstore.stats.prev_period.label}}</span>
                         </div>
-                        <div v-if="parseFloat(_statstore.stats.prev_period.percent_income.slice(0, -1)) > 0" class="flex items-center justify-end flex-1 text-sm text-green-500 dark:text-green-400">
+                        <div v-if="_statstore.stats && parseFloat(_statstore.stats.prev_period.percent_income.slice(0, -1)) > 0" class="flex items-center justify-end flex-1 text-sm text-green-500 dark:text-green-400">
                           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"
                             aria-hidden="true">
                             <path clip-rule="evenodd" fill-rule="evenodd"
@@ -335,7 +335,7 @@ function initChart(datas) {
                         <p class="font-medium text-gray-900 truncate dark:text-white">
                           {{$t("sale")}}
                         </p>
-                        <div v-if="parseFloat(_statstore.stats.prev_period.percent_sales.slice(0, -1)) < 0" class="flex items-center justify-end flex-1 text-sm text-red-600 dark:text-red-500">
+                        <div v-if="_statstore.stats && parseFloat(_statstore.stats.prev_period.percent_sales.slice(0, -1)) < 0" class="flex items-center justify-end flex-1 text-sm text-red-600 dark:text-red-500">
                           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"
                             aria-hidden="true">
                             <path clip-rule="evenodd" fill-rule="evenodd"
@@ -345,7 +345,7 @@ function initChart(datas) {
                           {{ parseFloat(_statstore.stats.prev_period.percent_sales.slice(0, -1)) }} %
                           <span class="ml-2 text-gray-500">{{_statstore.stats.prev_period.label}}</span>
                         </div>
-                        <div v-if="parseFloat(_statstore.stats.prev_period.percent_sales.slice(0, -1)) > 0" class="flex items-center justify-end flex-1 text-sm text-green-500 dark:text-green-400">
+                        <div v-if="_statstore.stats && parseFloat(_statstore.stats.prev_period.percent_sales.slice(0, -1)) > 0" class="flex items-center justify-end flex-1 text-sm text-green-500 dark:text-green-400">
                           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"
                             aria-hidden="true">
                             <path clip-rule="evenodd" fill-rule="evenodd"
@@ -378,7 +378,7 @@ function initChart(datas) {
                         <p class="font-medium text-gray-900 truncate dark:text-white">
                           {{$t("orders")}}
                         </p>
-                        <div v-if="parseFloat(_statstore.stats.prev_period.percent_orders.slice(0, -1)) < 0" class="flex items-center justify-end flex-1 text-sm text-red-600 dark:text-red-500">
+                        <div v-if="_statstore.stats && parseFloat(_statstore.stats.prev_period.percent_orders.slice(0, -1)) < 0" class="flex items-center justify-end flex-1 text-sm text-red-600 dark:text-red-500">
                           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"
                             aria-hidden="true">
                             <path clip-rule="evenodd" fill-rule="evenodd"
@@ -388,7 +388,7 @@ function initChart(datas) {
                           {{ parseFloat(_statstore.stats.prev_period.percent_orders.slice(0, -1)) }} %
                           <span class="ml-2 text-gray-500">{{_statstore.stats.prev_period.label}}</span>
                         </div>
-                        <div v-if="parseFloat(_statstore.stats.prev_period.percent_orders.slice(0, -1)) > 0" class="flex items-center justify-end flex-1 text-sm text-green-500 dark:text-green-400">
+                        <div v-if="_statstore.stats && parseFloat(_statstore.stats.prev_period.percent_orders.slice(0, -1)) > 0" class="flex items-center justify-end flex-1 text-sm text-green-500 dark:text-green-400">
                           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"
                             aria-hidden="true">
                             <path clip-rule="evenodd" fill-rule="evenodd"
