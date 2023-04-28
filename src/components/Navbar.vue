@@ -42,17 +42,18 @@ onMounted(() => {
   initFlowbite()
 
   const btnToggle = document.getElementById("btn-toggle-sidebar")
+  const sidebar = document.getElementById("logo-sidebar")
+  const overlay = document.getElementById("app-overlay")
 
   btnToggle.addEventListener("click", function (e) {
 
-    const back = document.querySelector("[drawer-backdrop]")
+    sidebar.classList.toggle("-translate-x-full")
+    overlay.classList.toggle("hidden")
+  })
 
-    back?.addEventListener("click", function() {
-      console.log("Euhhh")
-
-      return false
-    })
-
+  overlay.addEventListener("click", function() {
+    sidebar.classList.toggle("-translate-x-full")
+    overlay.classList.toggle("hidden")
   })
 })
 
@@ -71,9 +72,9 @@ const handleLogout = event => {
     <div class="px-3 py-3 lg:px-5 lg:pl-3">
       <div class="flex items-center justify-between">
         <div class="flex items-center justify-start">
-          <button id="btn-toggle-sidebar" data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar" aria-controls="logo-sidebar"
+          <button id="btn-toggle-sidebar" aria-controls="logo-sidebar"
             type="button"
-            class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+            class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
             <span class="sr-only">Open sidebar</span>
             <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
               xmlns="http://www.w3.org/2000/svg">
@@ -84,7 +85,7 @@ const handleLogout = event => {
           </button>
           <a href="https://toolbrothers.com/" class="flex ml-2 md:mr-24">
             <img src="https://toolbrothers.com/images/toolbrothers_logo.jpeg" class="h-6 mr-3 dark:hidden block" alt="FlowBite Logo">
-            <img src="/logo.png" class="mr-3 dark:block hidden" alt="FlowBite Logo">
+            <img src="/logo.png" class="mr-3 dark:block hidden" alt="TB Logo">
           </a>
         </div>
         <div class="flex items-center">

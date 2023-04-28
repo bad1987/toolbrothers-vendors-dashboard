@@ -13,7 +13,8 @@
       }
   </script>
   </head>
-  <body class="dark:bg-gray-800 dark:border-gray-700">
+  <body class="dark:bg-gray-800 dark:border-gray-700 relative overflow-hidden">
+    <div id="app-overlay" class="overlay bg-black opacity-60 absolute top-0 w-screen h-screen z-20 hidden"></div>
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
   </body>

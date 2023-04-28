@@ -64,11 +64,10 @@ function updateProduct(obj = null) {
           document.getElementById("edit-product-modal")?.click()
           let ans = products.value.map(x => x.product_id === selectedProduct.value.product_id ? response.data : x)
           products.value = ans
-          isLoading.value = false
         })
         .catch(err => {
-          isLoading.value = false
         })
+        .finally(() => isLoading.value = false)
 }
 
 function deactivateProduct(id) {
@@ -194,7 +193,7 @@ fetchProducts()
       </div>
       <!-- Table -->
       <div class="flex flex-col mt-6 relative">
-        <div v-if="isLoading" class="absolute top-0 left-0 w-full h-full bg-white opacity-50 z-50 flex">
+        <div v-if="isLoading" class="absolute top-0 left-0 w-full h-full bg-white opacity-50 z-10 flex">
           <div role="status" class="w-max m-auto">
               <svg aria-hidden="true" class="inline w-12 h-12 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-500" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
@@ -300,9 +299,9 @@ fetchProducts()
                         </button>
                       </td>
                       <td class="">
-                        <label @click="changeManually(product.product_id)" class="relative inline-flex items-center cursor-pointer">
+                        <label class="relative inline-flex items-center cursor-pointer">
                           <input v-model="product.manual_change" type="checkbox" value="" class="sr-only peer">
-                          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                          <div @click="changeManually(product.product_id)" class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                         </label>
                       </td>
                     </tr>
