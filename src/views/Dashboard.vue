@@ -104,11 +104,11 @@ onMounted(async () => {
     })
 })
 
-// onBeforeMount (async () => {
+onBeforeMount (async () => {
 
-//   // initialize the stats store
-//   _statstore.init()
-// })
+  // initialize the stats store
+  _statstore.init()
+})
 
 function initChart(datas) {
   if (!datas) return
