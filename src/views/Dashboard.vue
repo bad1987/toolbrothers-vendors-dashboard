@@ -113,34 +113,6 @@ onBeforeMount (async () => {
 function initChart(datas) {
   if (!datas) return
   const element = document.getElementById('main-chart')
-
-  // if (dates.value && moment(dates.value.end_date).diff(dates.value.start_date, 'month') <= 12) {
-  //   console.log(datas.chart_datas.map(x => x.date.slice(5)))
-  //  // Plot the chart based on months 
-  //   Plotly.newPlot('main-chart', [
-  //     {
-  //       x: datas.chart_datas.map(x => x.date.slice(5)),
-  //       y: datas.chart_datas.map(x => x.count),
-  //       type: 'scatter',
-  //       mode: 'lines',
-  //       name: 'Current period'
-  //     },
-  //     {
-  //       x: datas.prev_period.prev_chart.map(x => x.date.slice(5)),
-  //       y: datas.prev_period.prev_chart.map(x => x.count),
-  //       type: 'scatter',
-  //       mode: 'lines',
-  //       name: 'Prev period'
-  //     }
-  //   ], {
-  //         xaxis: { tickformat: '%m-%d' }
-  //   }, {
-  //     displayModeBar: false, scrollZoom: false, responsive: true
-  //   })
-
-  //  return
-  // }
-
   Plotly.newPlot('main-chart', [
     {
       x: datas.chart_datas.map(x => x.date),
