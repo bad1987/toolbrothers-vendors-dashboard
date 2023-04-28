@@ -1,4 +1,4 @@
-from sqlalchemy import Float, Text, TIMESTAMP, Column, ForeignKey, Integer, String, text
+from sqlalchemy import Float, Text, TIMESTAMP, Column, ForeignKey, Integer, String, text, Boolean
 from sqlalchemy.orm import relationship
 
 from Database.CscartConnexion import CscartBase
@@ -48,6 +48,7 @@ class Cscart_products(CscartBase):
     master_product_status = Column(String(25))
     timestamp = Column(Integer)
     status = Column(String(25))
+    manual_change = Column(Boolean)
 
     price = relationship("Cscart_product_prices", back_populates="product", uselist=False)
     description = relationship("Cscart_product_descriptions", back_populates="linkedProduct")

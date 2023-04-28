@@ -44,6 +44,7 @@ class ProductController:
         product = ProductSchema(
             product=result.Cscart_product_descriptions.product,
             product_id=result.Cscart_products.product_id,
+            manual_change=result.Cscart_products.manual_change,
             product_code=result.Cscart_products.product_code,
             amount=result.Cscart_products.amount,
             product_type=result.Cscart_products.product_type,

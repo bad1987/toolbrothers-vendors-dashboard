@@ -12,12 +12,14 @@ class ProductSchema(BaseModel):
     product_type: Optional[str]
     weight: Optional[int]
     product: Optional[str]
+    manual_change: Optional[bool]
 
 class ProductUpdateSchemaIn(BaseModel):
     product_id: int
     status: Optional[str]
     amount: Optional[int]
     price: Optional[float]
+    manual_change: Optional[bool]
 
     class Config:
         orm_mode = True
