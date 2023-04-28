@@ -74,7 +74,7 @@ function updateProduct(obj = null) {
 function deactivateProduct(id) {
   Object.assign(selectedProduct.value, products.value.find(x => x.product_id == id))
 
-  updateProduct({ status: selectedProduct.value.status == 'A' ? 'D' : 'A', product_id: selectedProduct.value.product_id })
+  updateProduct({ status: selectedProduct.value.status == 'A' ? 'H' : 'A', product_id: selectedProduct.value.product_id })
 }
 
 function changeManually(id) {
@@ -266,7 +266,7 @@ fetchProducts()
                         </span>
                       </td>
                       
-                      <td class="p-4 !w-32 line-clamp-1 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
+                      <td class="p-4 cursor-pointer !w-32 line-clamp-1 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
                         <span :data-tooltip-target="`tooltip-right-${product.product_id}`" data-tooltip-placement="right" class="w-full block overflow-ellipsis">{{ product.product }}</span>
                         <div :id="`tooltip-right-${product.product_id}`" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
                             {{ product.product }}
