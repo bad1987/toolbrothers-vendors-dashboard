@@ -4,7 +4,7 @@ from sqlalchemy import func, select, text, Date
 from fastapi import Request
 from Security.Controllers import LoginController
 from Database.CscartModels import CscartOrders
-from schemas.UserSchema import UserSchema
+from App.Http.Schema.UserSchema import UserSchema
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from dateutil.parser import parse

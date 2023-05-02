@@ -7,12 +7,12 @@ from fastapi.encoders import jsonable_encoder
 from App.Http.Controllers.resset_password.ForgotPasswordController import ForgotPasswordController
 import json
 import i18n
-from schemas.UserSchema import UserSchema
+from App.Http.Schema.UserSchema import UserSchema
 
 # instantiate a new translator class
 translator = i18n.Translator('languages/')
 
-route = APIRouter(prefix='')
+route = APIRouter(prefix='', tags=['Forgot password user'])
 console = Console()
 
 

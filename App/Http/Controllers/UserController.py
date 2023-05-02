@@ -1,7 +1,7 @@
 
 from Database.Connexion import SessionLocal
 from Database.Models import Permission, User_Permission
-from schemas.UserSchema import PermissionSchema
+from App.Http.Schema.UserSchema import PermissionSchema
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from typing import List

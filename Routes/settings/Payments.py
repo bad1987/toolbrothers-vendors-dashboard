@@ -2,7 +2,6 @@ import re
 import time
 from fastapi import Depends, HTTPException,Request, APIRouter, status
 from fastapi.responses import HTMLResponse, JSONResponse
-from fastapi.templating import Jinja2Templates
 from App.Enums.UserRoleEnum import ModelNameEnum
 from Database.Connexion import SessionLocal
 from Database.CscartConnexion import CscartSession
@@ -13,7 +12,7 @@ from Database.Models import Payment_method
 from typing import List
 from Decorators.auth_decorators import requires_permission
 from Security.Acls.RoleChecker import Role_checker
-from schemas.Settings.PaymentMethodSchema import PaymentMethodSchema, updatePaymentMethod
+from App.Http.Schema.Settings.PaymentMethodSchema import PaymentMethodSchema, updatePaymentMethod
 from fastapi.encoders import jsonable_encoder
 from Routes.Users import is_authenticated
 
@@ -22,8 +21,7 @@ console = Console()
 
 roles_checker = Role_checker()
 
-route = APIRouter(prefix='/payment')
-templates = Jinja2Templates(directory="templates")
+route = APIRouter(prefix='/payment', tags=['Payment settings'])
 
 
 def get_db():
@@ -54,13 +52,6 @@ async def get_payment_method_by_vendor(request: Request, db_local: Session = Dep
     for u in result["payment_method"]:
         res.append(PaymentMethodSchema(**jsonable_encoder(u)))
     return res
-    # context = {
-    #     "request": request,
-    #     "payment_method": result["payment_method"],
-    #     "user": result["user"]
-    # }
-    
-    # return templates.TemplateResponse("Settings/payment_method.html", context)
 
 # Payment method system
 @route.get('/method-system')

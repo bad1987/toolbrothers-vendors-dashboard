@@ -14,12 +14,16 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi.staticfiles import StaticFiles
 
 Models.Base.metadata.create_all(bind=engine)   
-app = FastAPI() 
- 
+app = FastAPI(title="TOOLBROTHER API", version="1.0.0", description="This API is to design the Toolbrother dashboard") 
+
+@app.get('/', tags=["Welcome"])
+def welcome(): return {"Message": "Welcome one api on", "Version": "1.0.0", "Build by": "TOOLBROTHER Enterprise"}
+
+
 origins = [
     "http://localhost:5173" 
 ]
- 
+
 app.include_router(Login_register.route) 
 app.include_router(Forgot_password.route) 
 app.include_router(Users.route) 

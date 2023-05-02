@@ -4,7 +4,7 @@ from fastapi import Depends, HTTPException, Request, Response, status, APIRouter
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from Security.OAuth2PasswordBearerWithCookie import OAuth2PasswordBearerWithCookie
 from fastapi.security import OAuth2PasswordRequestForm
-from fastapi.templating import Jinja2Templates
+# from fastapi.templating import Jinja2Templates
 from Security.Controllers import LoginController
 from Security.Settings import Settings
 from Security.DTO.UserDto import UserDto
@@ -16,13 +16,13 @@ from rich.console import Console
 from fastapi.encoders import jsonable_encoder
 
 import i18n
-from schemas.UserSchema import UserSchema
+from App.Http.Schema.UserSchema import UserSchema
 
 # instantiate a new translator class
 translator = i18n.Translator('languages/')
 
-route = APIRouter(prefix='')
-templates = Jinja2Templates(directory="templates")
+route = APIRouter(prefix='', tags=['Handle account users'])
+# templates = Jinja2Templates(directory="templates")
 console = Console()
 
 oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="token")
@@ -74,54 +74,54 @@ def login_for_access_token(
 # --------------------------------------------------------------------------
 # Home Page
 # --------------------------------------------------------------------------
-@route.get("/", response_class=HTMLResponse)
-def index(request: Request, db: Session = Depends(get_db)):
-    try:
-        user = LoginController.get_current_user_from_cookie(request, db)
-    except:
-        user = None
-    context = {
-        "user": user,
-        "request": request,
-    }
-    return templates.TemplateResponse("index.html", context)
+# @route.get("/", response_class=HTMLResponse)
+# def index(request: Request, db: Session = Depends(get_db)):
+#     try:
+#         user = LoginController.get_current_user_from_cookie(request, db)
+#     except:
+#         user = None
+#     context = {
+#         "user": user,
+#         "request": request,
+#     }
+#     return templates.TemplateResponse("index.html", context)
 
 
 # --------------------------------------------------------------------------
 # Private Page
 # --------------------------------------------------------------------------
 # A private page that only logged in users can access.
-@route.get("/dashboard", response_class=HTMLResponse)
-def index(request: Request, db: Session = Depends(get_db)):
-    user = LoginController.get_current_user_from_cookie(request, db)
-    context = {
-        "user": user,
-        "request": request
-    }
-    return templates.TemplateResponse("private.html", context)
+# @route.get("/dashboard", response_class=HTMLResponse)
+# def index(request: Request, db: Session = Depends(get_db)):
+#     user = LoginController.get_current_user_from_cookie(request, db)
+#     context = {
+#         "user": user,
+#         "request": request
+#     }
+#     return templates.TemplateResponse("private.html", context)
 
 # --------------------------------------------------------------------------
 # Register - GET
 # --------------------------------------------------------------------------
-@route.get("/register", response_class=HTMLResponse)
-def register_get(request: Request):
-    context = {
-        "request": request
-    }
-    return templates.TemplateResponse("register.html", context)
+# @route.get("/register", response_class=HTMLResponse)
+# def register_get(request: Request):
+#     context = {
+#         "request": request
+#     }
+#     return templates.TemplateResponse("register.html", context)
 
 # --------------------------------------------------------------------------
 # Login - GET
 # --------------------------------------------------------------------------
-@route.get("/auth/login", response_class=HTMLResponse)
-def login_get(request: Request, locale: str = 'de'):
-    translator.set_locale(locale)
-    context = {
-        "request": request
-    }
-    context.update(translator.get_data()[locale])
+# @route.get("/auth/login", response_class=HTMLResponse)
+# def login_get(request: Request, locale: str = 'de'):
+#     translator.set_locale(locale)
+#     context = {
+#         "request": request
+#     }
+#     context.update(translator.get_data()[locale])
 
-    return templates.TemplateResponse("login.html", context)
+#     return templates.TemplateResponse("login.html", context)
 
 # --------------------------------------------------------------------------
 # Login - POST
@@ -160,24 +160,24 @@ async def login_post(request: Request, db: Session = Depends(get_db)):
 # Register
 # --------------------------------------------------------------------------
 
-@route.post("/register", response_class=HTMLResponse)
-async def register_post(request: Request, db: Session = Depends(get_db)):
-    form = RegisterForm(request)
-    await form.load_data()
-    if await form.is_valid():
-        try:
-            response = RedirectResponse("/auth/login", status.HTTP_302_FOUND)
-            is_save = LoginController.create_user_account(form, db)
-            if is_save == False:
-                form.__dict__.update(msg="")
-                form.__dict__.get("exist_user").append("This email exist")
-                return templates.TemplateResponse("register.html", form.__dict__) 
-            return response
-        except HTTPException:
-            form.__dict__.update(msg="")
-            form.__dict__.get("errors").append("Incorrect Input")
-            return templates.TemplateResponse("register.html", form.__dict__)
-    return templates.TemplateResponse("register.html", form.__dict__)
+# @route.post("/register", response_class=HTMLResponse)
+# async def register_post(request: Request, db: Session = Depends(get_db)):
+#     form = RegisterForm(request)
+#     await form.load_data()
+#     if await form.is_valid():
+#         try:
+#             response = RedirectResponse("/auth/login", status.HTTP_302_FOUND)
+#             is_save = LoginController.create_user_account(form, db)
+#             if is_save == False:
+#                 form.__dict__.update(msg="")
+#                 form.__dict__.get("exist_user").append("This email exist")
+#                 return templates.TemplateResponse("register.html", form.__dict__) 
+#             return response
+#         except HTTPException:
+#             form.__dict__.update(msg="")
+#             form.__dict__.get("errors").append("Incorrect Input")
+#             return templates.TemplateResponse("register.html", form.__dict__)
+#     return templates.TemplateResponse("register.html", form.__dict__)
 
 # --------------------------------------------------------------------------
 # Logout

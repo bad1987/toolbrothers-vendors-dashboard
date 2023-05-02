@@ -4,7 +4,7 @@ from Security.Acls.Permissions import PermissionChecker
 from Security.Acls.RoleChecker import Role_checker
 from functools import wraps
 
-from schemas.UserSchema import PermissionSchema, UserSchema
+from App.Http.Schema.UserSchema import PermissionSchema, UserSchema
 
 roles_checker = Role_checker()
 

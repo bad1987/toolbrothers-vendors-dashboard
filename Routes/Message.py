@@ -1,7 +1,6 @@
 import time
 from fastapi import Depends,Request, APIRouter
 from fastapi.responses import JSONResponse
-from fastapi.templating import Jinja2Templates
 from App.Http.Schema.MessageSchema import CscartUserSchema, MessageSchema, ChatSchema
 from Security.Acls.RoleChecker import Role_checker
 from Database.Connexion import SessionLocal
@@ -14,8 +13,7 @@ from fastapi.encoders import jsonable_encoder
 
 console = Console()
 
-route = APIRouter(prefix='')
-templates = Jinja2Templates(directory="templates")
+route = APIRouter(prefix='', tags=['Message center'])
 
 
 roles_checker = Role_checker()

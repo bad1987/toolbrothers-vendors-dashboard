@@ -4,7 +4,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 
-route = APIRouter(prefix='/errors')
+route = APIRouter(prefix='/errors', tags=['Handle Errors response'])
 templates = Jinja2Templates(directory="templates")
 
 @route.get("/403", response_class=HTMLResponse)

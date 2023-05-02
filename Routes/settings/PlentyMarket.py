@@ -9,13 +9,13 @@ from App.Http.Controllers.PlentyMarketController import PlentyMarketController
 from typing import List
 from Decorators.auth_decorators import requires_permission
 from Security.Acls.RoleChecker import Role_checker
-from schemas.Settings.PlentyMarketSchema import PlentyMarketSchema
+from App.Http.Schema.Settings.PlentyMarketSchema import PlentyMarketSchema
 from fastapi.encoders import jsonable_encoder
 from Routes.Users import is_authenticated
 
 console = Console()
 
-route = APIRouter(prefix='/plenty-market')
+route = APIRouter(prefix='/plenty-market', tags=['Plenty market settings'])
 
 roles_checker = Role_checker()
 

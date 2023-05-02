@@ -53,7 +53,7 @@ class MessageController:
         .first()
         
         if last_message:
-            last_message.last_message = chatSchema.message
+            last_message.last_message = chatSchema.message[:200]
             last_message.thread_id = chatSchema.thread_id
             last_message.company_id = user.company_id
             last_message.status = "N"
@@ -77,7 +77,7 @@ class MessageController:
             
         last_new_message = Cscart_vendor_communications()
         
-        last_message.last_message = chatSchema.message
+        last_message.last_message = chatSchema.message[:200]
         last_message.thread_id = chatSchema.thread_id
         last_message.company_id = user.company_id
         last_message.status = "N"

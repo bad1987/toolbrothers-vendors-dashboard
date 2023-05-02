@@ -2,7 +2,6 @@ from datetime import datetime
 import time
 from fastapi import Depends,Request, APIRouter, HTTPException, status
 from fastapi.responses import HTMLResponse, JSONResponse
-from fastapi.templating import Jinja2Templates
 from App.Enums.UserRoleEnum import ModelNameEnum
 from App.Http.Controllers.ProductController import ProductController
 from Decorators.auth_decorators import requires_permission, requires_vendor_access
@@ -18,8 +17,7 @@ from App.Http.Controllers.OrderController import OrderController
 
 console = Console()
 
-route = APIRouter(prefix='')
-templates = Jinja2Templates(directory="templates")
+route = APIRouter(prefix='', tags=['Orders system'])
 
 
 roles_checker = Role_checker()
@@ -44,17 +42,17 @@ def get_db_cscart():
 def timestamp_to_date(s):
     return time.ctime(s)
 
-@route.get("/orders", response_class=HTMLResponse)
-async def get_order_by_vendor(request: Request, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart)):
+# @route.get("/orders", response_class=HTMLResponse)
+# async def get_order_by_vendor(request: Request, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart)):
 
-    result = OrderController.get_orders_by_vendor_connected(request, db_local, db_cscart)
-    context = {
-        "request": request,
-        "orders": result["orders"],
-        "user": result["user"]
-    }
+#     result = OrderController.get_orders_by_vendor_connected(request, db_local, db_cscart)
+#     context = {
+#         "request": request,
+#         "orders": result["orders"],
+#         "user": result["user"]
+#     }
     
-    return templates.TemplateResponse("orders/index.html", context) 
+#     return templates.TemplateResponse("orders/index.html", context) 
 
 @route.get('/orders/list/', response_class=JSONResponse)
 @requires_permission('read', ModelNameEnum.ORDER_MODEL.value)

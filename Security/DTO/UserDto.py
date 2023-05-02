@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from typing import List, Optional
-from schemas.UserSchema import UserSchema
+from App.Http.Schema.UserSchema import UserSchema
 from App.Enums.UserEnums import UserStatusEnum
 from App.Enums.UserRoleEnum import UserRoleEnum
 # --------------------------------------------------------------------------

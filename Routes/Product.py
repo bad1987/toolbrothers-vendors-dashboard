@@ -1,7 +1,6 @@
 import time, traceback, sys
 from fastapi import Depends, HTTPException,Request, APIRouter, status, Response
 from fastapi.responses import HTMLResponse, JSONResponse
-from fastapi.templating import Jinja2Templates
 from App.Enums.UserRoleEnum import ModelNameEnum
 from Database.Connexion import SessionLocal
 from Database.CscartConnexion import CscartSession
@@ -24,8 +23,7 @@ console = Console()
 
 roles_checker = Role_checker()
 
-route = APIRouter(prefix='/products')
-templates = Jinja2Templates(directory="templates")
+route = APIRouter(prefix='/products', tags=['Import products in cs-cart'])
 
 
 def get_db():

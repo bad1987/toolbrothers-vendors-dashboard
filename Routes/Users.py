@@ -2,7 +2,6 @@ import re
 from typing import List, Any, Dict
 from fastapi import Depends, HTTPException,Request, APIRouter, Response, status
 from fastapi.responses import HTMLResponse, JSONResponse
-from fastapi.templating import Jinja2Templates
 from Decorators.auth_decorators import requires_permission
 from Security.Acls.ModelPermissions import ModelPermissions
 from Security.Acls.RoleChecker import Role_checker
@@ -22,12 +21,11 @@ from App.Enums.LanguageEnum import LanguageEnum
 from Services.SendEmail import send_email
 import traceback, sys, random, string
 
-from schemas.UserSchema import UserSchema
+from App.Http.Schema.UserSchema import UserSchema
 
 console = Console()
 
-route = APIRouter(prefix='/admin')
-templates = Jinja2Templates(directory="templates")
+route = APIRouter(prefix='/admin', tags=['Users system'])
 
 roles_checker = Role_checker()
 
@@ -59,17 +57,6 @@ async def is_authenticated(request: Request, db: Session = Depends(get_db)):
         )
     return user
 
-
-@route.get("/users", response_class=HTMLResponse)
-def index(request: Request, db: Session = Depends(get_db)):
-    user = LoginController.get_current_user_from_cookie(request, db)
-    users = db.query(User).filter()
-    context = {
-        "user": user,
-        "users": users,
-        "request": request
-    }
-    return templates.TemplateResponse("users.html", context)
 
 @route.get("/user", response_model=UserSchema)
 def get_user(request: Request, db: Session = Depends(get_db)):

@@ -6,7 +6,7 @@ from fastapi import Request, status, HTTPException
 from Security.Controllers import LoginController
 from Database.Models import User
 from fastapi.responses import JSONResponse
-from schemas.Settings.PlentyMarketSchema import PlentyMarketSchema
+from App.Http.Schema.Settings.PlentyMarketSchema import PlentyMarketSchema
 from Services import SendEmail
 from datetime import datetime, timedelta
 import Setting

@@ -3,7 +3,7 @@ from fastapi import Request, status
 from Security.Controllers import LoginController
 from Database.Models import Payment_method_vendor
 from fastapi.responses import JSONResponse
-from schemas.Settings.PaymentMethodSchema import PaymentMethodSchema, updatePaymentMethod
+from App.Http.Schema.Settings.PaymentMethodSchema import PaymentMethodSchema, updatePaymentMethod
 
 
 class PaymentController:

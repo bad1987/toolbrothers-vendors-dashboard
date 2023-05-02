@@ -3,7 +3,7 @@ from fastapi import Request, status, HTTPException
 from Security.Controllers import LoginController
 from Database.Models import Platform_settings
 from fastapi.responses import JSONResponse
-from schemas.Settings.PlentyMarketSchema import PlentyMarketSchema
+from App.Http.Schema.Settings.PlentyMarketSchema import PlentyMarketSchema
 from rich.console import Console
 console = Console()
 
