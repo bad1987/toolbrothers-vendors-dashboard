@@ -4,16 +4,16 @@ import { useRouter } from 'vue-router';
 import { ref, onMounted, onBeforeMount } from 'vue'
 import { acl } from '../../router/acl';
 
-  const userRef = ref({user: null, isAdmin: false})
+const userRef = ref({user: null, isAdmin: false})
 
-  onBeforeMount( async () => {
+onBeforeMount( async () => {
 
-      const test = await acl()
-      userRef.value = test
-      userRef.value.user = test
-      userRef.value.isAdmin = test.roles == "Role_admin"
-      console.log("get message user vendor", userRef.value.email );
-  })
+    const test = await acl()
+    userRef.value = test
+    userRef.value.user = test
+    userRef.value.isAdmin = test.roles == "Role_admin"
+    console.log("get message user vendor", userRef.value.email );
+})
 
 const messages = ref([])
 const actualSkip = ref(0)
@@ -194,7 +194,7 @@ fetchMessages()
 
             <div v-if="is_data" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ">
                 <div v-for="items in messages" :key="items.id" className="md:flex md:justify-center md:flex-wrap hover:shadow-lg hover:scale-100 scale-90 transition-all duration-500">
-                    <div className="w-full h-84 p-3 border bg-white dark:bg-gray-600 dark:border-gray-500 mt-5 rounded-lg md:w-80">
+                    <div className="w-full h-84 p-3 border bg-white dark:bg-gray-600 dark:border-gray-500 mt-5 rounded-lg">
                         <div className="flex items-center gap-1">
                             <svg fill="currentColor" class="h-6 w-6 text-gray-300" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <path clip-rule="evenodd" fill-rule="evenodd" d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"></path>
@@ -216,33 +216,33 @@ fetchMessages()
             <!-- Card Footer -->
             <div class="flex items-center justify-between w-1/3 pt-3 mt-10 sm:pt-6">
                 <div class="flex space-x-4">
-                <select id="limits"
-                    @change="changeLimit()"
-                    v-model="actuaLimit"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
-                    <!-- <option selected>Limit to</option> -->
-                    <option v-for="limit in availableLimits" :key="limit" :selected="limit == 5" :value="limit">{{ limit }} Elements</option>
-                </select>
-                <svg v-if="actualSkip > 0" @click="fastBackward" class="text-gray-500 cursor-pointer" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5"></path>
-                </svg>
-                <div class="flex space-x-2">
-                    <!-- Previous Button -->
-                    <div
-                    v-if="actualSkip > 0"
-                    @click="previousPage()"
-                    class="inline-flex items-center px-4 py-2 mr-3 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                    Previous
-                </div>
-                    <div
-                    @click="nextPage()"
-                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                    Next
+                    <select id="limits"
+                        @change="changeLimit()"
+                        v-model="actuaLimit"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500">
+                        <!-- <option selected>Limit to</option> -->
+                        <option v-for="limit in availableLimits" :key="limit" :selected="limit == 5" :value="limit">{{ limit }} Elements</option>
+                    </select>
+                    <svg v-if="actualSkip > 0" @click="fastBackward" class="text-gray-500 cursor-pointer" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5"></path>
+                    </svg>
+                    <div class="flex space-x-2">
+                        <!-- Previous Button -->
+                        <div
+                        v-if="actualSkip > 0"
+                        @click="previousPage()"
+                        class="inline-flex items-center px-4 py-2 mr-3 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                        Previous
                     </div>
-                </div>
-                <svg @click="fastForward()" class="text-gray-500 cursor-pointer" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 4.5l7.5 7.5-7.5 7.5m-6-15l7.5 7.5-7.5 7.5"></path>
-                </svg>
+                        <div
+                        @click="nextPage()"
+                        class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                        Next
+                        </div>
+                    </div>
+                    <svg @click="fastForward()" class="text-gray-500 cursor-pointer" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 4.5l7.5 7.5-7.5 7.5m-6-15l7.5 7.5-7.5 7.5"></path>
+                    </svg>
                 </div>
             </div>
 
