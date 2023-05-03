@@ -92,6 +92,10 @@ async def get_orders_stats(request: Request, start_date: str, end_date: str, db_
     res.update({
         'prev_period': p_stats
     })
+    res.update({
+        'start_date': start_date,
+        'end_date': end_date
+    })
     return res
 
 @route.get('/orders/grouped')
