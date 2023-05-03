@@ -7,6 +7,7 @@ from fastapi.responses import JSONResponse
 from App.Http.Schema.MessageSchema import ChatSchema
 from datetime import datetime
 from rich.console import Console
+from Services.SendEmail import send_email
 console = Console()
 
 class MessageController:
@@ -73,6 +74,8 @@ class MessageController:
             db_cscart.commit()
             db_cscart.flush(message)
             
+            send_email("mafobruno990@gmail.com", "New message Dinotech", f"Hello, {user.firstname} your have new message on Dinotech, please click this link for read message.")
+            
             return JSONResponse(status_code=status.HTTP_201_CREATED, content='Create successful !!')  
             
         last_new_message = Cscart_vendor_communications()
@@ -90,7 +93,7 @@ class MessageController:
         db_cscart.flush(last_new_message)
         last_message.last_updated = datetime.timestamp(datetime.now())
         
-        message.user_id = chatSchema.user_id
+        last_message.user_id = chatSchema.user_id
         db_cscart.commit()
         db_cscart.flush(last_message)
         
@@ -99,6 +102,8 @@ class MessageController:
         db_cscart.add(message)
         db_cscart.commit()
         db_cscart.flush(message)
+        
+        send_email("mafobruno990@gmail.com", "New message Dinotech", f"Hello, {user.firstname} your have new message on Dinotech, please click this link for read message.")
         
         return JSONResponse(status_code=status.HTTP_201_CREATED, content='Create successful !!')  
         

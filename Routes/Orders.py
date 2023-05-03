@@ -42,18 +42,6 @@ def get_db_cscart():
 def timestamp_to_date(s):
     return time.ctime(s)
 
-# @route.get("/orders", response_class=HTMLResponse)
-# async def get_order_by_vendor(request: Request, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart)):
-
-#     result = OrderController.get_orders_by_vendor_connected(request, db_local, db_cscart)
-#     context = {
-#         "request": request,
-#         "orders": result["orders"],
-#         "user": result["user"]
-#     }
-    
-#     return templates.TemplateResponse("orders/index.html", context) 
-
 @route.get('/orders/list/', response_class=JSONResponse)
 @requires_permission('read', ModelNameEnum.ORDER_MODEL.value)
 async def get_all_orders(request: Request, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart), _user: dict = Depends(is_authenticated), skip: int = 0, limit: int = 10):
