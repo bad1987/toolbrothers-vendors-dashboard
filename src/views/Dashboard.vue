@@ -2,61 +2,23 @@
 import { initFlowbite } from 'flowbite'
 import { onMounted, ref, onBeforeMount } from 'vue'
 import DateRangePicker from 'flowbite-datepicker/DateRangePicker';
-import { Chart, registerables } from 'chart.js'
-import Plotly, { lo } from 'plotly.js-dist'
 import { statStore } from '../stores/StatStore'
 import moment from 'moment';
 import { getStats } from '../api';
-import axios from 'axios';
 import Statistic from '../components/dashboard/Statistic.vue';
 import GraphStatistic from '../components/dashboard/GraphStatistic.vue';
+import initChart from '../utils/drawshart';
+import { useLoaderStore } from '../stores/statestore';
+import { storeToRefs } from 'pinia';
 
-const chart = ref(null)
 const _statstore = statStore()
+const loaderStore = useLoaderStore()
+const chart = ref(null)
 const isErrorDate = ref(false)
 const ErrorMessage = ref("")
-const isLoading = ref(false)
 const dates = ref(null)
 
-const dataState = ref(_statstore.stats)
-
-Chart.register(...registerables)
-  const chartData = ref([
-      ['Date', 'Nombre'],
-      [new Date(2023, 0, 1), 100],
-      [new Date(2023, 0, 2), 150],
-      [new Date(2023, 0, 3), 200],
-      [new Date(2023, 0, 4), 250],
-      [new Date(2023, 0, 5), 300],
-      [new Date(2023, 0, 6), 300],
-      [new Date(2023, 0, 7), 300],
-      [new Date(2023, 0, 8), 300],
-      [new Date(2023, 0, 9), 300],
-      [new Date(2023, 0, 10), 300],
-      [new Date(2023, 0, 11), 300],
-      [new Date(2023, 0, 12), 300],
-      [new Date(2023, 0, 13), 300],
-      [new Date(2023, 0, 14), 300],
-      [new Date(2023, 0, 15), 300],
-      [new Date(2023, 0, 16), 300],
-      [new Date(2023, 0, 17), 300],
-      [new Date(2023, 0, 18), 300],
-      [new Date(2023, 0, 19), 300],
-      [new Date(2023, 0, 20), 300],
-      [new Date(2023, 0, 21), 300],
-      [new Date(2023, 0, 22), 300],
-      [new Date(2023, 0, 23), 300],
-      [new Date(2023, 0, 24), 300],
-    ]);
-
-  const chartOptions = ref({
-    title: 'Nombre de ventes par jour',
-    curveType: 'function',
-    height: 500,
-    width: '100%'
-  });
-
-  Chart.register(...registerables)
+const { isLoading } = storeToRefs(loaderStore)
 
 function handleSubmitDate () {
   isLoading.value = true
@@ -78,7 +40,7 @@ function handleSubmitDate () {
     ErrorMessage.value = "You cannot exceed the current date"
   }else{
     getStats(_statstore.setStats, data).then(ans => {
-      initChart(ans)      
+      initChart(ans, dates)      
       isLoading.value = false
     })
     isErrorDate.value = false;
@@ -93,13 +55,6 @@ onMounted(async () => {
   const dateRangePickerEl = document.getElementById('date-rangepicker');
   new DateRangePicker(dateRangePickerEl, {
   });
-  
-  _statstore.init().then(ans => {
-      initChart(ans)      
-      isLoading.value = false
-    })
-
-  // getStats(_statstore.setStats, null)
 })
 
 onBeforeMount (async () => {
@@ -107,55 +62,6 @@ onBeforeMount (async () => {
   // initialize the stats store
   // _statstore.init()
 })
-
-function initChart(datas) {
-  if (!datas) return
-
-  // if (dates.value && moment(dates.value.end_date).diff(dates.value.start_date, 'month') <= 12) {
-  //   console.log(datas.chart_datas.map(x => x.date.slice(5)))
-  //  // Plot the chart based on months 
-  //   Plotly.newPlot('main-chart', [
-  //     {
-  //       x: datas.chart_datas.map(x => x.date.slice(5)),
-  //       y: datas.chart_datas.map(x => x.count),
-  //       type: 'scatter',
-  //       mode: 'lines',
-  //       name: 'Current period'
-  //     },
-  //     {
-  //       x: datas.prev_period.prev_chart.map(x => x.date.slice(5)),
-  //       y: datas.prev_period.prev_chart.map(x => x.count),
-  //       type: 'scatter',
-  //       mode: 'lines',
-  //       name: 'Prev period'
-  //     }
-  //   ], {
-  //         xaxis: { tickformat: '%m-%d' }
-  //   }, {
-  //     displayModeBar: false, scrollZoom: false, responsive: true
-  //   })
-
-  //  return
-  // }
-
-  const element = document.getElementById('main-chart')
-  Plotly.newPlot('main-chart', [
-    {
-      x: datas.chart_datas.map(x => x.date),
-      y: datas.chart_datas.map(x => x.count),
-      type: 'scatter',
-      name: 'Current period'
-    },
-    {
-      x: datas.prev_period.prev_chart.map(x => x.date),
-      y: datas.prev_period.prev_chart.map(x => x.count),
-      type: 'scatter',
-      name: 'Prev period'
-    }
-  ], {paper_bgcolor:"#FFF3"}, {
-    displayModeBar: false, scrollZoom: false, responsive: true
-  })
-}
 </script>
 
 <template>
@@ -222,13 +128,13 @@ function initChart(datas) {
             </div>
           </div>
           <!-- statistic graph -->
-          <GraphStatistic :isLoading="isLoading" />
+          <GraphStatistic />
           
           <!-- statistic number -->
           <div class="flex items-center justify-between pt-3 mt-4 border-t border-gray-200 sm:pt-6 dark:border-gray-700">
           </div>
         </div>
-        <Statistic :isLoading="isLoading" />
+        <Statistic/>
        
     </div>
   </div>
