@@ -8,6 +8,7 @@ import ForgotPassword from '../views/ForgotPassword.vue'
 import ResetPassword from '../views/ResetPassword.vue'
 import Payment_method from '../views/Settings/Payment_method/index.vue'
 import Plenty_market from '../views/Settings/Plenty_market/index.vue'
+import SettingApi from '../views/Settings/SettingApi.vue'
 import Product from '../views/Products/index.vue'
 import Message from '../views/messages/Index.vue'
 import Chat from '../views/messages/Chat.vue'
@@ -97,6 +98,15 @@ const router = createRouter({
       path: '/plenty-market',
       name: 'plenty-market',
       component: Plenty_market,
+      meta: {
+        requiresAuth: true,
+        roles: ['Role_direct_sale']
+      }
+    },
+    {
+      path: '/api',
+      name: 'api',
+      component: SettingApi,
       meta: {
         requiresAuth: true,
         roles: ['Role_direct_sale']
