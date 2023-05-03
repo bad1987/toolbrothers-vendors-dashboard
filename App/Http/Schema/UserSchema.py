@@ -28,4 +28,7 @@ class PermissionSchema(BaseModel):
 
     class Config:
         orm_mode = True
+        
+class ApiSetting(BaseModel):
+    api_token: Optional[str]
     

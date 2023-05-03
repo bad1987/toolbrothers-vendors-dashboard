@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from Database import Models
 from Database.Connexion import engine
 import uvicorn
-from Routes.settings import Payments, PlentyMarket
+from Routes.settings import Payments, PlentyMarket, SettingApi
 from Security.Routes.Login_register import Login_register, Forgot_password
 from Routes import Users, Orders, Product, Errors, Message
 from fastapi.middleware.cors import CORSMiddleware
@@ -33,6 +33,7 @@ app.include_router(Payments.route)
 app.include_router(PlentyMarket.route)
 app.include_router(Product.route)
 app.include_router(Message.route)
+app.include_router(SettingApi.route)
  
 # static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
