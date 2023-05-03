@@ -86,9 +86,16 @@ def get_current_user_from_token(db: Session, token: str = Depends(oauth2_scheme)
 def get_current_user_from_api_token(request: Request, db: Session) -> UserDto:
     token = request.headers.get("Authorization")
     query = db.query(User).filter(User.api_token != None)
-    query = query.filter(crypto.verify(token, str(User.api_token))).first()
 
-    return user
+    if query.first() == None:
+        return None
+        
+    users = [user for user in query.all() if crypto.verify(token, user.api_token)]
+
+    if len(users) == 0:
+        return None
+
+    return users[0]
 
 def get_current_user_from_cookie(request: Request, db: Session) -> UserDto:
     """
