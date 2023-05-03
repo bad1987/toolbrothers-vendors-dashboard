@@ -21,6 +21,7 @@ class User(Base):
     default_language = Column(Enum(LanguageEnum, values_callable=lambda obj: [e.value for e in obj]), nullable=False)
     roles = Column(Enum(UserRoleEnum, values_callable=lambda obj: [e.value for e in obj]), nullable = False)
     status = Column(Enum(UserStatusEnum, values_callable=lambda obj: [e.value for e in obj]), nullable=False)
+    api_token = Column(String(255), nullable=True, unique=True)
     parent_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
 
     permissions = relationship("Permission", secondary='user_permissions')

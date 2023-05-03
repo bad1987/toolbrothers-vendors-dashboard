@@ -54,7 +54,6 @@ def authenticate_user(username: str, plain_password: str, db: Session) -> UserDt
         return False
     return user
 
-
 def decode_token(token: str, db: Session) -> UserDto:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED, 
@@ -84,6 +83,12 @@ def get_current_user_from_token(db: Session, token: str = Depends(oauth2_scheme)
     user = decode_token(token, db)
     return user
 
+def get_current_user_from_api_token(request: Request, db: Session) -> UserDto:
+    token = request.headers.get("Authorization")
+    query = db.query(User).filter(User.api_token != None)
+    query = query.filter(crypto.verify(token, str(User.api_token))).first()
+
+    return user
 
 def get_current_user_from_cookie(request: Request, db: Session) -> UserDto:
     """

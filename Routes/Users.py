@@ -49,6 +49,12 @@ def get_db_cscart():
 #check if user is connected
 async def is_authenticated(request: Request, db: Session = Depends(get_db)):
     user = LoginController.get_current_user_from_cookie(request, db)
+
+    if not user:
+        user = LoginController.get_current_user_from_api_token(request, db)
+
+    console.log(user)
+
     if not user:
         raise HTTPException(
             status_code=401,
