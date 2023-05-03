@@ -1,4 +1,5 @@
 <script setup>
+import { onMounted } from 'vue';
 import { statStore } from '../../stores/StatStore';
 import { useLoaderStore } from '../../stores/statestore';
 import { storeToRefs } from 'pinia';
@@ -8,6 +9,13 @@ const loaderStore = useLoaderStore()
 const { isLoading } = storeToRefs(loaderStore)
 
 const _statstore = statStore()
+
+const props = defineProps({
+  datas: Object
+})
+
+onMounted(() => {
+})
 
 
 </script>

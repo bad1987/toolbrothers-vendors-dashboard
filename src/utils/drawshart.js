@@ -4,17 +4,15 @@ import 'chartjs-adapter-moment'
 
 Chart.register(...registerables)
 
-export default function initChart(datas, dates) {
+export default function initChart(element, datas) {
     if (!datas) return
 
-    const prevInst = Object.values(Chart.instances).filter(c => c.canvas.id == 'stats-chart').pop()
+    const prevInst = Object.values(Chart.instances).filter(c => c.canvas.id == element).pop()
 
     if (prevInst) prevInst.destroy()
   
-    if (dates.value && moment(dates.value.end_date).diff(dates.value.start_date, 'month') <= 12) {
-
-        let combinedDates = [...new Set(datas.chart_datas.map(x => x.date.slice(5)).concat(datas.prev_period.prev_chart.map(x => x.date.slice(5)).sort()).sort())]
-        new Chart('stats-chart', {
+    if (moment(datas.end_date).diff(datas.start_date, 'day') <= 365) {
+        new Chart(element, {
             type: 'line',
             data: {
                 datasets: [
@@ -64,11 +62,16 @@ export default function initChart(datas, dates) {
                 ]
             },
             options: {
-                // scales: {
-                //     xAxis: {
-                //         type: 'time'
-                //     }
-                // },
+                scales: {
+                    xAxis: {
+                        type: 'time',
+                        time: {
+                            parser: 'YYYY-MM-DD',
+                            tooltipFormat: 'YYYY MMM DD',
+                            unit: 'month',
+                          }
+                    }
+                },
                 responsive: true,
             }
         })

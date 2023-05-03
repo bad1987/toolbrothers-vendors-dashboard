@@ -9,6 +9,7 @@ export let statStore = defineStore("stats", {
     // actions
     actions: {
         async init() {
+            if (this.stats) return this.stats
             return getStats(this.setStats)
         },
         setStats(stats) {

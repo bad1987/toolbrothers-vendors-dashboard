@@ -1,7 +1,6 @@
 <script setup>
 import { initFlowbite } from 'flowbite'
 import { onMounted, ref, onBeforeMount } from 'vue'
-import DateRangePicker from 'flowbite-datepicker/DateRangePicker';
 import { statStore } from '../stores/StatStore'
 import moment from 'moment';
 import { getStats } from '../api';
@@ -10,57 +9,44 @@ import GraphStatistic from '../components/dashboard/GraphStatistic.vue';
 import initChart from '../utils/drawshart';
 import { useLoaderStore } from '../stores/statestore';
 import { storeToRefs } from 'pinia';
+import DatePicker from '../components/DatePicker.vue';
 
 const _statstore = statStore()
 const loaderStore = useLoaderStore()
-const chart = ref(null)
 const isErrorDate = ref(false)
 const ErrorMessage = ref("")
+const statDatas = ref(null)
 const dates = ref(null)
 
 const { isLoading } = storeToRefs(loaderStore)
 
-function handleSubmitDate () {
-  isLoading.value = true
+function handleSubmitDate (_dates) {
+  loaderStore.changeLoadingStatus(true)  
   const today = new Date();
-  const start_date = moment(document.querySelector("input[name=start_date]").value, "MM/DD/YYYY").format('YYYY-MM-DD') 
-  const end_date = moment(document.querySelector("input[name=end_date]").value, "MM/DD/YYYY").format('YYYY-MM-DD')
-  if (document.querySelector("input[name=start_date]").value == '') {
-    isLoading.value = false
-    return
-  }
+  const start_date = moment(_dates.start_date, "MM/DD/YYYY").format('YYYY-MM-DD') 
+  const end_date = moment(_dates.end_date, "MM/DD/YYYY").format('YYYY-MM-DD')
   dates.value = { start_date, end_date }
   const data = {
     start_date,
     end_date
   };
-  if(data.end_date > moment(today).format('YYYY-MM-DD') | data.start_date > moment(today).format('YYYY-MM-DD') ){
-
+  if(data.end_date > moment(today).format('YYYY-MM-DD') || data.start_date > moment(today).format('YYYY-MM-DD') ){
     isErrorDate.value = true;
     ErrorMessage.value = "You cannot exceed the current date"
+    loaderStore.changeLoadingStatus(false)  
   }else{
     getStats(_statstore.setStats, data).then(ans => {
-      initChart(ans, dates)      
-      isLoading.value = false
+      statDatas.value = ans
+      loaderStore.changeLoadingStatus(false)  
     })
     isErrorDate.value = false;
-  }
+  }   
 }
 
 onMounted(async () => {
   // initialize the stats store
-  isLoading.value = true
+  loaderStore.changeLoadingStatus(true)
   initFlowbite()
-  
-  const dateRangePickerEl = document.getElementById('date-rangepicker');
-  new DateRangePicker(dateRangePickerEl, {
-  });
-})
-
-onBeforeMount (async () => {
-
-  // initialize the stats store
-  // _statstore.init()
 })
 </script>
 
@@ -76,44 +62,9 @@ onBeforeMount (async () => {
       </div>
       <!-- Filter by date form -->
       <div class="flex items-center justify-end flex-1 text-base font-medium text-green-500 dark:text-green-400 mb-5 ">
-          <div date-rangepicker id="date-rangepicker" class="flex items-center space-x-4">
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path
-                      d="M5.25 12a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H6a.75.75 0 01-.75-.75V12zM6 13.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V14a.75.75 0 00-.75-.75H6zM7.25 12a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H8a.75.75 0 01-.75-.75V12zM8 13.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V14a.75.75 0 00-.75-.75H8zM9.25 10a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H10a.75.75 0 01-.75-.75V10zM10 11.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V12a.75.75 0 00-.75-.75H10zM9.25 14a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H10a.75.75 0 01-.75-.75V14zM12 9.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V10a.75.75 0 00-.75-.75H12zM11.25 12a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H12a.75.75 0 01-.75-.75V12zM12 13.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V14a.75.75 0 00-.75-.75H12zM13.25 10a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H14a.75.75 0 01-.75-.75V10zM14 11.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V12a.75.75 0 00-.75-.75H14z">
-                    </path>
-                    <path clip-rule="evenodd" fill-rule="evenodd"
-                      d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z">
-                    </path>
-                  </svg>
-                </div>
-                <input type="text" name="start_date" required
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                  placeholder="Start date"> 
-              </div>
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path
-                      d="M5.25 12a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H6a.75.75 0 01-.75-.75V12zM6 13.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V14a.75.75 0 00-.75-.75H6zM7.25 12a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H8a.75.75 0 01-.75-.75V12zM8 13.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V14a.75.75 0 00-.75-.75H8zM9.25 10a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H10a.75.75 0 01-.75-.75V10zM10 11.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V12a.75.75 0 00-.75-.75H10zM9.25 14a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H10a.75.75 0 01-.75-.75V14zM12 9.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V10a.75.75 0 00-.75-.75H12zM11.25 12a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H12a.75.75 0 01-.75-.75V12zM12 13.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V14a.75.75 0 00-.75-.75H12zM13.25 10a.75.75 0 01.75-.75h.01a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75H14a.75.75 0 01-.75-.75V10zM14 11.25a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 00.75-.75V12a.75.75 0 00-.75-.75H14z">
-                    </path>
-                    <path clip-rule="evenodd" fill-rule="evenodd"
-                      d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z">
-                    </path>
-                  </svg>
-                </div>
-                <input type="text" name="end_date"  required
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                  placeholder="End date">
-              </div>
-              <button @click="handleSubmitDate" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 mt-2 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Change date</button>
-          </div>
+          <DatePicker @filter-date-range="handleSubmitDate" />
       </div>
       <div class="grid gap-4 xl:grid-cols-2 2xl:grid-cols-3">
-        <!-- Main widget -->
         <div
           class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">
           <div class="flex items-center justify-between mb-4" v-if="_statstore.stats">
@@ -128,14 +79,13 @@ onBeforeMount (async () => {
             </div>
           </div>
           <!-- statistic graph -->
-          <GraphStatistic />
+          <GraphStatistic :datas="statDatas"/>
           
           <!-- statistic number -->
           <div class="flex items-center justify-between pt-3 mt-4 border-t border-gray-200 sm:pt-6 dark:border-gray-700">
           </div>
         </div>
         <Statistic/>
-       
     </div>
   </div>
 
