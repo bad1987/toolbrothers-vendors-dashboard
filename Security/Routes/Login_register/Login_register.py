@@ -2,6 +2,7 @@ import json
 from typing import Dict, List, Optional
 from fastapi import Depends, HTTPException, Request, Response, status, APIRouter
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
+from Database.Models import Login_Attempt
 from Security.OAuth2PasswordBearerWithCookie import OAuth2PasswordBearerWithCookie
 from fastapi.security import OAuth2PasswordRequestForm
 # from fastapi.templating import Jinja2Templates
@@ -58,13 +59,32 @@ def get_db():
 
 @route.post("token")
 def login_for_access_token(
+    request: Request,
     form_data: dict,
     db: Session = Depends(get_db)
 ) -> Dict[str, str]:
     user = LoginController.authenticate_user(form_data['username'], form_data['password'], db)
+    # search if previous attempts
+    connected_ip = request.client.host
+    attempt = db.query(Login_Attempt).filter(Login_Attempt.ip == connected_ip).first()
     if not user:
+        if attempt is None:
+            attempt = Login_Attempt()
+
+            attempt.ip = connected_ip
+            attempt.count = 1
+            db.add(attempt)
+        else:
+            attempt.count += 1
+
+        db.commit()
+
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password")
     access_token = LoginController.create_access_token(data={"username": user.email})
+
+    if attempt != None:
+        attempt.count = 0
+        db.commit()
     
     # Set an HttpOnly cookie in the response. `httponly=True` prevents 
     # JavaScript from reading the cookie. 
@@ -151,7 +171,7 @@ def login_for_access_token(
 async def login_post(request: Request, db: Session = Depends(get_db)):
     credentials = json.loads(await request.body())
     response = JSONResponse(jsonable_encoder(credentials))
-    res = login_for_access_token(credentials, db)
+    res = login_for_access_token(request, credentials, db)
     res.update({'expired_at': Settings.ACCESS_TOKEN_EXPIRE_MINUTES})
     res.update({'cookie_name': Settings.COOKIE_NAME})
     return jsonable_encoder(res)

@@ -8,7 +8,7 @@ from Routes import Users, Orders, Product, Errors, Message
 from fastapi.middleware.cors import CORSMiddleware
 
 from middlewares.FirewallMiddleware import firewall_middleware
-from middlewares.AuthorizationMiddleware import orders_permissions
+from middlewares.AuthorizationMiddleware import orders_permissions, block_ip_middleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi.staticfiles import StaticFiles
 
@@ -45,6 +45,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"]
 )
+app.add_middleware(BaseHTTPMiddleware, dispatch=block_ip_middleware)
 # authorizations
 # app.add_middleware(BaseHTTPMiddleware, dispatch=orders_permissions)
 

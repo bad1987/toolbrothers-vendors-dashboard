@@ -86,3 +86,9 @@ class User_Permission(Base):
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     permission_id = Column(Integer, ForeignKey("permissions.id", ondelete="CASCADE"), nullable=False)
+
+class Login_Attempt(Base):
+    __tablename__ = "login_attempts"
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    ip = Column(String(20), unique=True, nullable=False)
+    count = Column(Integer, default=0)
