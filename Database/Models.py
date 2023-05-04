@@ -92,3 +92,4 @@ class Login_Attempt(Base):
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     ip = Column(String(20), unique=True, nullable=False)
     count = Column(Integer, default=0)
+    timestamp = Column(Integer, nullable=True)

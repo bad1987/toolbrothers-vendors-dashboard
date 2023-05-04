@@ -37,6 +37,7 @@ app.include_router(SettingApi.route)
 # static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+app.add_middleware(BaseHTTPMiddleware, dispatch=block_ip_middleware)
 # cors
 app.add_middleware( 
     CORSMiddleware,
@@ -45,7 +46,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"]
 )
-app.add_middleware(BaseHTTPMiddleware, dispatch=block_ip_middleware)
 # authorizations
 # app.add_middleware(BaseHTTPMiddleware, dispatch=orders_permissions)
 
