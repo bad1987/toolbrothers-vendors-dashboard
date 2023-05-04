@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 from Database.Models import User
 from rich.console import Console
 from Database.Connexion import SessionLocal
-import json
+import json, hashlib
 
 # Dependency
 def get_db():
@@ -84,18 +84,22 @@ def get_current_user_from_token(db: Session, token: str = Depends(oauth2_scheme)
     return user
 
 def get_current_user_from_api_token(request: Request, db: Session) -> UserDto:
-    token = request.headers.get("Authorization")
-    query = db.query(User).filter(User.api_token != None)
+    try:
+        token = request.headers.get("Authorization")
+        playload = jwt.decode(token, Settings.SECRET_KEY, [Settings.ALGORITHM])
+        email = playload.get('email')
 
-    if query.first() == None:
-        return None
+        user = db.query(User).filter(User.email == email).first()
+
+        if token == user.api_token:
+            return user
         
-    users = [user for user in query.all() if crypto.verify(token, user.api_token)]
-
-    if len(users) == 0:
         return None
-
-    return users[0]
+    except:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal error"
+        )
 
 def get_current_user_from_cookie(request: Request, db: Session) -> UserDto:
     """

@@ -25,7 +25,7 @@ from App.Http.Schema.UserSchema import UserSchema
 
 console = Console()
 
-route = APIRouter(prefix='/admin', tags=['Users system'])
+route = APIRouter(prefix='/admin', tags=['Users system'], include_in_schema=False)
 
 roles_checker = Role_checker()
 

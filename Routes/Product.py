@@ -23,7 +23,7 @@ console = Console()
 
 roles_checker = Role_checker()
 
-route = APIRouter(prefix='/products', tags=['Import products in cs-cart'])
+route = APIRouter(prefix='/products', tags=['Import products from cs-cart'], include_in_schema=False)
 
 
 def get_db():

@@ -12,7 +12,7 @@ from App.Http.Schema.UserSchema import UserSchema
 # instantiate a new translator class
 translator = i18n.Translator('languages/')
 
-route = APIRouter(prefix='', tags=['Forgot password user'])
+route = APIRouter(prefix='', tags=['Forgot password user'], include_in_schema=False)
 console = Console()
 
 

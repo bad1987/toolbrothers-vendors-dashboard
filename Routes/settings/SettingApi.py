@@ -15,7 +15,7 @@ from Routes.Users import is_authenticated
 
 console = Console()
 
-route = APIRouter(prefix='/setting', tags=['Get token api from user'])
+route = APIRouter(prefix='/setting', tags=['Get token api from user'], include_in_schema=False)
 
 roles_checker = Role_checker()
 

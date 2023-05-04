@@ -10,13 +10,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from middlewares.FirewallMiddleware import firewall_middleware
 from middlewares.AuthorizationMiddleware import orders_permissions
 from starlette.middleware.base import BaseHTTPMiddleware
-
 from fastapi.staticfiles import StaticFiles
 
 Models.Base.metadata.create_all(bind=engine)   
 app = FastAPI(title="TOOLBROTHER API", version="1.0.0", description="This API is to design the Toolbrother dashboard") 
 
-@app.get('/', tags=["Welcome"])
+@app.get('/', tags=["Welcome"], include_in_schema=False)
 def welcome(): return {"Message": "Welcome one api on", "Version": "1.0.0", "Build by": "TOOLBROTHER Enterprise"}
 
 
@@ -44,7 +43,7 @@ app.add_middleware(
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=["*"]
 )
 # authorizations
 # app.add_middleware(BaseHTTPMiddleware, dispatch=orders_permissions)

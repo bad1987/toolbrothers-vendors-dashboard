@@ -13,7 +13,7 @@ from fastapi.encoders import jsonable_encoder
 
 console = Console()
 
-route = APIRouter(prefix='', tags=['Message center'])
+route = APIRouter(prefix='', tags=['Message center'], include_in_schema=False)
 
 
 roles_checker = Role_checker()

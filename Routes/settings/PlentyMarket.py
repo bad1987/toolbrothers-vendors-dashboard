@@ -15,7 +15,7 @@ from Routes.Users import is_authenticated
 
 console = Console()
 
-route = APIRouter(prefix='/plenty-market', tags=['Plenty market settings'])
+route = APIRouter(prefix='/plenty-market', tags=['Plenty market settings'], include_in_schema=False)
 
 roles_checker = Role_checker()
 

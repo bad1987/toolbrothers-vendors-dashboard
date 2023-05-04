@@ -5,6 +5,8 @@ from rich.console import Console
 from Database.Models import User
 from datetime import datetime, timedelta
 import jwt
+
+from Security.Settings import Settings
 console = Console()
 
 class ApiSettingController:
@@ -12,15 +14,14 @@ class ApiSettingController:
         user = LoginController.get_current_user_from_cookie(request, db_local)
         userToken = db_local.query(User).filter(User.id == user.id).first()
         
-        expire_time = datetime.utcnow() + timedelta(minutes=1)
-        expired_ad = {"user_id": userToken.id, "exp": expire_time, "email": userToken.email}
-        encoded_token = jwt.encode(expired_ad, "secretApiSettingDinotech1234./*@#", algorithm="HS256")
+        expire_time = datetime.utcnow() + timedelta(days=Settings.API_TOKEN_EXPIRE_DAYS)
+        playload = {"exp": expire_time, "email": userToken.email}
+        encoded_token = jwt.encode(playload, Settings.SECRET_KEY, algorithm=Settings.ALGORITHM)
         
         userToken.api_token = encoded_token
         db_local.commit()
-        db_local.flush(userToken)
         
-        return userToken.api_token
+        return encoded_token
  
     def get_token_api (request: Request, db_local: Session):
         user = LoginController.get_current_user_from_cookie(request, db_local)

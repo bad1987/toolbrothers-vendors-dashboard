@@ -21,7 +21,7 @@ from App.Http.Schema.UserSchema import UserSchema
 # instantiate a new translator class
 translator = i18n.Translator('languages/')
 
-route = APIRouter(prefix='', tags=['Handle account users'])
+route = APIRouter(prefix='', tags=['Handle account users'], include_in_schema=False)
 # templates = Jinja2Templates(directory="templates")
 console = Console()
 
