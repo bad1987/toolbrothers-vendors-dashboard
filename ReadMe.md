@@ -24,3 +24,7 @@ localhost:8000/payment/payment-method-system
  - SMTP_SERVER
  - SMTP_PORT
  # in Setting.py file, create this variable in .env file and give value
+
+ # set these values in seccurity settings
+
+ - API_TOKEN_EXPIRE_DAYS
