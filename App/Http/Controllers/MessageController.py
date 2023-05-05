@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.sql import text
-from fastapi import Request, status, HTTPException
+from fastapi import Request, status
 from Security.Controllers import LoginController
 from Database.CscartModels import CscartUsers, Cscart_vendor_communications, Cscart_vendor_communication_messages
 from fastapi.responses import JSONResponse

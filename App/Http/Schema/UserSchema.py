@@ -3,6 +3,7 @@ from typing import Text, List, Optional
 from App.Enums.UserEnums import UserStatusEnum
 from App.Enums.UserRoleEnum import UserRoleEnum
 from App.Enums.LanguageEnum import LanguageEnum
+from App.Http.Schema.PermissionSchema import PermissionSchema
 
 class UserSchema(BaseModel):
     id: Optional[int]
@@ -32,3 +33,18 @@ class PermissionSchema(BaseModel):
 class ApiSetting(BaseModel):
     api_token: Optional[str]
     
+
+class UserCreateSubVendorSchema(BaseModel):
+    email: Optional[str]
+    username: Optional[str]
+    roles: Optional[UserRoleEnum]
+    status: Optional[UserStatusEnum]
+    permissions: Optional[PermissionSchema] = [{}]
+    firstname: Optional[str]
+    lastname: Optional[str]
+    default_language: Optional[str]
+    password: Optional[str]
+    parent_id: Optional[int]
+    
+    class Config:
+        orm_mode = True
