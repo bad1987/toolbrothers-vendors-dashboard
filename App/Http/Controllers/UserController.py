@@ -30,9 +30,7 @@ class UserController:
             db.close()
         return permission_schemas
     
-    def get_sub_vendor_for_vendor(db_local: Session, request: Request):
-        user = LoginController.get_current_user_from_cookie(request, db_local)
-        
+    def get_sub_vendor_for_vendor(db_local: Session, request: Request, user: UserDto):
         user_vendor = db_local.query(User).filter(User.parent_id == user.id).all()
         permissions = db_local.query(Permission).all()
         
