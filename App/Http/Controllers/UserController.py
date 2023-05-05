@@ -59,27 +59,19 @@ class UserController:
         db_local.commit()
 
         if schema.permissions:
-            for item in schema.permissions:
-                permission = Permission()
-                
-                permission.name = item.name
-                permission.mode = item.mode
-                permission.model_name = item.model_name
-                permission.description = item.description
-                
-                db_local.add(permission)
-                db_local.commit()
-                
-                userPermission = User_Permission()
-                
-                userPermission.permission_id = permission.id
-                userPermission.user_id = userSubVendor.id
-                
-                db_local.add(userPermission)
-                db_local.commit()
-                
-                db_local.flush(permission)
-                db_local.flush(userPermission)
+            for perm_id in schema.permissions:
+                permission = db_local.query(Permission).filter(Permission.id == int(perm_id)).first()
+
+                if permission != None: 
+                    
+                    userPermission = User_Permission()
+                    
+                    userPermission.permission_id = permission.id
+                    userPermission.user_id = userSubVendor.id
+                    
+                    db_local.add(userPermission)
+                    db_local.commit()
+                    db_local.flush(userPermission)
                 
         db_local.flush(userSubVendor)
         

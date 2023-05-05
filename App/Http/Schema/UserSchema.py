@@ -39,7 +39,7 @@ class UserCreateSubVendorSchema(BaseModel):
     username: Optional[str]
     roles: Optional[UserRoleEnum]
     status: Optional[UserStatusEnum]
-    permissions: Optional[PermissionSchema] = [{}]
+    permissions: Optional[List]
     firstname: Optional[str]
     lastname: Optional[str]
     default_language: Optional[str]
