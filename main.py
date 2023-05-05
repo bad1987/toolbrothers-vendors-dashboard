@@ -4,7 +4,7 @@ from Database.Connexion import engine
 import uvicorn
 from Routes.settings import Payments, PlentyMarket, SettingApi
 from Security.Routes.Login_register import Login_register, Forgot_password
-from Routes import Users, Orders, Product, Errors, Message
+from Routes import Users, Orders, Product, Errors, Message, SubVendor
 from fastapi.middleware.cors import CORSMiddleware
 
 from middlewares.FirewallMiddleware import firewall_middleware
@@ -33,6 +33,7 @@ app.include_router(PlentyMarket.route)
 app.include_router(Product.route)
 app.include_router(Message.route)
 app.include_router(SettingApi.route)
+app.include_router(SubVendor.route)
  
 # static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
