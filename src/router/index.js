@@ -46,7 +46,7 @@ const router = createRouter({
       component: Vendors,
       meta: {
         requiresAuth: true,
-        roles: ['Role_affiliate']
+        roles: ['Role_affiliate', 'Role_direct_sale']
       }
     },
     {

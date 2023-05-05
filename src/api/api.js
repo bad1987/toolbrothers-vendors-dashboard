@@ -42,8 +42,7 @@ const userApi = {
         })
     },
 
-    updateUser: (obj, users, selectedUser, selectedPermissions, loading) => {
-        loading.value = true
+    updateUser: async (obj, users, selectedUser, selectedPermissions) => {
         if (selectedUser.value !== undefined && obj == null) {
             const datas = {...selectedUser.value,
                  permissions: selectedPermissions.value,
@@ -58,7 +57,6 @@ const userApi = {
 
             })
             .catch(err => {
-                loading.value = false
                 console.log(err)
             })
         } else if (obj != null) {
@@ -71,7 +69,6 @@ const userApi = {
 
             }).then()
             .catch(err => {
-                loading.value = false
                 console.log(err)
             })
         }

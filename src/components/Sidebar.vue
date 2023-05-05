@@ -26,7 +26,7 @@
                     <span class="ml-3">{{$t("dashboard")}}</span>
                     </RouterLink>
                 </li>
-                <li>
+                <li v-if="userRef.isAdmin">
                   <button type="button" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="dropdown-example" data-collapse-toggle="dropdown-example">
                         <svg  class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"></path>
@@ -36,16 +36,24 @@
                   </button>
                   <ul id="dropdown-example" class="hidden py-2 space-y-2">
                       <li>
-                          <RouterLink to="admin/users/vendors" v-if="userRef.isAdmin" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                          <RouterLink to="/admin/users/vendors" v-if="userRef.isAdmin" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
                             <span class="flex-1 ml-3 whitespace-nowrap">Vendors</span>
                           </RouterLink>
                       </li>
                       <li>
-                          <RouterLink to="admin/users/admins" v-if="userRef.isAdmin" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                          <RouterLink to="/admin/users/admins" v-if="userRef.isAdmin" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
                             <span class="flex-1 ml-3 whitespace-nowrap">System administrators</span>
                           </RouterLink>
                       </li>
                   </ul>
+                </li>
+                <li v-else>
+                  <RouterLink to="/users" class="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <svg  class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"></path>
+                    </svg>
+                    <span class="flex-1 ml-3 whitespace-nowrap">{{$t("users")}}</span>
+                  </RouterLink>
                 </li>
                 <li v-if="!userRef.isAdmin">
                     <RouterLink to="/orders" class="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
