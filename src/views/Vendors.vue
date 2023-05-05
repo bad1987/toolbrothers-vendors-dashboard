@@ -1,14 +1,75 @@
 <script setup>
-import { ref } from 'vue';
+import { onBeforeMount, onMounted, ref } from 'vue';
+import { userApi } from '../api/api';
+import { useLoaderStore } from '../stores/statestore';
+import { storeToRefs } from 'pinia';
+import { useRoute, useRouter } from 'vue-router';
+import { initFlowbite } from 'flowbite';
+import CheckboxGroup from './components/CheckboxGroup.vue';
+
+    const loadStore = useLoaderStore()
+    const route = useRoute()
+    const router = useRouter()
+
+    const { isLoading } = storeToRefs(loadStore)
 
 
-const users = ref([])
-const newUser = ref({})
+    const users = ref([])
+    const newUser = ref({
+        email: '',
+        password: '',
+        username: '',
+        status: false,
+    })
+    const permissions = ref([])
+    const selectedPermissions = ref([])
+
+    onBeforeMount(() => {
+        fetchUsers()
+    })
+
+    // onMounted(() => {
+    //     fetchUsers()
+    // })
 
 
-function addUser() {
+    function addUser() {
+        loadStore.changeLoadingStatus(true)
+        userApi.addUser(newUser, selectedPermissions, route, false)
+        .finally(() => loadStore.changeLoadingStatus(false))
+    }
 
-}
+    const fetchUsers = () => {
+        loadStore.changeLoadingStatus(true)
+        userApi.fetchUsers(users, permissions, router, route, false)
+        .then((data) => {
+            permissions.value = data.permissions
+            console.log('datas fredchess', data, data.ans)
+        })
+        .finally(() => {
+
+            console.log("finally", permissions.value)
+            loadStore.changeLoadingStatus(false)
+            initFlowbite()
+        })
+    }
+
+    function changeSelectedUser(email) {
+        Object.assign(selectedUser.value, users.value.find(x => x.email == email))
+        selectedPermissions.value = selectedUser.value.permissions.map(x => x.id)
+    }
+
+    function deactivateUser(id) {
+        Object.assign(selectedUser.value = users.value.find(x => x.id == id))
+
+        updateUser({status: selectedUser.value.status == 'A' ? 'D' : 'A', permissions: null})
+    }
+
+    function togglePermissionValue(item) {
+        if (selectedPermissions.value.indexOf(item.value) >= 0) 
+            selectedPermissions.value = selectedPermissions.value.filter(x => x != item.value)
+        else selectedPermissions.value.push(item.value)
+    }
 
 </script>
 
@@ -249,7 +310,7 @@ function addUser() {
                     <!-- Modal header -->
                     <div class="flex items-start justify-between p-5 border-b rounded-t dark:border-gray-700">
                         <h3 class="text-xl font-semibold dark:text-white">
-                            Add new vendor
+                            Add a new user
                         </h3>
                         <button type="button"
                             class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-700 dark:hover:text-white"
@@ -280,12 +341,10 @@ function addUser() {
                                         placeholder="example@company.com" required="">
                                 </div>
                                 <div class="col-span-6 sm:col-span-3">
-                                    <label for="role" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select a role</label>
-                                    <select v-model="newUser.roles" @change="changeRole" id="role" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                        <option value="" selected>Select a role</option>
-                                        <option value="Role_affiliate">Affiliate</option>
-                                        <option value="Role_direct_sale">Direct sale</option>
-                                    </select>
+                                    <label for="role" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Set a password</label>
+                                    <input v-model="newUser.password" type="email" name="email" id="email"
+                                        class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        placeholder="example@company.com" required="">
                                 </div>
                                 <div class="mt-9">
                                     <input v-model="newUser.status" id="checkbox-activate-create-vendor" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
@@ -295,6 +354,7 @@ function addUser() {
                                     <h4 class="font-bold dark:text-white">Set permissions</h4>
                                     <div class="permissions-list">
                                         <CheckboxGroup :is-grouped="true"
+                                            :items="permissions"
                                             name="permission" 
                                             id="checkbox-group-perm" 
                                             @toggle-value="togglePermissionValue"/>

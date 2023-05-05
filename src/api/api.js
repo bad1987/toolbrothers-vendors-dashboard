@@ -2,13 +2,18 @@ import axios from 'axios'
 import { initFlowbite, initModals } from 'flowbite'
 import { useRoute, useRouter } from 'vue-router'
 
+// A revoir...
+
 const userApi = {
-    fetchUsers: async (users, permissions, router, route) => {
-        axios.get(`/admin/users/${route.params.type}/list`).then((response) => {
+    fetchUsers: async (users, permissions, router, route, isAdmin = true) => {
+        let ans = {
+            permissions: []
+        }
+        const url = isAdmin ? `/admin/users/${route.params.type}/list` : '/sub-vendor/get'
+
+        axios.get(url).then((response) => {
             users.value = response.data.users
-            permissions.value = response.data.permissions
-        }).then(() => {
-            initFlowbite()
+            ans.permissions = permissions.value = response.data.permissions
         })
         .catch(err => {
             if (err.response) {
@@ -24,16 +29,19 @@ const userApi = {
                 }
             }
         })
+
+        return ans
     },
 
-    addUser: async (newUser, selectedPermissions, route) => {
+    addUser: async (newUser, selectedPermissions, route, isAdmin = true) => {
+        const url = isAdmin ? 'admin/users' : '/sub-vendor/create'
         newUser.value.permissions = selectedPermissions
 
         if (route.params.type === 'admins') {
             newUser.value.roles = 'Role_admin'
         }
 
-        return axios.post('admin/users', {
+        return axios.post(url, {
             username: newUser.value.username,
             email: newUser.value.email,
             status: newUser.value.status == true ? 'A' : 'D',
@@ -42,13 +50,14 @@ const userApi = {
         })
     },
 
-    updateUser: async (obj, users, selectedUser, selectedPermissions) => {
+    updateUser: async (obj, users, selectedUser, selectedPermissions, isAdmin = true) => {
+        const url = isAdmin ? 'admin/users' : '/users'
         if (selectedUser.value !== undefined && obj == null) {
             const datas = {...selectedUser.value,
                  permissions: selectedPermissions.value,
                  status: selectedUser.value.status
                 }
-            axios.put("admin/users/" + selectedUser.value.id, datas)
+            axios.put(url + selectedUser.value.id, datas)
             .then(response => {
                 let ans = users.value.map(x => x.id === selectedUser.value.id ? response.data : x)
                 users.value = ans
@@ -60,7 +69,7 @@ const userApi = {
                 console.log(err)
             })
         } else if (obj != null) {
-            axios.put("admin/users/" + selectedUser.value.id, obj)
+            axios.put(url + selectedUser.value.id, obj)
             .then(response => {
                 let ans = users.value.map(x => x.id === selectedUser.value.id ? response.data : x)
                 users.value = ans

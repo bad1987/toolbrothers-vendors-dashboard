@@ -1,5 +1,5 @@
 <script setup>
-    import { defineProps, ref, defineEmits } from 'vue'
+    import { defineProps, ref, defineEmits, onBeforeMount } from 'vue'
 
 
     const itemsByGroup = ref([])
@@ -12,13 +12,15 @@
         isHorizontal: Boolean
     })
 
-    props['items'].forEach(item => {
-        let val = itemsByGroup.value.find(x => x.name == item.text.split("_")[1])
-        if ( val == null) {
-            itemsByGroup.value.push({name: item.text.split("_")[1], items: [item]})
-        }else {
-            val.items.push(item)
-        }
+    onBeforeMount(() => {
+        props['items'].forEach(item => {
+            let val = itemsByGroup.value.find(x => x.name == item.text.split("_")[1])
+            if ( val == null) {
+                itemsByGroup.value.push({name: item.text.split("_")[1], items: [item]})
+            }else {
+                val.items.push(item)
+            }
+        })
     })
 
     const emits = defineEmits(['toggleValue'])
