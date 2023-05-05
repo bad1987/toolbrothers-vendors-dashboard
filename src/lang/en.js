@@ -15,7 +15,10 @@ const en = {
     "income": "Income",
     "sale": "Sale",
     "mb_active_product": "Active products",
-    "mb_out_of_store": "Out of stock"
+    "mb_out_of_store": "Out of stock",
+    "mb_your_token": "Your token Api",
+    "mb_description_token": "This token will allow you to use our API from your platform. It must be kept secret",
+    "mb_generate_a_new_token": "Generate a new token"
 }
 
 export default en

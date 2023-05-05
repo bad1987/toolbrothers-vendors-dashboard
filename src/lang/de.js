@@ -15,7 +15,10 @@ const de = {
   "income": "Einkommen",
   "sale": "Verkauf",
   "mb_active_product": "Aktive Produkte",
-  "mb_out_of_store": "Ausverkauft"
+  "mb_out_of_store": "Ausverkauft",
+  "mb_your_token": "Ihre Token-API",
+  "mb_description_token": "Mit diesem Token können Sie unsere API von Ihrer Plattform aus verwenden. ",
+  "mb_generate_a_new_token": "Generieren Sie ein neues Token"
 }
 
 export default de

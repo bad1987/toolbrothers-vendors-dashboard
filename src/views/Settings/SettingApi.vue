@@ -80,12 +80,12 @@ getTokenApi();
       <h1
         class="mb-4 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl dark:text-white"
       >
-        Your token Api
+        {{ $t('mb_your_token') }}
       </h1>
       <p
         class="my-5 mb-10 text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400"
       >
-      This token will allow you to use our API from your platform. It must be kept secret
+      {{ $t('mb_description_token') }}
       </p>
     </div>
 
@@ -183,7 +183,7 @@ getTokenApi();
         </div>
         <div class="flex items-center justify-between px-3 py-2 border-t dark:border-gray-600">
             <button @click="generateTokenApi" type="submit" class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">
-                Generate a new token
+                {{ $t('mb_generate_a_new_token') }}
             </button>
         </div>
     </div>
