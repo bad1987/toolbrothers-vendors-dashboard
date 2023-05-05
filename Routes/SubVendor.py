@@ -44,7 +44,8 @@ def timestamp_to_date(s):
 @route.get("/get")
 @requires_permission('read', ModelNameEnum.SETTING_MODEL.value)
 async def get_sub_vendor_by_vendor(request: Request, db_local: Session = Depends(get_db), _user: dict = Depends(is_authenticated)):
-    return UserController.get_sub_vendor_for_vendor(db_local, request)
+    result = UserController.get_sub_vendor_for_vendor(db_local, request)
+    return {"users": result['users'], "permissions": [{"text": perm.name, "value": perm.id, "description": perm.description} for perm in result['permissions']]}
 
 @route.post("/create")
 @requires_permission('write', ModelNameEnum.SETTING_MODEL.value)

@@ -34,8 +34,9 @@ class UserController:
         user = LoginController.get_current_user_from_cookie(request, db_local)
         
         user_vendor = db_local.query(User).filter(User.parent_id == user.id).all()
+        permissions = db_local.query(Permission).all()
         
-        return user_vendor
+        return {"users": user_vendor, "permissions": permissions}
     
     def create_sub_vendor_by_vendor(request: Request, schema: UserCreateSubVendorSchema, db_local: Session, user_vendor: UserDto):
         userSubVendor = User()
@@ -61,5 +62,5 @@ class UserController:
                 
         db_local.commit(userSubVendor)
         
-        return JSONResponse(status_code=status.HTTP_201_CREATED, content='Create successful !!')   
+        return {"user": userSubVendor} 
                 
