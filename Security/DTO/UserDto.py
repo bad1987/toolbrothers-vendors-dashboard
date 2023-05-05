@@ -27,6 +27,7 @@ class UserDto(BaseModel):
     roles: UserRoleEnum
     user_id: Optional[int]
     permissions: Optional[List[Permission]]
+    default_language: str
 
     class Config:
         orm_mode = True

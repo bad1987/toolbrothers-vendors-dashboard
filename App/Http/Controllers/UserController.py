@@ -11,6 +11,8 @@ from passlib.handlers.sha2_crypt import sha512_crypt as crypto
 from fastapi.responses import JSONResponse
 from rich.console import Console
 
+from Security.DTO.UserDto import UserDto
+
 console = Console()
 
 
@@ -35,45 +37,29 @@ class UserController:
         
         return user_vendor
     
-    def create_sub_vendor_by_vendor(request: Request, schema: UserCreateSubVendorSchema, db_local: Session):
-        user = LoginController.get_current_user_from_cookie(request, db_local)
-        user_vendor = db_local.query(User).filter(User.id == user.id).first()
+    def create_sub_vendor_by_vendor(request: Request, schema: UserCreateSubVendorSchema, db_local: Session, user_vendor: UserDto):
         userSubVendor = User()
         
         userSubVendor.email = schema.email
         userSubVendor.username = schema.username
-        if schema.firstname:
-            userSubVendor.firstname = schema.firstname
-        if schema.lastname:
-            userSubVendor.lastname = schema.lastname
-        if schema.default_language:
-            userSubVendor.default_language = schema.default_language
-        else:
-            userSubVendor.default_language = "en"
+        userSubVendor.firstname = schema.firstname
+        userSubVendor.lastname = schema.lastname
+        userSubVendor.default_language = user_vendor.default_language
         userSubVendor.roles = user_vendor.roles
         userSubVendor.status = schema.status
         userSubVendor.parent_id = user_vendor.id
         userSubVendor.password = crypto.hash(f"{schema.password}")
         
         db_local.add(userSubVendor)
-        db_local.commit()
 
         if schema.permissions:
             for perm_id in schema.permissions:
                 permission = db_local.query(Permission).filter(Permission.id == int(perm_id)).first()
 
                 if permission != None: 
-                    
-                    userPermission = User_Permission()
-                    
-                    userPermission.permission_id = permission.id
-                    userPermission.user_id = userSubVendor.id
-                    
-                    db_local.add(userPermission)
-                    db_local.commit()
-                    db_local.flush(userPermission)
+                    userSubVendor.permissions.append(permission)
                 
-        db_local.flush(userSubVendor)
+        db_local.commit(userSubVendor)
         
         return JSONResponse(status_code=status.HTTP_201_CREATED, content='Create successful !!')   
                 
