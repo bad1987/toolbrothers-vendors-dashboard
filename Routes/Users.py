@@ -63,12 +63,11 @@ async def is_authenticated(request: Request, db: Session = Depends(get_db)):
     return user
 
 
-@route.get("/user", response_model=UserSchema)
+@route.get("/user", response_model= UserSchema | None)
 def get_user(request: Request, db: Session = Depends(get_db)):
     user = LoginController.get_current_user_from_cookie(request, db)
 
     return user
-
 
 @route.get("/users/{type}/list", response_model=UserListDto, responses={200:{"model": UserSchema}})#, response_model=list(UserSchema)
 @requires_permission('read', ModelNameEnum.USER_MODEL.value)
