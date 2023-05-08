@@ -6,14 +6,11 @@ import { useRoute, useRouter } from 'vue-router'
 
 const userApi = {
     fetchUsers: async (users, permissions, router, route, isAdmin = true) => {
-        let ans = {
-            permissions: []
-        }
         const url = isAdmin ? `/admin/users/${route.params.type}/list` : '/sub-vendor/get'
 
         axios.get(url).then((response) => {
             users.value = response.data.users
-            ans.permissions = permissions.value = response.data.permissions
+            permissions.value = response.data.permissions
         })
         .catch(err => {
             if (err.response) {
@@ -29,8 +26,6 @@ const userApi = {
                 }
             }
         })
-
-        return ans
     },
 
     addUser: async (newUser, selectedPermissions, route, isAdmin = true) => {
@@ -51,7 +46,7 @@ const userApi = {
     },
 
     updateUser: async (obj, users, selectedUser, selectedPermissions, isAdmin = true) => {
-        const url = isAdmin ? 'admin/users' : '/users'
+        const url = isAdmin ? 'admin/users/' : '/users/'
         if (selectedUser.value !== undefined && obj == null) {
             const datas = {...selectedUser.value,
                  permissions: selectedPermissions.value,

@@ -6,6 +6,8 @@ import { storeToRefs } from 'pinia';
 import { useRoute, useRouter } from 'vue-router';
 import { initFlowbite } from 'flowbite';
 import CheckboxGroup from './components/CheckboxGroup.vue';
+import { s } from 'plotly.js-dist';
+import ButtonComponent from './components/ButtonComponent.vue';
 
     const loadStore = useLoaderStore()
     const route = useRoute()
@@ -23,40 +25,44 @@ import CheckboxGroup from './components/CheckboxGroup.vue';
     })
     const permissions = ref([])
     const selectedPermissions = ref([])
+    const selectedUser = ref({})
 
-    onBeforeMount(() => {
+    onMounted(() => {
         fetchUsers()
-    })
 
-    // onMounted(() => {
-    //     fetchUsers()
-    // })
+        initFlowbite()
+    })
 
 
     function addUser() {
         loadStore.changeLoadingStatus(true)
-        userApi.addUser(newUser, selectedPermissions, route, false)
-        .finally(() => loadStore.changeLoadingStatus(false))
+        userApi.addUser(newUser, selectedPermissions, route, false).then((response) => { 
+            fetchUsers();
+
+            document.getElementById('add-user-modal')?.click()
+        })
+        .finally(() => loadStore.changeLoadingStatus(false) )
     }
 
-    const fetchUsers = () => {
+    const fetchUsers = async () => {
         loadStore.changeLoadingStatus(true)
         userApi.fetchUsers(users, permissions, router, route, false)
-        .then((data) => {
-            permissions.value = data.permissions
-            console.log('datas fredchess', data, data.ans)
-        })
         .finally(() => {
-
-            console.log("finally", permissions.value)
             loadStore.changeLoadingStatus(false)
-            initFlowbite()
         })
     }
 
     function changeSelectedUser(email) {
         Object.assign(selectedUser.value, users.value.find(x => x.email == email))
         selectedPermissions.value = selectedUser.value.permissions.map(x => x.id)
+
+    }
+
+    function updateUser(obj = null) {
+        loadStore.changeLoadingStatus(true)
+        userApi.updateUser(obj, users, selectedUser, selectedPermissions, false).finally(() => {
+            loadStore.changeLoadingStatus(false)
+        })
     }
 
     function deactivateUser(id) {
@@ -182,7 +188,7 @@ import CheckboxGroup from './components/CheckboxGroup.vue';
                                     d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
                                     clip-rule="evenodd"></path>
                             </svg>
-                            Add user
+                            Add new user
                         </button>
                     </div>
                 </div>
@@ -205,10 +211,6 @@ import CheckboxGroup from './components/CheckboxGroup.vue';
                                     <th scope="col"
                                         class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
                                         Name
-                                    </th>
-                                    <th scope="col"
-                                        class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
-                                        Role
                                     </th>
                                     <th scope="col"
                                         class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
@@ -238,11 +240,6 @@ import CheckboxGroup from './components/CheckboxGroup.vue';
                                             <div class="text-sm font-normal text-gray-500 dark:text-gray-400">
                                                 {{ u.email }}</div>
                                         </div>
-                                    </td>
-                                    <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        <span v-if="u.roles == 'Role_admin'">Admin</span>
-                                        <span v-if="u.roles == 'Role_affiliate'">Affiliate</span>
-                                        <span v-if="u.roles == 'Role_direct_sale'">Direct Sale</span>
                                     </td>
                                     <td class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
                                         <div v-if="u.status == 'A'" class="flex items-center">
@@ -301,6 +298,7 @@ import CheckboxGroup from './components/CheckboxGroup.vue';
                 </div>
             </div>
         </div>
+        <!-- Modals -->
         <div class="fixed left-0 right-0 z-50 items-center justify-center hidden overflow-x-hidden overflow-y-auto top-4 md:inset-0 h-modal sm:h-full"
             id="add-user-modal">
             <div class="relative w-full h-full max-w-2xl px-4 md:h-auto">
@@ -324,27 +322,27 @@ import CheckboxGroup from './components/CheckboxGroup.vue';
                     </div>
                     <!-- Modal body -->
                     <div class="p-6 space-y-6">
-                        <form action="#" id="add-user-form">
+                        <form action="#" id="add-user-form" autocomplete="off">
                             <div class="grid grid-cols-6 gap-6">
                                 <div class="col-span-6 sm:col-span-3">
                                     <label for="username"
                                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">User Name</label>
-                                    <input v-model="newUser.username" type="text" name="username" id="username"
+                                    <input autocomplete="off" v-model="newUser.username" type="text"
                                         class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                         placeholder="Bonnie" required="">
                                 </div>
                                 <div class="col-span-6 sm:col-span-3">
                                     <label for="email"
                                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
-                                    <input v-model="newUser.email" type="email" name="email" id="email"
+                                    <input autocomplete="off" v-model="newUser.email" type="email"
                                         class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                         placeholder="example@company.com" required="">
                                 </div>
                                 <div class="col-span-6 sm:col-span-3">
-                                    <label for="role" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Set a password</label>
-                                    <input v-model="newUser.password" type="email" name="email" id="email"
+                                    <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Set a password</label>
+                                    <input autocomplete="new-password" v-model="newUser.password" type="password"
                                         class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        placeholder="example@company.com" required="">
+                                        placeholder="xxxxxx" required="">
                                 </div>
                                 <div class="mt-9">
                                     <input v-model="newUser.status" id="checkbox-activate-create-vendor" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
@@ -353,7 +351,9 @@ import CheckboxGroup from './components/CheckboxGroup.vue';
                                 <div class="col-span-6">
                                     <h4 class="font-bold dark:text-white">Set permissions</h4>
                                     <div class="permissions-list">
-                                        <CheckboxGroup :is-grouped="true"
+                                        <CheckboxGroup 
+                                            v-if="permissions.length"
+                                            :is-grouped="true"
                                             :items="permissions"
                                             name="permission" 
                                             id="checkbox-group-perm" 
@@ -371,6 +371,85 @@ import CheckboxGroup from './components/CheckboxGroup.vue';
                             type="submit" id="btn-add-user">Add user</button>
                     </div>
 
+                </div>
+            </div>
+        </div>
+        <div v-if="selectedUser" class="fixed left-0 right-0 z-50 items-center justify-center hidden overflow-x-hidden overflow-y-auto top-4 md:inset-0 h-modal sm:h-full"
+            id="edit-user-modal">
+            <div class="relative w-full h-full max-w-2xl px-4 md:h-auto">
+                <div v-if="isLoading" class="absolute top-5 bottom-5 left-5 right-5 z-[10000] opacity-50 bg-white"></div>
+                <!-- Modal content -->
+                <div class="relative bg-white rounded-lg shadow dark:bg-gray-800">
+                    <!-- Modal header -->
+                    <div class="flex items-start justify-between p-5 border-b rounded-t dark:border-gray-700">
+                        <h3 class="text-xl font-semibold dark:text-white">
+                            Edit user
+                        </h3>
+                        <button type="button"
+                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-700 dark:hover:text-white"
+                            data-modal-toggle="edit-user-modal">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd"
+                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <!-- Modal body -->
+                    <div class="p-6 space-y-6" v-if="selectedUser != undefined">
+                        <form action="#" id="add-admin-form">
+                            <div class="grid grid-cols-6 gap-6">
+                                <div class="col-span-6 sm:col-span-3">
+                                    <label for="username"
+                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">User Name</label>
+                                    <input v-model="selectedUser.username" type="text" name="username" id="username"
+                                        class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        placeholder="Bonnie" required="">
+                                </div>
+                                <div class="col-span-6 sm:col-span-3">
+                                    <label for="email"
+                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
+                                    <input disabled v-model="selectedUser.email" type="email" name="email" id="email"
+                                        class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        placeholder="example@company.com" required="">
+                                </div>
+                                <div class="col-span-6 sm:col-span-3" v-if="route.params.type == 'vendors'">
+                                    <label for="role" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select a role</label>
+                                    <select @change="changeRole" id="role" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <option value="">Select a role</option>
+                                        <option :selected="selectedUser.roles == 'Role_affiliate'" value="Role_affiliate">Affiliate</option>
+                                        <option :selected="selectedUser.roles == 'Role_direct_sale'" value="Role_direct_sale">Direct sale</option>
+                                    </select>
+                                </div>
+                                <div class="mt-9">
+                                    <input @change="changeSelectedStatus" :checked="selectedUser.status == 'A'" id="checkbox-activate-create" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    <label for="checkbox-activate-create" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Activate</label>
+                                </div>
+                                <div class="col-span-6">
+                                    <h4 class="font-bold dark:text-white">Set permissions</h4>
+                                    <div class="permissions-list">
+                                        <CheckboxGroup 
+                                        v-if="permissions.length"
+                                        :selected="selectedUser.permissions" 
+                                        :items="permissions" 
+                                        :is-grouped="true"
+                                        name="permission" 
+                                        id="checkbox-group-perm" 
+                                        @toggle-value="togglePermissionValue"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="items-center p-6 border-t border-gray-200 rounded-b dark:border-gray-700">
+                        <ButtonComponent
+                            @click="updateUser(null)"
+                            text="Save all"
+                            classes="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                            :loading="isLoading"
+                        />
+                    </div>
                 </div>
             </div>
         </div>

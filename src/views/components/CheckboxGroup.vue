@@ -1,5 +1,5 @@
 <script setup>
-    import { defineProps, ref, defineEmits, onBeforeMount } from 'vue'
+    import { defineProps, ref, defineEmits, onBeforeMount, onMounted } from 'vue'
 
 
     const itemsByGroup = ref([])

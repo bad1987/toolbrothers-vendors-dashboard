@@ -29,6 +29,8 @@
 
     onMounted(() => {
         initFlowbite()
+
+        fetchUsers()
     })
 
     onUpdated(() => {
@@ -36,7 +38,6 @@
     })
 
     onBeforeMount( async () => {
-
         const test = await acl()
         userRef.value = test
         userRef.value.user = test
@@ -113,8 +114,6 @@
             initFlowbite()
         }
     )
-
-    fetchUsers()
 
     const newUser = ref({
         username: null,
@@ -494,7 +493,9 @@
                                     <div class="col-span-6">
                                         <h4 class="font-bold dark:text-white">Set permissions</h4>
                                         <div class="permissions-list">
-                                            <CheckboxGroup :selected="selectedUser.permissions" 
+                                            <CheckboxGroup 
+                                            v-if="permissions.length"
+                                            :selected="selectedUser.permissions" 
                                             :items="permissions" 
                                             :is-grouped="true"
                                             name="permission" 
@@ -573,7 +574,9 @@
                                     <div class="col-span-6">
                                         <h4 class="font-bold dark:text-white">Set permissions</h4>
                                         <div class="permissions-list">
-                                            <CheckboxGroup :is-grouped="true"
+                                            <CheckboxGroup 
+                                            v-if="permissions.length"
+                                            :is-grouped="true"
                                              :items="permissions" 
                                              name="permission" 
                                              id="checkbox-group-perm" 
@@ -641,7 +644,9 @@
                                     <div class="col-span-6">
                                         <h4 class="font-bold dark:text-white">Set permissions</h4>
                                         <div class="permissions-list">
-                                            <CheckboxGroup :is-grouped="true" 
+                                            <CheckboxGroup 
+                                            v-if="permissions.length"
+                                            :is-grouped="true" 
                                             :items="permissions" 
                                             name="permission" 
                                             id="checkbox-group-perm" 
