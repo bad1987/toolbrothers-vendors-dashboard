@@ -37,7 +37,6 @@ class ApiSetting(BaseModel):
 class UserCreateSubVendorSchema(BaseModel):
     email: Optional[str]
     username: Optional[str]
-    roles: Optional[UserRoleEnum]
     status: Optional[UserStatusEnum]
     permissions: Optional[List]
     firstname: Optional[str]

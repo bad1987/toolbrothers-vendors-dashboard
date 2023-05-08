@@ -30,11 +30,12 @@ class UserController:
             db.close()
         return permission_schemas
     
-    def get_sub_vendor_for_vendor(db_local: Session, request: Request, user: UserDto):
+    def get_sub_vendor_for_vendor(db_local: Session, request: Request, user: User):
         user_vendor = db_local.query(User).filter(User.parent_id == user.id).all()
-        permissions = db_local.query(Permission).all()
-        
-        return {"users": user_vendor, "permissions": permissions}
+
+        user_permissions = [{"text": permission.name, "value": permission.id, "description": permission.description} for permission in user.permissions]
+
+        return {"users": user_vendor, "permissions": user_permissions}
     
     def create_sub_vendor_by_vendor(request: Request, schema: UserCreateSubVendorSchema, db_local: Session, user_vendor: UserDto):
         userSubVendor = User()
@@ -58,7 +59,6 @@ class UserController:
                 if permission != None: 
                     userSubVendor.permissions.append(permission)
                 
-        db_local.commit(userSubVendor)
+        db_local.commit()
         
         return {"user": userSubVendor} 
-                

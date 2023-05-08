@@ -43,6 +43,7 @@ def login_for_access_token(
     db: Session = Depends(get_db)
 ) -> Dict[str, str]:
     user = LoginController.authenticate_user(form_data['username'], form_data['password'], db)
+    console.log(user)
     # search if previous attempts
     now = datetime.datetime.now()
     future = now + datetime.timedelta(minutes=1)
@@ -74,7 +75,12 @@ def login_for_access_token(
     
     # Set an HttpOnly cookie in the response. `httponly=True` prevents 
     # JavaScript from reading the cookie. 
-    p_user = UserSchema(**jsonable_encoder(user))
+    # p_user = UserSchema(**jsonable_encoder(user))
+    dictio = UserSchema(id=user.id, username=user.username, company_id=user.company_id, email=user.email, default_language=user.default_language, firstname=user.firstname, lastname=user.lastname, roles=user.roles, status=user.status, permissions=user.permissions)
+    # console.log(user.__dict__)
+    # console.log()
+    p_user = UserSchema(**user.__dict__)
+    console.log(p_user)
     return {Settings.COOKIE_NAME: access_token, "token_type": "bearer", "user": p_user}
 
 

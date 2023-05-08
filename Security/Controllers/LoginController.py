@@ -1,6 +1,7 @@
 
 import datetime as dt
 from typing import Dict, List, Optional
+from App.Http.Schema.UserSchema import UserSchema
 from Security.OAuth2PasswordBearerWithCookie import OAuth2PasswordBearerWithCookie
 from fastapi import Depends, HTTPException, Request, status
 from jose import JWTError, jwt
@@ -46,7 +47,7 @@ def create_access_token(data: Dict) -> str:
     return encoded_jwt
 
 
-def authenticate_user(username: str, plain_password: str, db: Session) -> UserDto:
+def authenticate_user(username: str, plain_password: str, db: Session) -> UserSchema:
     user = get_user_by_email(db, username)
     if not user:
         return False
