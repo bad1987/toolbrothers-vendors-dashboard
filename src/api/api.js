@@ -36,17 +36,23 @@ const userApi = {
             newUser.value.roles = 'Role_admin'
         }
 
-        return axios.post(url, {
+        let datas = {
             username: newUser.value.username,
             email: newUser.value.email,
             status: newUser.value.status == true ? 'A' : 'D',
             permissions: newUser.value.permissions,
             roles: newUser.value.roles,
-        })
+        }
+
+        if (!isAdmin) {
+            datas.password = newUser.value.password
+        }
+
+        return axios.post(url, datas)
     },
 
     updateUser: async (obj, users, selectedUser, selectedPermissions, isAdmin = true) => {
-        const url = isAdmin ? 'admin/users/' : '/users/'
+        const url = isAdmin ? 'admin/users/' : '/sub-vendor/update/'
         if (selectedUser.value !== undefined && obj == null) {
             const datas = {...selectedUser.value,
                  permissions: selectedPermissions.value,

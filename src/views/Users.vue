@@ -111,7 +111,6 @@
     watch(() => route.params.type,
         () => {
             fetchUsers()
-            initFlowbite()
         }
     )
 

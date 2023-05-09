@@ -1,5 +1,5 @@
 <script setup>
-import { onBeforeMount, onMounted, ref } from 'vue';
+import { onBeforeMount, onMounted, onUpdated, ref } from 'vue';
 import { userApi } from '../api/api';
 import { useLoaderStore } from '../stores/statestore';
 import { storeToRefs } from 'pinia';
@@ -12,15 +12,15 @@ import ButtonComponent from './components/ButtonComponent.vue';
     const loadStore = useLoaderStore()
     const route = useRoute()
     const router = useRouter()
-
+    
     const { isLoading } = storeToRefs(loadStore)
-
-
+    
+    
     const users = ref([])
     const newUser = ref({
-        email: '',
-        password: '',
-        username: '',
+        email: null,
+        password: null,
+        username: null,
         status: false,
     })
     const permissions = ref([])
@@ -28,8 +28,12 @@ import ButtonComponent from './components/ButtonComponent.vue';
     const selectedUser = ref({})
 
     onMounted(() => {
+        initFlowbite()
+        
         fetchUsers()
+    })
 
+    onUpdated(() => {
         initFlowbite()
     })
 
@@ -44,7 +48,7 @@ import ButtonComponent from './components/ButtonComponent.vue';
         .finally(() => loadStore.changeLoadingStatus(false) )
     }
 
-    const fetchUsers = async () => {
+    const fetchUsers = () => {
         loadStore.changeLoadingStatus(true)
         userApi.fetchUsers(users, permissions, router, route, false)
         .finally(() => {
@@ -55,7 +59,6 @@ import ButtonComponent from './components/ButtonComponent.vue';
     function changeSelectedUser(email) {
         Object.assign(selectedUser.value, users.value.find(x => x.email == email))
         selectedPermissions.value = selectedUser.value.permissions.map(x => x.id)
-
     }
 
     function updateUser(obj = null) {
@@ -75,6 +78,10 @@ import ButtonComponent from './components/ButtonComponent.vue';
         if (selectedPermissions.value.indexOf(item.value) >= 0) 
             selectedPermissions.value = selectedPermissions.value.filter(x => x != item.value)
         else selectedPermissions.value.push(item.value)
+    }
+
+    function changeSelectedStatus() {
+        selectedUser.value.status = selectedUser.value.status == true ? 'D' : (selectedUser.value.status == 'A' ? 'D' : 'A')
     }
 
 </script>
@@ -345,7 +352,7 @@ import ButtonComponent from './components/ButtonComponent.vue';
                                         placeholder="xxxxxx" required="">
                                 </div>
                                 <div class="mt-9">
-                                    <input v-model="newUser.status" id="checkbox-activate-create-vendor" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    <input @change="changeSelectedStatus" v-model="newUser.status" id="checkbox-activate-create-vendor" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                     <label for="checkbox-activate-create-vendor" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Activate</label>
                                 </div>
                                 <div class="col-span-6">
