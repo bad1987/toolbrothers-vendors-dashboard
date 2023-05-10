@@ -10,7 +10,9 @@ from App.input_ports.schemas.OrderSchema import OrdersSchema
 class IOrderRepository(ABC):
 
     @abstractmethod
-    def get_orders(self, request: Request, db_local: Session, db_cscart: Session, skip: int, limit: int, status: str, start_time: datetime, end_time: datetime) -> List[OrdersSchema]:
+    def get_orders(self, request: Request, db_local: Session, db_cscart: Session, skip: int, limit: int, 
+        status: list, start_time: datetime, end_time: datetime, order_by: str, sort_order: str
+    ) -> List[OrdersSchema]:
         ...
 
     @abstractmethod

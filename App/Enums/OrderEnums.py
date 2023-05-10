@@ -9,3 +9,11 @@ class OrderStatus(str, Enum):
     BACKORDERED = "B"
     CANCELLED = "I"
     AWAITING_CALL = "Y"
+
+class OrderOrderBy(str, Enum):
+    timestamp = "timestamp"
+    status = "status"
+
+class SortOrder(str, Enum):
+    asc = "asc"
+    desc = "desc"
