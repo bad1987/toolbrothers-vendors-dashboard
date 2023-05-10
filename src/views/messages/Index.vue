@@ -1,7 +1,7 @@
 <script setup>
 import axios from 'axios'
 import { useRouter } from 'vue-router';
-import { ref, onMounted, onBeforeMount } from 'vue'
+import { ref, onMounted, onBeforeMount, computed } from 'vue'
 import { acl } from '../../router/acl';
 import MessageItems from '../../components/message/MessageItems.vue';
 
@@ -13,19 +13,29 @@ onBeforeMount( async () => {
     userRef.value = test
     userRef.value.user = test
     userRef.value.isAdmin = test.roles == "Role_admin"
-    console.log("get message user vendor", userRef.value.email );
 })
 
 const messages = ref([])
 const actualSkip = ref(0)
 const actuaLimit = ref(5)
 const totalMessages = ref(0)
+const searchTerm = ref("")
 const availableLimits = [5, 10, 25, 50, 75, 100]
 const skeletonCnt = ref(5)
 
 const is_data = ref(false)
 
 const router = useRouter()
+
+const filteredMessages = computed(() => {
+    return messages.value.filter(message => 
+        {
+            return message.cscart_users.firstname.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+                    message.cscart_users.lastname.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+                    message.last_message.toLowerCase().includes(searchTerm.value.toLowerCase())
+        }
+    )
+})
 
 
 const fetchMessages = () => {
@@ -34,7 +44,6 @@ const fetchMessages = () => {
   }).then(resp => {
     messages.value = resp.data.messages
     is_data.value = true
-    console.log(resp.data.messages);
     messages.value.map(message => {
       message.last_updated = new Date(message.last_updated * 1000).toUTCString()
 
@@ -49,7 +58,6 @@ const fetchMessages = () => {
         let status = err.response.status
         if (status) {
           if (status == 403) {
-            console.log(err.response.status);
             router.push('/error/403')
           }
           else if (status == 401) {
@@ -91,9 +99,9 @@ function fastBackward() {
 }
 
 onMounted(() => {
+    fetchMessages()
 })
 
-fetchMessages()
 </script>
 
 <template>
@@ -112,7 +120,7 @@ fetchMessages()
                                         <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
                                         </svg>
                                     </div>
-                                    <input type="text" id="simple-search" class="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Search" required="">
+                                    <input v-model="searchTerm" type="text" id="simple-search" class="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Search" required="">
                                     </div>
                                 </form>
                             </div>
@@ -193,8 +201,8 @@ fetchMessages()
             </div>
 
             <div v-if="is_data" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ">
-                <div v-for="items in messages" :key="items.id" className="md:flex md:justify-center md:flex-wrap hover:shadow-lg hover:scale-100 scale-90 transition-all duration-500">
-                    <MessageItems :item="items" />
+                <div v-for="item in filteredMessages" :key="item.id" className="md:flex md:justify-center md:flex-wrap hover:shadow-lg hover:scale-100 scale-90 transition-all duration-500">
+                    <MessageItems :item="item" />
                 </div>
             </div>
             <!-- Card Footer -->

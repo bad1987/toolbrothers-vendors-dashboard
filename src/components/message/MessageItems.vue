@@ -5,8 +5,6 @@
             type: Object,
         }
     })
-    
-    console.log(props.item);
 </script>
 
 <template>
