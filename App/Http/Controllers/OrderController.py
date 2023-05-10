@@ -19,7 +19,7 @@ class OrderController:
         total = query.count()
         orders = query.offset(skip).limit(limit).all()
         
-        return {"user": user, "orders": orders, "total": total}
+        return {"orders": orders, "total": total}
     
     def get_order_stats(db_cscart: Session, start_date: str, end_date: str, company_id):
         # get the number of orders and total revenue for March 25 to April 25, 2023

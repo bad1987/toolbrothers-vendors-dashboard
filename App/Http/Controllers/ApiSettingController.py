@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from fastapi import Request
+from fastapi import Depends, HTTPException, Request
 from Security.Controllers import LoginController
 from rich.console import Console
 from Database.Models import User
@@ -7,6 +7,10 @@ from datetime import datetime, timedelta
 import jwt
 
 from Security.Settings import Settings
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+
+security = HTTPBearer()
+
 console = Console()
 
 class ApiSettingController:
@@ -28,3 +32,15 @@ class ApiSettingController:
         userToken = db_local.query(User).filter(User.id == user.id).first()
         
         return userToken.api_token
+
+    async def validate_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
+        # get token from credentials
+        token = credentials.credentials
+        # sanitize token
+        token = token[7:]
+        # validate token
+        try:
+            payload = jwt.decode(token, Settings.SECRET_KEY, algorithms=Settings.ALGORITHM)
+            return payload
+        except jwt.PyJWTError:
+            raise HTTPException(status_code=401, detail="Invalid token")

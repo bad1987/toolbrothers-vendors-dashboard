@@ -12,12 +12,16 @@ from Security.Acls.RoleChecker import Role_checker
 from App.Http.Schema.UserSchema import ApiSetting
 from fastapi.encoders import jsonable_encoder
 from Routes.Users import is_authenticated
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from fastapi.responses import RedirectResponse
 
 console = Console()
 
 route = APIRouter(prefix='/setting', tags=['Get token api from user'], include_in_schema=False)
 
 roles_checker = Role_checker()
+
+security = HTTPBearer()
 
 def get_db():
     db = SessionLocal()
@@ -51,3 +55,9 @@ async def get_token_for_api(request: Request, db_local: Session = Depends(get_db
     token = ApiSettingController.get_token_api(request, db_local)
     return token
    
+@route.get("/docs")
+async def read_docs(payload: dict = Depends(ApiSettingController.validate_token)):
+    # check token
+    # return docs
+    print(payload)
+    return RedirectResponse(url="/docs")

@@ -55,7 +55,7 @@ def authenticate_user(username: str, plain_password: str, db: Session) -> UserSc
         return False
     return user
 
-def decode_token(token: str, db: Session) -> UserDto:
+def decode_token(token: str, db: Session, from_auth_header=False) -> UserDto:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED, 
         detail="Could not validate credentials."
@@ -63,7 +63,7 @@ def decode_token(token: str, db: Session) -> UserDto:
     token = token.removeprefix("Bearer").strip()
     try:
         payload = jwt.decode(token, Settings.SECRET_KEY, algorithms=[Settings.ALGORITHM])
-        username: str = payload.get("username")
+        username: str = payload.get("username") if not from_auth_header else payload.get("email")
         if username is None:
             raise credentials_exception
     except JWTError as e:
@@ -113,11 +113,13 @@ def get_current_user_from_cookie(request: Request, db: Session) -> UserDto:
     if not token:
         # try to get the token from the Authorization header
         auth_header = request.headers.get("Authorization")
+        
         if not auth_header:
             return None
         token = auth_header.split(" ")[1]
+        token = token.strip()
         
-    user = decode_token(token, db)
+    user = decode_token(token, db, from_auth_header=True)
     return user
 
 # Register user
