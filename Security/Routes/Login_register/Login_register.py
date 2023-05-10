@@ -69,8 +69,8 @@ def login_for_access_token(
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password")
     
     if user.status != UserStatusEnum.ACTIVE:
-        console.log(user.status.value)
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Your account is not active, please contact admins")
+        
     access_token = LoginController.create_access_token(data={"username": user.email})
 
     if attempt != None:
