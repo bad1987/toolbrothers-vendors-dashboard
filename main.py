@@ -12,12 +12,13 @@ from middlewares.AuthorizationMiddleware import orders_permissions, block_ip_mid
 from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi.staticfiles import StaticFiles
 
+from App.input_ports.routes.api import order_routes
+
 Models.Base.metadata.create_all(bind=engine)   
-app = FastAPI(title="TOOLBROTHER API", version="1.0.0", description="This API is to design the Toolbrother dashboard") 
+app = FastAPI(title="TOOLBROTHER API", version="1.0.0", description="This API is to design the Toolbrother dashboard",docs_url="/toolbrothers_api/docs") 
 
 @app.get('/', tags=["Welcome"], include_in_schema=False)
 def welcome(): return {"Message": "Welcome one api on", "Version": "1.0.0", "Build by": "TOOLBROTHER Enterprise"}
-
 
 origins = [
     "http://localhost:5173" 
@@ -34,6 +35,8 @@ app.include_router(Product.route)
 app.include_router(Message.route)
 app.include_router(SettingApi.route)
 app.include_router(SubVendor.route)
+
+app.include_router(order_routes.api_route)
  
 # static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
