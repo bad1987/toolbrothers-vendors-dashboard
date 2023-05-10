@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import and_, func, literal_column, select, join
 from sqlalchemy.sql import text
 from fastapi import Request, status, HTTPException
+from Database.Models import User
 from Security.Controllers import LoginController
 from Database.CscartModels import Cscart_product_descriptions, Cscart_products, Cscart_product_prices
 from fastapi.responses import JSONResponse
@@ -10,18 +11,27 @@ from rich.console import Console
 from App.Http.Schema.UserSchema import UserSchema
 from App.Http.Schema.ProductSchema import ProductSchema
 from fastapi.encoders import jsonable_encoder
+
+from Security.DTO.UserDto import UserDto
 console = Console()
 
 class ProductController:
-    def get_product_list_by_vendor(request: Request, db_local: Session, db_cscart: Session, skip: int, limit: int):
-        user = LoginController.get_current_user_from_cookie(request, db_local)
+    def get_product_list_by_vendor(user: User, request: Request, db_local: Session, db_cscart: Session, skip: int, limit: int):
         if not user:
             return JSONResponse(status_code=status.HTTP_403_FORBIDDEN, content='Access denied') 
+
+        company_id = user.company_id
                     
-        query = db_cscart.query(Cscart_products).filter(Cscart_products.company_id == user.company_id)
+        query = db_cscart.query(Cscart_products).filter(Cscart_products.company_id == company_id)
+
+        if user.parent_id != None:
+            parent = db_local.query(User).filter(User.id == user.parent_id).first()
+            company_id = parent.company_id
+            query = db_cscart.query(Cscart_products).filter(Cscart_products.company_id == company_id)
+
         total = query.count()
 
-        query = select(Cscart_products,Cscart_product_descriptions, Cscart_product_prices, Cscart_product_descriptions).where(Cscart_products.company_id == user.company_id).\
+        query = select(Cscart_products,Cscart_product_descriptions, Cscart_product_prices, Cscart_product_descriptions).where(Cscart_products.company_id == company_id).\
                     select_from(join(Cscart_products, Cscart_product_descriptions, Cscart_product_descriptions.product_id == Cscart_products.product_id)).\
                     join(Cscart_product_prices, Cscart_product_prices.product_id == Cscart_products.product_id).\
                     where(Cscart_product_descriptions.lang_code == user.default_language.value).\

@@ -2,6 +2,7 @@ import json, time, datetime
 from typing import Dict, List, Optional
 from fastapi import Depends, HTTPException, Request, Response, status, APIRouter
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
+from App.Enums.UserEnums import UserStatusEnum
 from Database.Models import Login_Attempt
 from Security.OAuth2PasswordBearerWithCookie import OAuth2PasswordBearerWithCookie
 from fastapi.security import OAuth2PasswordRequestForm
@@ -66,6 +67,10 @@ def login_for_access_token(
         db.commit()
 
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password")
+    
+    if user.status != UserStatusEnum.ACTIVE:
+        console.log(user.status.value)
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Your account is not active, please contact admins")
     access_token = LoginController.create_access_token(data={"username": user.email})
 
     if attempt != None:
