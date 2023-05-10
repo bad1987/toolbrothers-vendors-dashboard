@@ -10,7 +10,7 @@ class UserSchema(BaseModel):
     email: Optional[str]
     username: Optional[str]
     company_id: Optional[int]
-    roles: Optional[UserRoleEnum]
+    roles: Optional[UserRoleEnum] = None
     status: Optional[UserStatusEnum]
     permissions: Optional[List]
     firstname: Optional[str]

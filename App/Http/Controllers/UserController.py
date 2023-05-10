@@ -49,7 +49,7 @@ class UserController:
         userSubVendor.status = schema.status
         userSubVendor.parent_id = user_vendor.id
         userSubVendor.password = crypto.hash(f"{schema.password}")
-        
+
         db_local.add(userSubVendor)
 
         if schema.permissions:

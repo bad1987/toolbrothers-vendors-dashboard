@@ -47,7 +47,7 @@ class OrderController:
             'sales': total_sales.total_sales or 0
         }
 
-    def get_grouped_orders(db_cscart: Session, user: UserSchema, start_date: str, end_date: str):
+    def get_grouped_orders(db_cscart: Session, user: UserSchema, start_date: str, end_date: str, company_id: int):
         start = datetime.strptime(f"{start_date} 00:00:00", "%Y-%m-%d %H:%M:%S").timestamp()
         end = datetime.strptime(f"{end_date} 23:59:59", "%Y-%m-%d %H:%M:%S").timestamp()
 
@@ -55,7 +55,7 @@ class OrderController:
         query = text(f""" 
                 SELECT FROM_UNIXTIME(cscart_orders.timestamp, '%Y-%m-%d') AS date, sum(cscart_orders.total) AS order_total 
                 FROM cscart_orders 
-                WHERE company_id={user.company_id} and
+                WHERE company_id={company_id} and
                 timestamp >= {start} and timestamp <= {end} and
                 status in ('C', 'P') 
                 GROUP BY date

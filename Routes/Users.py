@@ -10,7 +10,7 @@ from Security.DTO.UserDto import UserDtoCreate, UserDto, UserListDto, Permission
 from Database.Connexion import SessionLocal
 from Database.CscartConnexion import CscartSession
 from sqlalchemy.orm import Session
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 from Database.Models import User, Payment_method, Payment_method_vendor, User_Permission, Permission
 from rich.console import Console
 from fastapi.encoders import jsonable_encoder
@@ -71,14 +71,14 @@ def get_user(request: Request, db: Session = Depends(get_db)):
 
 @route.get("/users/{type}/list", response_model=UserListDto, responses={200:{"model": UserSchema}})#, response_model=list(UserSchema)
 @requires_permission('read', ModelNameEnum.USER_MODEL.value)
-async def index(request: Request, type: str, db: Session = Depends(get_db), _user: dict = Depends(is_authenticated)):
+async def index(request: Request, type: str, db: Session = Depends(get_db), _user: User = Depends(is_authenticated)):
 
     users = []
     model_permissions = ModelPermissions(_user)
     if type == "vendors" and model_permissions.can_read_user_vendors():
-        users = db.query(User).filter(or_(User.roles == UserRoleEnum.AFFILIATE.value, User.roles == UserRoleEnum.DIRECT_SALE.value)).all()
+        users = db.query(User).filter(and_(User.roles != UserRoleEnum.ADMIN.value, User.parent_id == None, User.id != _user.id)).all()
     elif type == "admins" and model_permissions.can_read_user_admins():
-        users = db.query(User).filter(User.roles == UserRoleEnum.ADMIN.value).all()
+        users = db.query(User).filter(and_(User.roles == UserRoleEnum.ADMIN.value, User.id != _user.id)).all()
     else:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

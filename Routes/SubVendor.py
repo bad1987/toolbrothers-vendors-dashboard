@@ -56,14 +56,14 @@ async def create_dub_vendor_by_vendor(request: Request, schema: UserCreateSubVen
 
 @route.put('/update/{id}', response_model=UserSchema | Dict[str, str])
 @requires_permission('write', ModelNameEnum.USER_MODEL.value)
-async def update_user(id: int, model: UserSchema, request: Request,  db: Session = Depends(get_db), _user: dict = Depends(is_authenticated)):
+async def update_user(id: int, model: UserSchema, request: Request,  db: Session = Depends(get_db), _user: User = Depends(is_authenticated)):
     try:
         if db.in_transaction():
             db.rollback()
         transaction = db.begin()
         user_to_update = db.query(User).filter(User.parent_id == _user.id).filter(User.id == id).first()
 
-        if not user_to_update:
+        if not user_to_update or (user_to_update.parent_id != _user.id):
             return {"status": False, "message": "Invalid user"}
         
         for field, value in model.dict(exclude_unset=True, exclude={'permissions'}).items():
