@@ -56,17 +56,15 @@ const fetchProducts = () => {
     }).finally(() => isLoading.value = false)
 }
 
-function updateProduct(obj = null) {
+async function updateProduct(obj = null) {
   isLoading.value = true
   axios.put("/products/" + selectedProduct.value.product_id, obj == null ? selectedProduct.value : obj)
         .then(response => {
-          console.log(response.data)
           document.getElementById("edit-product-modal")?.click()
           let ans = products.value.map(x => x.product_id === selectedProduct.value.product_id ? response.data : x)
           products.value = ans
         })
-        .catch(err => {
-        })
+        .catch(() => { fetchProducts() })
         .finally(() => isLoading.value = false)
 }
 
@@ -84,7 +82,9 @@ function changeManually(id) {
     return
   }
 
-  updateProduct({ manual_change: selectedProduct.value.manual_change == true ? false : true, product_id: id })
+  updateProduct({ manual_change: selectedProduct.value.manual_change == true ? false : true, product_id: id }).catch(() => {
+
+  })
 }
 
 function nextPage() {

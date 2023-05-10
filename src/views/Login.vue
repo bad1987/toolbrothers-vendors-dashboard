@@ -55,13 +55,18 @@
             //TODO::save the user in the store
             const user = data.user
             uStore.setUser(user)
-            console.log('user locale', user.default_language)
             local_storage_set('locale', user.default_language)
             
-            if(route.query.redirect)
-                window.location.href = route.query.redirect
-            else
-                window.location.href = "/"
+            if(route.query.redirect) {
+                if (user.roles == 'Role_admin')
+                    window.location.href = "/admin/users/admins"
+                else window.location.href = route.query.redirect
+            }
+            else{
+                if (user.roles == 'Role_admin')
+                    window.location.href = "/users"
+                else window.location.href = "/"
+            }
         })
         .catch(err => {
             console.log(err)
