@@ -1,7 +1,7 @@
 from datetime import datetime
 from pydantic import BaseModel
 from sqlalchemy.sql.sqltypes import TIMESTAMP
-from typing import List
+from typing import List, Optional
 
 class OrdersSchema(BaseModel):
     order_id: int
@@ -22,3 +22,6 @@ class OrdersSchema(BaseModel):
 class OrderResponseModel(BaseModel):
     orders: List[OrdersSchema]
     total: int
+
+class SingleOrderResponseModel(BaseModel):
+    order: Optional[OrdersSchema]

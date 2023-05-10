@@ -18,7 +18,7 @@ from App.Http.Controllers.OrderController import OrderController
 
 console = Console()
 
-route = APIRouter(prefix='', tags=['Orders system'], include_in_schema=True)
+route = APIRouter(prefix='', tags=['Orders system'], include_in_schema=False)
 
 
 roles_checker = Role_checker()

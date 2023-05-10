@@ -8,7 +8,6 @@ security = HTTPBearer()
 async def validate_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
     # get token from credentials
     token = credentials.credentials
-    print(token)
     # sanitize token
     token.removeprefix("Bearer").strip()
     # validate token
