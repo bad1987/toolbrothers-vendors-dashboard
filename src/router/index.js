@@ -3,6 +3,7 @@ import Dashboard from '../views/Dashboard.vue'
 import Users from '../views/Users.vue'
 import Vendors from '../views/Vendors.vue'
 import Orders from '../views/Orders.vue'
+import OrderDetail from '../views/orders/Detail.vue'
 import Login from '../views/Login.vue'
 import ForgotPassword from '../views/ForgotPassword.vue'
 import ResetPassword from '../views/ResetPassword.vue'
@@ -44,6 +45,15 @@ const router = createRouter({
       path: '/users',
       name: 'users',
       component: Vendors,
+      meta: {
+        requiresAuth: true,
+        roles: ['Role_affiliate', 'Role_direct_sale']
+      }
+    },
+    {
+      path: '/order/detail/:id',
+      name: 'order-detail',
+      component: OrderDetail,
       meta: {
         requiresAuth: true,
         roles: ['Role_affiliate', 'Role_direct_sale']

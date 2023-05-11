@@ -233,7 +233,7 @@ fetchOrders()
                     </tr>
                     <tr v-for="order in orders" :key="order.order_id">
                       <td class="p-4 text-sm font-normal text-gray-900 whitespace-nowrap dark:text-white">
-                        Order <span class="font-semibold">#{{ order.order_id }}</span>
+                        <RouterLink :to="`/order/detail/${order.order_id}`">Order <span class="font-semibold">#{{ order.order_id }}</span></RouterLink>
                       </td>
                       <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
                         <span

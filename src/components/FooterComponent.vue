@@ -9,7 +9,7 @@
 
 <template>
 
-    <footer class="bg-white dark:bg-gray-900">
+    <footer class="bg-white dark:bg-transparent bottom-0 border-t border-gray-200 dark:border-gray-600">
         <div class="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8">
         <div class="sm:flex sm:items-center sm:justify-between">
             <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400 m-auto">© 2023 <a href="https://toolbrothers.com/" class="hover:underline">Dinotech™</a>. All Rights Reserved.
