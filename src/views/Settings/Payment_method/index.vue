@@ -216,7 +216,7 @@ getPaymentMethodByVendorConnected();
                     <div class="h-1"></div>
                   </tr>
 
-                  <tr v-for="item in payment_method" :key="item.id" class="border-b border-b-gray-600 dark:border-b-gray-600">
+                  <tr v-for="item in payment_method" :key="item.id" class="border-b border-b-gray-200 dark:border-b-gray-600">
                     <td
                       :data-modal-target="`staticModal${item.id}`"
                       :data-modal-toggle="`staticModal${item.id}`"

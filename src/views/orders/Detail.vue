@@ -66,7 +66,7 @@
 </script>
 
 <template>
-    <div class="py-5 px-4 2xl:container 2xl:mx-auto">
+    <div class="py-5 px-4 2xl:container 2xl:mx-auto pb-[5%]">
         <div class="flex justify-start item-start space-y-2 flex-col">
             <h1 class="text-3xl lg:text-4xl font-semibold leading-7 lg:leading-9 text-gray-800 dark:text-gray-300" v-if="order">Order #{{ id }}</h1>
             <p class="text-base dark:text-gray-400 font-medium leading-6 text-gray-600" v-if="order">{{moment(order.timestamp).format("ddd MMM DD, YYYY [at] HH:mm a")}}</p>
@@ -82,7 +82,7 @@
                         </div>
                         <div class="border-b border-gray-200 dark:border-gray-600 md:flex-row flex-col flex justify-between items-start w-full pb-8 space-y-4 md:space-y-0">
                             <div class="w-full flex flex-col justify-start items-start space-y-8">
-                                <h3 class="text-xl dark:text-gray-300 xl:text-xl font-semibold leading-6 text-gray-800 line-clamp-1" > 
+                                <h3 class="text-lg dark:text-gray-300 font-semibold leading-6 text-gray-800 " > 
                                     {{ u.extra.product }}
                                 </h3>
                                 <div class="flex justify-start items-start flex-col space-y-2">
@@ -91,8 +91,8 @@
                                 </div>
                             </div>
                             <div class="flex justify-between space-x-8 items-start w-full">
-                                <p class="text-base dark:text-gray-300 xl:text-lg leading-6 ld:px-10">{{ u.price }} €</p>
-                                <p class="text-base dark:text-gray-300 xl:text-lg leading-6 text-gray-800">{{ u.amount }}</p>
+                                <p class="text-base dark:text-gray-300 xl:text-lg leading-6 ld:px-16">{{ u.price }} €</p>
+                                <p class="text-base dark:text-gray-300 xl:text-lg leading-6 text-gray-800">× {{ u.amount }}</p>
                                 <p class="text-base dark:text-gray-300 xl:text-lg font-semibold leading-6 text-gray-800">{{ u.price*u.amount }} €</p>
                             </div>
                         </div>
