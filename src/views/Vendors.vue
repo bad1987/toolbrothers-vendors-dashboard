@@ -27,7 +27,8 @@ import ButtonComponent from './components/ButtonComponent.vue';
     const selectedUser = ref({})
     const searchTerm = ref("")
     const filteredUsers = computed(() => {
-        return users.value.filter(user => user.email.includes(searchTerm.value.toLowerCase()) || user.username.toLowerCase().includes(searchTerm.value.toLowerCase()))
+        return users.value.filter(user => user.email.includes(searchTerm.value.toLowerCase()) ||
+         user.username.toLowerCase().includes(searchTerm.value.toLowerCase()))
     })
 
     onMounted(() => {
