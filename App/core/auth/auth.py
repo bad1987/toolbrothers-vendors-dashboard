@@ -1,7 +1,8 @@
 from fastapi import Depends, HTTPException, status
-from Security.Settings import Settings
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 import jwt
+
+from App.core.auth.Configs.Settings import Settings
 
 security = HTTPBearer()
 

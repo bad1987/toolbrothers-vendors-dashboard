@@ -8,10 +8,9 @@ from App.core.entities.user_repository import IUserRepository
 from sqlalchemy.orm import Session
 from App.input_ports.schemas.UserSchema import PermissionSchema
 
-from Database.Models import Permission, User
 
-# from App.input_ports.schemas.UserSchema import PermissionSchema, UserSchema
-# from App.output_ports.models.Models import Permission, User
+from App.input_ports.schemas.UserSchema import PermissionSchema, UserSchema
+from App.output_ports.models.Models import Permission, User
 
 class UserRepository(IUserRepository):
     def __init__(self, db: Session):

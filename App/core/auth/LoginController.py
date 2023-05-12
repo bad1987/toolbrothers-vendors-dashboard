@@ -1,22 +1,18 @@
 
 import datetime as dt
 from typing import Dict, List, Optional
-from App.Http.Schema.UserSchema import UserSchema
-from Security.OAuth2PasswordBearerWithCookie import OAuth2PasswordBearerWithCookie
+from App.Http.Schema.UserSchema import UserSchema, UserSchemaCreate
+from App.core.auth.Configs.OAuth2PasswordBearerWithCookie import OAuth2PasswordBearerWithCookie
+from App.core.auth.Configs.Settings import Settings
+from App.output_ports.db.Connexion import SessionLocal
+from App.output_ports.models.Models import User
 from fastapi import Depends, HTTPException, Request, status
 from jose import JWTError, jwt
 from passlib.handlers.sha2_crypt import sha512_crypt as crypto
 from rich import print
-from Security.Settings import Settings
-from Security.DTO.UserDto import UserDto
-from Security.DTO.UserDto import UserDtoCreate
-from Security.DTO.DataBase import DataBase
 from fastapi import Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
-from Database.Models import User
 from rich.console import Console
-from Database.Connexion import SessionLocal
-import json, hashlib
 
 # Dependency
 def get_db():
@@ -55,7 +51,7 @@ def authenticate_user(username: str, plain_password: str, db: Session) -> UserSc
         return False
     return user
 
-def decode_token(token: str, db: Session, from_auth_header=False) -> UserDto:
+def decode_token(token: str, db: Session, from_auth_header=False) -> UserSchema:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED, 
         detail="Could not validate credentials."
@@ -73,7 +69,7 @@ def decode_token(token: str, db: Session, from_auth_header=False) -> UserDto:
     return user
 
 
-def get_current_user_from_token(db: Session, token: str = Depends(oauth2_scheme)) -> UserDto:
+def get_current_user_from_token(db: Session, token: str = Depends(oauth2_scheme)) -> UserSchema:
     """
     Get the current user from the cookies in a request.
 
@@ -84,7 +80,7 @@ def get_current_user_from_token(db: Session, token: str = Depends(oauth2_scheme)
     user = decode_token(token, db)
     return user
 
-def get_current_user_from_api_token(request: Request, db: Session) -> UserDto:
+def get_current_user_from_api_token(request: Request, db: Session) -> UserSchema:
     try:
         token = request.headers.get("Authorization")
         token.removeprefix("Bearer").strip()
@@ -103,7 +99,7 @@ def get_current_user_from_api_token(request: Request, db: Session) -> UserDto:
             detail="Internal error"
         )
 
-def get_current_user_from_cookie(request: Request, db: Session) -> UserDto:
+def get_current_user_from_cookie(request: Request, db: Session) -> UserSchema:
     """
     Get the current user from the cookies in a request.
     
@@ -126,7 +122,7 @@ def get_current_user_from_cookie(request: Request, db: Session) -> UserDto:
     return user
 
 # Register user
-def create_user_account(user_dto: UserDtoCreate, db: Session):
+def create_user_account(user_dto: UserSchemaCreate, db: Session):
     user = User()
     is_user = db.query(User).filter(User.email == user_dto.email).first()
     if not is_user:

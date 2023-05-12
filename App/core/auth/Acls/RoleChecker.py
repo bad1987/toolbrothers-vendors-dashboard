@@ -2,8 +2,7 @@
 from fastapi import Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
-from Database.Models import User
-from Security.Controllers.LoginController import get_current_user_from_cookie
+from App.core.auth.LoginController import get_current_user_from_cookie
 
 class Role_checker:
     def __init__(self, allowed_roles: list = []) -> None:

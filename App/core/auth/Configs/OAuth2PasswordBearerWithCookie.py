@@ -3,7 +3,8 @@ from fastapi import HTTPException, Request, status
 from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
 from fastapi.security import OAuth2
 from fastapi.security.utils import get_authorization_scheme_param
-from Security.Settings import Settings
+
+from App.core.auth.Configs.Settings import Settings
 # --------------------------------------------------------------------------
 # Authentication logic
 # --------------------------------------------------------------------------

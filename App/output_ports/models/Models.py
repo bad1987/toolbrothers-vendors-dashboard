@@ -1,10 +1,10 @@
 from sqlalchemy import TIMESTAMP, Column, ForeignKey, Integer, String, text, BigInteger, Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy.types import Text
-from Database.Connexion import Base
 from App.Enums.UserRoleEnum import UserRoleEnum
 from App.Enums.UserEnums import UserStatusEnum
 from App.Enums.LanguageEnum import LanguageEnum
+from App.output_ports.db.Connexion import Base
 
 
 class User(Base):

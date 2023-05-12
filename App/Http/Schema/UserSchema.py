@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import Text, List, Optional
 from App.Enums.UserEnums import UserStatusEnum
 from App.Enums.UserRoleEnum import UserRoleEnum
@@ -47,3 +47,11 @@ class UserCreateSubVendorSchema(BaseModel):
     
     class Config:
         orm_mode = True
+
+    
+class UserSchemaCreate(BaseModel):
+    username: str
+    email: EmailStr
+    status: UserStatusEnum
+    permissions: list | None = None
+    roles: UserRoleEnum

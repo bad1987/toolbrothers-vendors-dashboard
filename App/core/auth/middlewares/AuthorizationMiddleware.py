@@ -1,13 +1,12 @@
 from fastapi import HTTPException, Request, status, Response
 from fastapi.responses import RedirectResponse, JSONResponse
-from Database.Models import Login_Attempt
 import datetime, time
-
-from Security.Acls.RoleChecker import Role_checker
-from Database.Connexion import SessionLocal
 
 from fastapi import Request, HTTPException
 from App.core.auth.auth import validate_token
+from App.output_ports.db.Connexion import SessionLocal
+from App.core.auth.Acls.RoleChecker import Role_checker
+from App.output_ports.models.Models import Login_Attempt
 
 def get_db():
     db = SessionLocal()

@@ -1,22 +1,13 @@
 from fastapi import Depends, FastAPI, Request
-from App.core.auth.middlewares.AuthorizationMiddleware import TokenMiddleware, token_middleware
-from Database import Models
-from Database.Connexion import engine
+from App.core.auth.middlewares.AuthorizationMiddleware import token_middleware
 import uvicorn
-from Routes.settings import Payments, PlentyMarket, SettingApi
-from Security.Routes.Login_register import Login_register, Forgot_password
-from Routes import Users, Orders, Product, Errors, Message, SubVendor
 from fastapi.middleware.cors import CORSMiddleware
 
-from middlewares.FirewallMiddleware import firewall_middleware
-from middlewares.AuthorizationMiddleware import orders_permissions, block_ip_middleware
-from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from App.input_ports.routes.api import order_routes
 from App.input_ports.routes.system import user_routes
 
-Models.Base.metadata.create_all(bind=engine)   
 app = FastAPI(title="TOOLBROTHER API", version="1.0.0", description="This API is to design the Toolbrother dashboard",docs_url="/toolbrothers_api/docs") 
 
 @app.get('/', tags=["Welcome"], include_in_schema=False)
@@ -26,25 +17,12 @@ origins = [
     "http://localhost:5173" 
 ]
 
-app.include_router(Login_register.route) 
-app.include_router(Forgot_password.route) 
-app.include_router(Users.route) 
-app.include_router(Orders.route)
-app.include_router(Errors.route)
-app.include_router(Payments.route)
-app.include_router(PlentyMarket.route)
-app.include_router(Product.route)
-app.include_router(Message.route)
-app.include_router(SettingApi.route)
-app.include_router(SubVendor.route)
-
 app.include_router(order_routes.api_route)
 app.include_router(user_routes.s_user_route, dependencies=[Depends(token_middleware)])
  
 # static files
-app.mount("/static", StaticFiles(directory="static"), name="static")
+# app.mount("/static", StaticFiles(directory="static"), name="static")
 
-app.add_middleware(BaseHTTPMiddleware, dispatch=block_ip_middleware)
 # cors
 app.add_middleware( 
     CORSMiddleware,
