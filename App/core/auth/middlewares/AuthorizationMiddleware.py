@@ -68,7 +68,7 @@ class TokenMiddleware:
         if not auth_header:
             raise HTTPException(status_code=401, detail="Missing authorization header")
         token = auth_header.split(" ")[1]
-        token.removeprefix("Bearer").strip()
+        token = token.removeprefix("Bearer").strip()
         if not validate_token(token):
             raise HTTPException(status_code=401, detail="Invalid token")
         response = await self.app(request, *args, **kwargs)
@@ -76,11 +76,16 @@ class TokenMiddleware:
 
 async def token_middleware(request: Request, call_next):
     auth_header = request.headers.get("Authorization")
+    print("inside middleware")
     if not auth_header:
         raise HTTPException(status_code=401, detail="Missing authorization header")
     token = auth_header.split(" ")[1]
-    token.removeprefix("Bearer").strip()
+    token = token.removeprefix("Bearer").strip()
     if not validate_token(token):
         raise HTTPException(status_code=401, detail="Invalid token")
-    response = await call_next(request, call_next)
+    response = await call_next(request)
+    # try:
+    #     ...
+    # except Exception as e:
+    #     raise e
     return response

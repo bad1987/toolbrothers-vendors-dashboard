@@ -32,8 +32,9 @@ class UserRepository(IUserRepository):
             and_(User.roles == UserRoleEnum.ADMIN.value, User.id != user_id)
         ).all()
         result = [UserSchema.from_orm(p) for p in result]
+        return result
 
     def get_permissions(self) -> List[PermissionSchema]:
         permissions = self.db.query(Permission).all()
-        permissions = [PermissionSchema({"text": perm.name, "value": perm.id, "description": perm.description}) for perm in permissions]
+        # permissions = [PermissionSchema(**{"text": perm.name, "value": perm.id, "description": perm.description}) for perm in permissions]
         return permissions

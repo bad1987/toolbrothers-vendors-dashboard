@@ -83,7 +83,7 @@ def get_current_user_from_token(db: Session, token: str = Depends(oauth2_scheme)
 def get_current_user_from_api_token(request: Request, db: Session) -> UserSchema:
     try:
         token = request.headers.get("Authorization")
-        token.removeprefix("Bearer").strip()
+        token = token.removeprefix("Bearer").strip()
         playload = jwt.decode(token, Settings.SECRET_KEY, [Settings.ALGORITHM])
         email = playload.get('email')
 

@@ -28,7 +28,7 @@ async def get_orders_list(request: Request, db_local: Session = Depends(get_db),
         description="The sort order of the results. Possible values are: asc (ascending), desc (descending)"
     )
 ):
-    order_usecase = OrderUsecase()
+    order_usecase = OrderUsecase(db_local=db_local, db_cscart=db_cscart)
     skip = (page - 1) * items_per_page
     limit = items_per_page
     status = [s.value for s in status]
@@ -36,13 +36,13 @@ async def get_orders_list(request: Request, db_local: Session = Depends(get_db),
         order_by = order_by.value
     sort_order = sort_order.value
 
-    result = order_usecase.get_order_list(request=request, db_cscart=db_cscart, db_local=db_local,skip=skip, limit=limit,
+    result = order_usecase.get_order_list(request=request,skip=skip, limit=limit,
         status=status, start_time=start_time, end_time=end_time, order_by=order_by, sort_order=sort_order
     )
     return result
 
 @api_route.get('/order/', response_model=SingleOrderResponseModel)
 async def get_order(request: Request, order_id: int, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart), payload: dict = Depends(validate_token)):
-    order_usecase = OrderUsecase()
-    result = order_usecase.get_order(request=request, db_cscart=db_cscart, db_local=db_local, order_id=order_id)
+    order_usecase = OrderUsecase(db_local=db_local, db_cscart=db_cscart)
+    result = order_usecase.get_order(request=request, order_id=order_id)
     return result

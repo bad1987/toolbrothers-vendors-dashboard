@@ -7,13 +7,9 @@ from App.core.auth.Configs.Settings import Settings
 security = HTTPBearer()
 
 async def validate_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    # get token from credentials
-    token = credentials.credentials
-    # sanitize token
-    token.removeprefix("Bearer").strip()
     # validate token
     try:
-        payload = jwt.decode(token, Settings.SECRET_KEY, algorithms=Settings.ALGORITHM)
-        return payload
+        payload = jwt.decode(str(credentials.credentials.removeprefix("Bearer").strip()), Settings.SECRET_KEY, algorithms=Settings.ALGORITHM)
+        return True if payload else False
     except jwt.PyJWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
