@@ -1,17 +1,13 @@
 from fastapi import Request, status
-from Database.Connexion import SessionLocal
-from Database.Models import Permission, User, User_Permission
-from App.Http.Schema.UserSchema import PermissionSchema
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
-from Security.Controllers import LoginController
-from App.Http.Schema.UserSchema import UserCreateSubVendorSchema
 from typing import List
 from passlib.handlers.sha2_crypt import sha512_crypt as crypto
-from fastapi.responses import JSONResponse
 from rich.console import Console
+from App.input_ports.schemas.UserSchema import PermissionSchema, UserCreateSubVendorSchema, UserSchema
 
-from Security.DTO.UserDto import UserDto
+from App.output_ports.db.Connexion import SessionLocal
+from App.output_ports.models.Models import Permission, User
 
 console = Console()
 
@@ -37,7 +33,7 @@ class UserController:
 
         return {"users": user_vendor, "permissions": user_permissions}
     
-    def create_sub_vendor_by_vendor(request: Request, schema: UserCreateSubVendorSchema, db_local: Session, user_vendor: UserDto):
+    def create_sub_vendor_by_vendor(request: Request, schema: UserCreateSubVendorSchema, db_local: Session, user_vendor: UserSchema):
         userSubVendor = User()
         
         userSubVendor.email = schema.email

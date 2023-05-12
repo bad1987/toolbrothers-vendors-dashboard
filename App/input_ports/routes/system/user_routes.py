@@ -1,5 +1,7 @@
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
+from App.Enums.UserRoleEnum import ModelNameEnum
+from App.core.Decorators.auth_decorators import requires_permission
 
 from App.core.auth.middlewares.AuthorizationMiddleware import TokenMiddleware
 from App.core.dependencies.db_dependencies import get_db
@@ -10,7 +12,7 @@ from App.input_ports.schemas.UserSchema import UserListSchema, UserSchema
 s_user_route = APIRouter(prefix='/admin', tags=['Users system'], include_in_schema=False)
 
 @s_user_route.get("/users/{type}/list")
-# @requires_permission('read', ModelNameEnum.USER_MODEL.value)
+@requires_permission('read', ModelNameEnum.USER_MODEL.value)
 async def get_users_list(
     request: Request,
     type: str,
