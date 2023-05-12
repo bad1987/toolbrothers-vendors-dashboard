@@ -16,3 +16,4 @@ Flask-Script
 pydantic[email]
 python-dateutil
 fastapi-limiter
+phpserialize
