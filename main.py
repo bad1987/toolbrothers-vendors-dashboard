@@ -1,4 +1,5 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI, Request
+from App.core.auth.middlewares.AuthorizationMiddleware import TokenMiddleware, token_middleware
 from Database import Models
 from Database.Connexion import engine
 import uvicorn
@@ -13,6 +14,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from App.input_ports.routes.api import order_routes
+from App.input_ports.routes.system import user_routes
 
 Models.Base.metadata.create_all(bind=engine)   
 app = FastAPI(title="TOOLBROTHER API", version="1.0.0", description="This API is to design the Toolbrother dashboard",docs_url="/toolbrothers_api/docs") 
@@ -37,6 +39,7 @@ app.include_router(SettingApi.route)
 app.include_router(SubVendor.route)
 
 app.include_router(order_routes.api_route)
+app.include_router(user_routes.s_user_route, dependencies=[Depends(token_middleware)])
  
 # static files
 app.mount("/static", StaticFiles(directory="static"), name="static")

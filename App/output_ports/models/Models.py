@@ -26,6 +26,7 @@ class User(Base):
 
     permissions = relationship("Permission", secondary='user_permissions')
     
+    
     # payment_method_vendor = relationship("Payment_method_vendor",  back_populates="users", cascade="all, delete")
 
 class Payment_method(Base):

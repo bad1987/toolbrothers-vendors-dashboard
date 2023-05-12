@@ -3,30 +3,13 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, Query, Request
 from App.Enums.OrderEnums import OrderOrderBy, OrderStatus, SortOrder
 from App.core.auth.auth import validate_token
+from App.core.dependencies.db_dependencies import get_db, get_db_cscart
 from App.core.use_cases.order_use_case import OrderUsecase
 
 from App.input_ports.schemas.OrderSchema import OrderResponseModel, SingleOrderResponseModel
-from App.output_ports.db.Connexion import SessionLocal
-from App.output_ports.db.CscartConnexion import CscartSession
 from sqlalchemy.orm import Session
 
 from App.utils.datetime_utils import validate_end_time, validate_start_time
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-        
-#Connexion from cscart database
-
-def get_db_cscart():
-    db_cscart = CscartSession()
-    try:
-        yield db_cscart
-    finally:
-        db_cscart.close()
 
 api_route = APIRouter(prefix='/api', tags=['Orders system'], include_in_schema=True)
 

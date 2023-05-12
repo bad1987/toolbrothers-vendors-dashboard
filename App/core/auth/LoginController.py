@@ -87,6 +87,7 @@ def get_current_user_from_token(db: Session, token: str = Depends(oauth2_scheme)
 def get_current_user_from_api_token(request: Request, db: Session) -> UserDto:
     try:
         token = request.headers.get("Authorization")
+        token.removeprefix("Bearer").strip()
         playload = jwt.decode(token, Settings.SECRET_KEY, [Settings.ALGORITHM])
         email = playload.get('email')
 
@@ -110,6 +111,7 @@ def get_current_user_from_cookie(request: Request, db: Session) -> UserDto:
     for views that should work for both logged in, and not logged in users.
     """
     token = request.cookies.get(Settings.COOKIE_NAME)
+    from_auth_header = False
     if not token:
         # try to get the token from the Authorization header
         auth_header = request.headers.get("Authorization")
@@ -118,8 +120,9 @@ def get_current_user_from_cookie(request: Request, db: Session) -> UserDto:
             return None
         token = auth_header.split(" ")[1]
         token = token.strip()
+        from_auth_header = True
         
-    user = decode_token(token, db, from_auth_header=True)
+    user = decode_token(token, db, from_auth_header=from_auth_header)
     return user
 
 # Register user
