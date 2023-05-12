@@ -49,9 +49,13 @@ class UserCreateSubVendorSchema(BaseModel):
         orm_mode = True
 
     
-class UserSchemaCreate(BaseModel):
+class UserCreateSchema(BaseModel):
     username: str
     email: EmailStr
     status: UserStatusEnum
     permissions: list | None = None
     roles: UserRoleEnum
+
+class UserCreateResponse(BaseModel):
+    user: UserCreateSchema
+    password: str

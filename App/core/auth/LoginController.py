@@ -1,9 +1,10 @@
 
 import datetime as dt
 from typing import Dict, List, Optional
-from App.Http.Schema.UserSchema import UserSchema, UserSchemaCreate
+from App.Http.Schema.UserSchema import UserSchema
 from App.core.auth.Configs.OAuth2PasswordBearerWithCookie import OAuth2PasswordBearerWithCookie
 from App.core.auth.Configs.Settings import Settings
+from App.input_ports.schemas.UserSchema import UserCreateSchema
 from App.output_ports.db.Connexion import SessionLocal
 from App.output_ports.models.Models import User
 from fastapi import Depends, HTTPException, Request, status
@@ -122,7 +123,7 @@ def get_current_user_from_cookie(request: Request, db: Session) -> UserSchema:
     return user
 
 # Register user
-def create_user_account(user_dto: UserSchemaCreate, db: Session):
+def create_user_account(user_dto: UserCreateSchema, db: Session):
     user = User()
     is_user = db.query(User).filter(User.email == user_dto.email).first()
     if not is_user:

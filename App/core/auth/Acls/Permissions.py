@@ -1,7 +1,8 @@
 from fastapi import HTTPException, status
 from App.Http.Controllers.UserController import UserController
-from App.Http.Schema.UserSchema import PermissionSchema, UserSchema
 from fastapi.encoders import jsonable_encoder
+
+from App.input_ports.schemas.UserSchema import PermissionSchema, UserSchema
 
 
 class PermissionChecker:

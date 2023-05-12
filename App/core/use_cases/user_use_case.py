@@ -1,10 +1,11 @@
 
 from typing import List
 from fastapi import HTTPException, Request, status
+from App.core.Services.SendEmail import send_email
 from App.core.auth.Acls.ModelPermissions import ModelPermissions
 from App.core.auth.LoginController import get_current_user_from_cookie
 
-from App.input_ports.schemas.UserSchema import PermissionSchema, UserSchema
+from App.input_ports.schemas.UserSchema import PermissionSchema, UserCreateSchema, UserSchema
 from App.output_ports.repositories.user_repository import UserRepository
 from sqlalchemy.orm import Session
 
@@ -33,3 +34,29 @@ class UserUsecase:
     def get_user(self, request: Request):
         _user = get_current_user_from_cookie(request=request, db=self.db)
         return _user
+    
+    def create_user(self, model: UserCreateSchema) -> UserSchema:
+        resolved = None
+        try:
+            resolved = self.user_repository.create_user(model)
+            send_email(resolved.user.email, 'New account infos', 
+                f"""
+                    Login to your vendor dashboard
+                    Your infos\n\n
+                    email: {resolved.user.email}\n
+                    password: {resolved.password}\n\n
+                """
+            )
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail= str(e)
+            )
+        return resolved.user
+    
+    def update_user(self, id: int, model: UserCreateSchema) -> UserSchema:
+        try:
+            user = self.user_repository.update_user(model=model, id=id)
+            return user
+        except:
+            raise
