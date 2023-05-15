@@ -233,4 +233,5 @@ const handleLogout = event => {
       </div>
     </div>
   </div>
-</nav></template> 
+  </nav>
+</template> 

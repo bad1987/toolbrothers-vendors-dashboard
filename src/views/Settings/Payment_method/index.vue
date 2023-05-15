@@ -297,8 +297,7 @@ getPaymentMethodByVendorConnected();
                       :data-drawer-target="`confirmPaymentMethod${item.id}`" :data-drawer-show="`confirmPaymentMethod${item.id}`" data-drawer-placement="right" :aria-controls="`confirmPaymentMethod${item.id}`"
                         v-if="item.status == 'A'"
                         class="px-5 py-1 mb-2 mr-2 text-sm font-medium text-center text-red-700 border border-red-700 rounded-lg cursor-pointer hover:text-white hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-500 dark:focus:ring-blue-800"
-                        >Disable</span
-                      >
+                        >Disable</span>
                     </td>
 
                     <!-- Confirm update payment method -->
