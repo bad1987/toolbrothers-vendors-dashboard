@@ -7,7 +7,9 @@ import { local_storage_get } from '../utils';
 import { useI18n } from 'vue-i18n'
 import axios from 'axios'
 import { initFlowbite } from 'flowbite'
-import { onMounted } from 'vue';
+import { onBeforeMount, onMounted, ref } from 'vue';
+import { RouterLink } from 'vue-router';
+import { acl } from '@/router/acl'
 
 // initialize components based on data attribute selectors
   onMounted(() => {
@@ -20,6 +22,8 @@ const usStore = userStore()
 const { isDark } = storeToRefs(themeStore)
 const { actual } = storeToRefs(langStore)
 const { t, locale } = useI18n()
+
+const user = ref(null)
 
 function changeLanguage (lang) {
   langStore.changeLanguage(lang)
@@ -38,7 +42,11 @@ function changeLanguage (lang) {
 
 }
 
-onMounted(() => {
+onBeforeMount(async () => {
+  user.value = await acl()
+})
+
+onMounted(async () => {
   initFlowbite()
 
   const btnToggle = document.getElementById("btn-toggle-sidebar")
@@ -113,31 +121,22 @@ const handleLogout = event => {
               </button>
             </div>
             <div
+              v-if="user"
               class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600"
               id="dropdown-user">
               <div class="px-4 py-3" role="none">
                 <p class="text-sm text-gray-900 dark:text-white" role="none">
-                  Neil Sims
+                  {{ user.username }}
                 </p>
                 <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300" role="none">
-                  neil.sims@flowbite.com
+                  {{ user.email }}
                 </p>
               </div>
               <ul class="py-1" role="none">
                 <li>
-                  <a href="#"
+                  <RouterLink to="/"
                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                    role="menuitem">Dashboard</a>
-                </li>
-                <li>
-                  <a href="#"
-                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                    role="menuitem">Settings</a>
-                </li>
-                <li>
-                  <a href="#"
-                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                    role="menuitem">Earnings</a>
+                    role="menuitem">Dashboard</RouterLink>
                 </li>
                 <li>
                   <a href="#" @click="handleLogout"
