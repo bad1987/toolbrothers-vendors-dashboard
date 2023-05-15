@@ -18,3 +18,7 @@ class IOrderRepository(ABC):
     @abstractmethod
     def get_order(self, request: Request, order_id: int) -> Optional[OrdersSchema]:
         ...
+        
+    @abstractmethod
+    def get_detail_order(self, request: Request, order_id: int, db_local: Session, db_cscart: Session):
+        ...

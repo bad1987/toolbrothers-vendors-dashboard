@@ -25,3 +25,15 @@ class OrderResponseModel(BaseModel):
 
 class SingleOrderResponseModel(BaseModel):
     order: Optional[OrdersSchema]
+    
+class CscartOrderDetailSchema(BaseModel):
+    item_id: Optional[int]
+    order_id: Optional[int]
+    product_id: Optional[int]
+    product_code: Optional[str]
+    price: Optional[float]
+    extra: Optional[dict]
+    amount: Optional[int]
+        
+    class Config:
+        orm_mode = True

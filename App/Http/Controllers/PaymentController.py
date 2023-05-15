@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from fastapi import Request, status
-from Security.Controllers import LoginController
-from Database.Models import Payment_method_vendor
+from App.core.auth import LoginController
+from App.output_ports.models.Models import Payment_method_vendor
 from fastapi.responses import JSONResponse
 from App.Http.Schema.Settings.PaymentMethodSchema import PaymentMethodSchema, updatePaymentMethod
 

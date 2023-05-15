@@ -11,22 +11,7 @@ class CscartCompanies(CscartBase):
     company = Column(String(255), nullable=True)
     lang_code = Column(String(255), nullable=True)
     status = Column(String(25), nullable=True)
-
-class CscartOrders(CscartBase):
-    __tablename__ = "cscart_orders"
-
-    order_id = Column(Integer, primary_key=True, index=True)
-    company_id = Column(Integer, index=True)
-    status = Column(String(255), unique=True, index=True, nullable=True)
-    timestamp = Column(TIMESTAMP, nullable=True)
-    status = Column(String(25), nullable=True)
-    firstname = Column(String(25), nullable=True)
-    lastname = Column(String(25), nullable=True)
-    email = Column(String(25), nullable=True)
-    phone = Column(String(25), nullable=True)
-    company = Column(String(255), nullable=True)
-    total = Column(Float, nullable=True)
-    
+ 
 class Cscart_payments(CscartBase):
     __tablename__ = "cscart_payments"
     payment_id = Column(Integer, primary_key=True, index=True)
@@ -49,6 +34,7 @@ class Cscart_products(CscartBase):
     status = Column(String(25))
     manual_change = Column(Boolean)
 
+    # cscart_order_details = relationship("Cscart_products",  back_populates="cscart_order_details", cascade="all, delete") 
     price = relationship("Cscart_product_prices", back_populates="product", uselist=False)
     description = relationship("Cscart_product_descriptions", back_populates="linkedProduct")
 
@@ -71,16 +57,6 @@ class Cscart_product_prices(CscartBase):
     
     product = relationship("Cscart_products",  back_populates="price")
    
-
-class CscartUsers(CscartBase):
-    __tablename__ = "cscart_users"
-
-    user_id = Column(Integer, primary_key=True, index=True)
-    email = Column(String(255), unique=True, index=True, nullable=True)
-    firstname = Column(String(255), nullable=True)
-    lastname = Column(String(255), nullable=True)
-    company_id = Column(String(255), nullable=False)
-    
 class Cscart_vendor_communications(CscartBase):
     __tablename__ = "cscart_vendor_communications"
     thread_id = Column(Integer, primary_key=True, nullable=True)
@@ -98,6 +74,14 @@ class Cscart_vendor_communications(CscartBase):
     user_id = Column(Integer, ForeignKey("cscart_users.user_id", ondelete="CASCADE"), nullable=True)
     
     
+class CscartUsers(CscartBase):
+    __tablename__ = "cscart_users"
+    user_id = Column(Integer, primary_key=True, index=True)
+    email = Column(String(255), unique=True, index=True, nullable=True)
+    firstname = Column(String(255), nullable=True)
+    lastname = Column(String(255), nullable=True)
+    company_id = Column(String(255), nullable=False)
+    
 class Cscart_vendor_communication_messages(CscartBase):
     __tablename__ = "cscart_vendor_communication_messages"
     message_id = Column(Integer, primary_key=True, nullable=True)
@@ -108,3 +92,42 @@ class Cscart_vendor_communication_messages(CscartBase):
     message = Column(Text, nullable=True)
     
     cscart_users = relationship("Cscart_vendor_communication_messages", secondary='cscart_users')   
+    
+
+class CscartOrders(CscartBase):
+    __tablename__ = "cscart_orders"
+    order_id = Column(Integer, primary_key=True, index=True)
+    company_id = Column(Integer, index=True)
+    status = Column(String(255), unique=True, index=True, nullable=True)
+    timestamp = Column(TIMESTAMP, nullable=True)
+    status = Column(String(25), nullable=True)
+    firstname = Column(String(25), nullable=True)
+    lastname = Column(String(25), nullable=True)
+    email = Column(String(25), nullable=True)
+    phone = Column(String(25), nullable=True)
+    company = Column(String(255), nullable=True)
+    user_id = Column(Integer, ForeignKey("cscart_users.user_id", ondelete="CASCADE"), nullable=True)
+    total = Column(Float, nullable=True)
+    subtotal = Column(Float, nullable=True)
+    discount = Column(Float, nullable=True)
+    timestamp = Column(Integer, nullable=True)
+    b_address = Column(String(255), nullable=True)
+    b_address_2 = Column(String(255), nullable=True)
+    b_city = Column(String(255), nullable=True)
+    b_state = Column(String(255), nullable=True)
+    b_zipcode = Column(Integer, nullable=True)
+    shipping_cost = Column(Float, nullable=True)
+   
+class CscartOrderDetails(CscartBase):
+    __tablename__ = "cscart_order_details"
+    item_id = Column(Integer, primary_key=True, nullable=True)
+    order_id = Column(Integer, ForeignKey("cscart_orders.order_id", ondelete="CASCADE"), nullable=True)
+    product_id = Column(Integer, ForeignKey("cscart_products.product_id", ondelete="CASCADE"), nullable=True)
+    product_code = Column(String(255), nullable=True)
+    price = Column(Integer, nullable=True)
+    amount = Column(Integer, nullable=True)
+    extra = Column(String(255), nullable=False)
+    
+    cscart_orders = relationship("CscartOrderDetails", secondary='cscart_orders') 
+    cscart_products = relationship("CscartOrderDetails", secondary='cscart_products') 
+  

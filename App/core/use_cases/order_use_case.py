@@ -25,3 +25,8 @@ class OrderUsecase:
     def get_order(self, request: Request, order_id: int) -> SingleOrderResponseModel:
         result = self.order_repository.get_order(request=request, order_id=order_id)
         return {"order": result}
+    
+    def get_detail_order(self, request: Request, order_id: int, db_local: Session, db_cscart: Session):
+
+        result = self.order_repository.get_detail_order(request, order_id, db_local, db_cscart)
+        return result
