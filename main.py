@@ -21,10 +21,17 @@ origins = [
     "http://localhost:5173" 
 ]
 
+## Api's routes
+
 app.include_router(order_routes.api_route)
-app.include_router(user_routes.s_user_route)
 app.include_router(product_routes.api_route)
+
+
+
+##
+
 app.include_router(Payment_route.route)
+app.include_router(user_routes.s_user_route)
  
 # static files
 # app.mount("/static", StaticFiles(directory="static"), name="static")
