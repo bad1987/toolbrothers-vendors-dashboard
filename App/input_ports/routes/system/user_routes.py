@@ -6,7 +6,7 @@ from App.core.Decorators.auth_decorators import requires_permission
 from App.core.auth.auth import is_authenticated
 
 from App.core.auth.middlewares.AuthorizationMiddleware import TokenMiddleware
-from App.core.dependencies.db_dependencies import get_db
+from App.core.dependencies.db_dependencies import get_db, get_db_cscart
 from App.core.use_cases.user_use_case import UserUsecase
 from App.input_ports.schemas.UserSchema import UserCreateSchema, UserListSchema, UserSchema
 
@@ -48,4 +48,14 @@ async def add_user(request: Request, model: UserCreateSchema, db: Session = Depe
 async def update_user(id: int, model: UserSchema, request: Request,  db: Session = Depends(get_db), _user: dict = Depends(is_authenticated)):
     user_usecase = UserUsecase(db)
     result = user_usecase.update_user(model=model, id=id)
+    return result
+
+# Scrap user vendor in cscart database
+@s_user_route.get('/cscart-users')
+@requires_permission('write', ModelNameEnum.USER_MODEL.value)
+async def cscart_users(db_cscart: Session = Depends(get_db_cscart), db_local: Session = Depends(get_db)):
+
+    user_usecase = UserUsecase(db_local)
+    result = user_usecase.import_cscart_users(db_cscart, db_local)
+
     return result

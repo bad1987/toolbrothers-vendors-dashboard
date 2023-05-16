@@ -60,3 +60,13 @@ class UserUsecase:
             return user
         except:
             raise
+
+    def import_cscart_users(self, db_cscart: Session, db_local: Session) -> List[UserSchema]:
+        try:
+            result = self.user_repository.import_cscart_users(db_cscart, db_local)
+            return result
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail= str(e)
+            )
