@@ -20,7 +20,6 @@ class UserController:
             permissions: List[Permission] = db.query(Permission).filter(Permission.mode == mode, Permission.model_name == model_name).all()
             permission_schemas: List[PermissionSchema] = [PermissionSchema(**jsonable_encoder(p)) for p in permissions]
         except Exception as e:
-            print(str(e))
             permission_schemas = None
         finally:
             db.close()
@@ -58,3 +57,35 @@ class UserController:
         db_local.commit()
         
         return {"user": userSubVendor} 
+
+    def update_subvendor(model: UserSchema, db_local: Session, _user: User):
+        try:
+            if db_local.in_transaction():
+                db_local.rollback()
+            transaction = db_local.begin()
+            user_to_update = db_local.query(User).filter(User.parent_id == _user.id).filter(User.id == id).first()
+
+            if not user_to_update or (user_to_update.parent_id != _user.id):
+                return {"status": False, "message": "Invalid user"}
+            
+            for field, value in model.dict(exclude_unset=True, exclude={'permissions'}).items():
+                setattr(user_to_update, field, value)
+
+            if model.permissions != None:
+                user_to_update.permissions.clear()
+
+                for perm_id in model.permissions:
+                    permission = db_local.query(Permission).filter(Permission.id == int(perm_id)).first()
+
+                    if permission != None: 
+                        user_to_update.permissions.append(permission)
+                    else:
+                        continue
+                    
+            db_local.commit()
+            db_local.refresh(user_to_update)
+
+            return user_to_update
+        except Exception as e:
+            transaction.rollback()
+            return { "status": False, "message": str(e) }

@@ -2,17 +2,17 @@ from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import and_, func, literal_column, select, join
 from sqlalchemy.sql import text
 from fastapi import Request, status, HTTPException
-from Database.Models import User
-from Security.Controllers import LoginController
-from Database.CscartModels import Cscart_product_descriptions, Cscart_products, Cscart_product_prices
 from fastapi.responses import JSONResponse
 from App.Http.Schema.Settings.PlentyMarketSchema import PlentyMarketSchema
 from rich.console import Console
 from App.Http.Schema.UserSchema import UserSchema
 from App.Http.Schema.ProductSchema import ProductSchema
 from fastapi.encoders import jsonable_encoder
+from App.core.auth import LoginController
+from App.output_ports.models.CscartModels import Cscart_product_descriptions, Cscart_product_prices, Cscart_products
 
-from Security.DTO.UserDto import UserDto
+from App.output_ports.models.Models import User
+
 console = Console()
 
 class ProductController:
@@ -78,3 +78,50 @@ class ProductController:
             'active_products': active_products,
             'out_of_stock': out_of_stock_products
         }
+
+    def update_product(product_id: int, model: ProductSchema, request: Request, db_local: Session, db_cscart: Session):
+        try:
+            if db_cscart.in_transaction():
+                db_cscart.rollback()
+            transaction = db_cscart.begin()
+            user = LoginController.get_current_user_from_cookie(request, db_local)
+
+            product = db_cscart.query(Cscart_products).filter(Cscart_products.product_id == product_id).filter(Cscart_products.company_id == user.company_id).first()
+            price = product.price
+
+            if product is None:
+                raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Product Not Found"
+            )
+
+            if user.company_id != product.company_id:
+                raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="You are not able to access this product"
+            )
+
+            #modify price
+            for field, value in model.dict(exclude_unset=True, exclude_none=True, exclude={"product_id"}).items():
+                if hasattr(price, field):
+                    setattr(price, field, value)
+
+            # Modify the product
+            for field, value in model.dict(exclude_unset=True, exclude={"product_id", "price"}, exclude_none=True).items():
+                if hasattr(product, field):
+                    setattr(product, field, value)
+
+            product_model = ProductController.get_product_by_id(product_id, request, db_cscart, user)
+
+            db_cscart.commit()
+
+            return product_model
+        
+        except Exception as e:
+            # traceback.print_exc(file=sys.stdout)
+            
+            transaction.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="An error occured"
+            )
