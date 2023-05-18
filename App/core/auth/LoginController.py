@@ -1,10 +1,9 @@
 
 import datetime as dt
 from typing import Dict, List, Optional
-from App.Http.Schema.UserSchema import UserSchema
 from App.core.auth.Configs.OAuth2PasswordBearerWithCookie import OAuth2PasswordBearerWithCookie
 from App.core.auth.Configs.Settings import Settings
-from App.input_ports.schemas.UserSchema import UserCreateSchema
+from App.input_ports.schemas.UserSchema import UserCreateSchema, UserSchema
 from App.output_ports.db.Connexion import SessionLocal
 from App.output_ports.models.Models import User
 from fastapi import Depends, HTTPException, Request, status
