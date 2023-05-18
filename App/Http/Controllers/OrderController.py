@@ -2,12 +2,13 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 from sqlalchemy import func, select, text, Date
 from fastapi import Request
-from Security.Controllers import LoginController
-from Database.CscartModels import CscartOrders
 from App.Http.Schema.UserSchema import UserSchema
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from dateutil.parser import parse
+
+from App.core.auth import LoginController
+from App.output_ports.models.CscartModels import CscartOrders
 
 class OrderController:
     def get_orders_by_vendor_connected(request: Request, db_local: Session, db_cscart: Session, skip: int, limit: int):

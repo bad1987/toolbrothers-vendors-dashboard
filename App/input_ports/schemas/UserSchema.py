@@ -28,6 +28,11 @@ class PermissionSchema(BaseModel):
 
     class Config:
         orm_mode = True
+
+class PermissionReturnModel(BaseModel):
+    text: Optional[str]
+    description: Optional[str]
+    value: Optional[int]
         
 class ApiSetting(BaseModel):
     api_token: Optional[str]
@@ -57,4 +62,4 @@ class UserCreateSchema(BaseModel):
 
 class UserListSchema(BaseModel):
     users: List[UserSchema] = []
-    permissions: List[PermissionSchema] = []
+    permissions: List[PermissionReturnModel] = []

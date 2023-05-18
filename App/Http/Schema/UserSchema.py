@@ -3,7 +3,6 @@ from typing import Text, List, Optional
 from App.Enums.UserEnums import UserStatusEnum
 from App.Enums.UserRoleEnum import UserRoleEnum
 from App.Enums.LanguageEnum import LanguageEnum
-from App.Http.Schema.PermissionSchema import PermissionSchema
 
 class UserSchema(BaseModel):
     id: Optional[int]
