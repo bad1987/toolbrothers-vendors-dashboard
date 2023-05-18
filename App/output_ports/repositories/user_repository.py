@@ -1,12 +1,15 @@
 
+from datetime import datetime, timedelta
 import random, string, re
 from typing import List, Optional
 from fastapi import HTTPException, status
+import jwt
 
 from sqlalchemy import and_
 from App.Enums.LanguageEnum import LanguageEnum
 from App.Enums.UserRoleEnum import UserRoleEnum
 from App.Http.Schema.UserSchema import UserCreateResponse, UserSchema
+from App.core.auth.Configs.Settings import Settings
 from App.core.entities.user_repository import IUserRepository
 from sqlalchemy.orm import Session
 from App.input_ports.schemas.UserSchema import PermissionSchema, UserCreateSchema
@@ -45,6 +48,20 @@ class UserRepository(IUserRepository):
         elif email:
             user = self.db.query(User).filter(User.email == email).first()
         return user
+    
+    def generate_api_token(self, email: str):
+        userToken: User = self.get_user(email=email)
+        if userToken is None:
+            return None
+        
+        expire_time = datetime.utcnow() + timedelta(days=Settings.API_TOKEN_EXPIRE_DAYS)
+        playload = {"exp": expire_time, "email": userToken.email}
+        encoded_token = jwt.encode(playload, Settings.SECRET_KEY, algorithm=Settings.ALGORITHM)
+        
+        userToken.api_token = encoded_token
+        self.db.commit()
+
+        return encoded_token
 
     def get_permissions(self) -> List[PermissionSchema]:
         permissions = self.db.query(Permission).all()

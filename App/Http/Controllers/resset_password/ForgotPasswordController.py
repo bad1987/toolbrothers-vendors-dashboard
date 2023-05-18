@@ -2,16 +2,14 @@ import jwt
 
 import json
 from sqlalchemy.orm import Session
-from fastapi import Request, status, HTTPException
+from fastapi import status
 from fastapi.responses import JSONResponse
-from App.Http.Schema.Settings.PlentyMarketSchema import PlentyMarketSchema
 from datetime import datetime, timedelta
 from App.core.Services.SendEmail import send_email
 from App.output_ports.repositories.user_repository import UserRepository
 import Setting
 from passlib.handlers.sha2_crypt import sha512_crypt as crypto
 from rich.console import Console
-from App.output_ports.models.Models import User
 console = Console()
 
 

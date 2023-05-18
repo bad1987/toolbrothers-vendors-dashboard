@@ -14,6 +14,8 @@ from fastapi import Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 from rich.console import Console
 
+from App.output_ports.repositories.user_repository import UserRepository
+
 # Dependency
 def get_db():
     db = SessionLocal()
@@ -29,7 +31,8 @@ console = Console()
 
 
 def get_user_by_email(db: Session, email: str):
-    return db.query(User).filter(User.email == email).first()
+    user_repo = UserRepository(db)
+    return user_repo.get_user(email=email)
 
 def create_access_token(data: Dict) -> str:
     to_encode = data.copy()
