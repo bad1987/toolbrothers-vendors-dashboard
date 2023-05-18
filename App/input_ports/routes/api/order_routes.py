@@ -47,7 +47,6 @@ async def get_order(request: Request, order_id: int, db_local: Session = Depends
     result = order_usecase.get_order(request=request, order_id=order_id)
     return result
 
-
 @api_route.get('/order/detail/{id}')
 async def get_detail_order(request: Request, order_id: int, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart), payload: dict = Depends(validate_token)):
     order_usecase = OrderUsecase(db_local=db_local, db_cscart=db_cscart)

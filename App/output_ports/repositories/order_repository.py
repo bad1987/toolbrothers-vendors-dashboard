@@ -1,7 +1,7 @@
 from datetime import datetime, time
 from typing import List, Optional
 from sqlalchemy.orm import Session
-from sqlalchemy import and_
+from sqlalchemy import and_, desc
 from fastapi.encoders import jsonable_encoder
 from fastapi import Request, status
 from App.Enums.OrderEnums import OrderOrderBy, SortOrder
@@ -73,15 +73,26 @@ class OrderRepository(IOrderRepository):
         result = query.first()
         return OrdersSchema.from_orm(result)
     
-    def get_detail_order(self, request: Request, order_id: int, db_local: Session, db_cscart: Session):
-        user = LoginController.get_current_user_from_cookie(request, db_local)
+    def get_orders_by_vendor_connected(self, request: Request, skip: int, limit: int):
+        
+        user = LoginController.get_current_user_from_cookie(request, self.db_local)
+
+        query = self.db_cscart.query(CscartOrders).filter(CscartOrders.company_id == user.company_id).order_by(desc(CscartOrders.order_id))
+
+        total = query.count()
+        orders = query.offset(skip).limit(limit).all()
+        
+        return {"orders": orders, "total": total}
+    
+    def get_detail_order(self, request: Request, order_id: int):
+        user = LoginController.get_current_user_from_cookie(request, self.db_local)
         
         if not user:
             return JSONResponse(status_code=status.HTTP_403_FORBIDDEN, content='Access denied') 
 
-        order = db_cscart.query(CscartOrders).filter(CscartOrders.order_id == order_id).first()
+        order = self.db_cscart.query(CscartOrders).filter(CscartOrders.order_id == order_id).first()
         
-        order_detail = db_cscart.query(CscartOrderDetails).filter(CscartOrderDetails.order_id == order_id).all()
+        order_detail = self.db_cscart.query(CscartOrderDetails).filter(CscartOrderDetails.order_id == order_id).all()
         data_detail = []
         for u in order_detail:
             detail_product = phpserialize.loads(u.extra)
@@ -101,3 +112,4 @@ class OrderRepository(IOrderRepository):
             result[k] = v.decode("utf-8") if isinstance(v, bytes) else v
             
         return result
+    

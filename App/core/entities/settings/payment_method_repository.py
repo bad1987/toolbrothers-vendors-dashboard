@@ -12,3 +12,6 @@ class IPaymentRepository(ABC):
     
     def get_payment_method(self, request: Request)->List[PaymentMethodSchema]:
         ...
+    
+    def update_payment_method(self, request: Request, payment_method_id: int):
+        ...

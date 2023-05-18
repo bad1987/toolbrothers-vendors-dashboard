@@ -26,7 +26,10 @@ class OrderUsecase:
         result = self.order_repository.get_order(request=request, order_id=order_id)
         return {"order": result}
     
-    def get_detail_order(self, request: Request, order_id: int, db_local: Session, db_cscart: Session):
-
-        result = self.order_repository.get_detail_order(request, order_id, db_local, db_cscart)
+    def get_detail_order(self, request: Request, order_id: int):
+  
+        result = self.order_repository.get_detail_order(request, order_id)
         return result
+    
+    def get_orders_by_vendor_connected(self, request: Request, skip: int, limit: int):
+        return self.order_repository.get_orders_by_vendor_connected(request, skip, limit)
