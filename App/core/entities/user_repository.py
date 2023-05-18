@@ -24,3 +24,6 @@ class IUserRepository(ABC):
     
     def update_user(self, id:int, model: UserSchema) -> UserSchema:
         ...
+
+    def get_user(self, username:str = None, email: str = None) -> Optional[UserSchema]:
+        ...

@@ -53,3 +53,4 @@ async def get_detail_order(request: Request, order_id: int, db_local: Session = 
     result = order_usecase.get_detail_order(request, order_id, db_local, db_cscart)
     
     return result
+    

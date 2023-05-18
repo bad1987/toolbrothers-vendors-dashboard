@@ -3,21 +3,22 @@ import jwt
 import json
 from sqlalchemy.orm import Session
 from fastapi import Request, status, HTTPException
-from Security.Controllers import LoginController
-from Database.Models import User
 from fastapi.responses import JSONResponse
 from App.Http.Schema.Settings.PlentyMarketSchema import PlentyMarketSchema
-from Services import SendEmail
 from datetime import datetime, timedelta
+from App.core.Services.SendEmail import send_email
+from App.output_ports.repositories.user_repository import UserRepository
 import Setting
 from passlib.handlers.sha2_crypt import sha512_crypt as crypto
 from rich.console import Console
+from App.output_ports.models.Models import User
 console = Console()
 
 
 class ForgotPasswordController:
     def send_reset_password_email(email: str, db_local: Session):
-        user = db_local.query(User).filter(User.email == email).first()
+        user_reop = UserRepository(db_local)
+        user = user_reop.get_user(email=email)
         if not user:
             return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content='No account corresponds to this email address')  
         expire_time = datetime.utcnow() + timedelta(minutes=1)
@@ -29,7 +30,7 @@ class ForgotPasswordController:
         subject = f"{user.username} - Password recovery"
         body = f"Click this link to reset your password: {link}"
         
-        email = SendEmail.send_email(recipient_email, subject, body)
+        email = send_email(recipient_email, subject, body)
         return JSONResponse(status_code=status.HTTP_200_OK, content='The email was sent successfully !!')
         
     
@@ -40,7 +41,8 @@ class ForgotPasswordController:
             expired_ad = jwt.decode(token, "secret", algorithms=['HS256'], verify=False)['exp']
 
             if datetime.utcnow() < datetime.fromtimestamp(expired_ad):
-                user = db_local.query(User).filter(User.email == email).first()
+                user_reop = UserRepository(db_local)
+                user = user_reop.get_user(email=email)
                 if not user:
                     return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content='No account corresponds to this email address') 
             

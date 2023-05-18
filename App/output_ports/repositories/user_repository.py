@@ -1,6 +1,6 @@
 
 import random, string, re
-from typing import List
+from typing import List, Optional
 from fastapi import HTTPException, status
 
 from sqlalchemy import and_
@@ -38,6 +38,13 @@ class UserRepository(IUserRepository):
         ).all()
         result = [UserSchema.from_orm(p) for p in result]
         return result
+    
+    def get_user(self, username:str = None, email: str = None) -> Optional[UserSchema]:
+        if username:
+            user = self.db.query(User).filter(User.username == username).first()
+        elif email:
+            user = self.db.query(User).filter(User.email == email).first()
+        return user
 
     def get_permissions(self) -> List[PermissionSchema]:
         permissions = self.db.query(Permission).all()

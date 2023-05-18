@@ -1,7 +1,10 @@
 
+import json
 from fastapi import HTTPException, Request, status
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from App.Enums.UserEnums import UserStatusEnum
+from App.Http.Controllers.resset_password.ForgotPasswordController import ForgotPasswordController
 from App.core.auth import LoginController
 from App.core.auth.Configs.Settings import Settings
 
@@ -38,3 +41,20 @@ class AuthenticationUsecase:
         p_user = UserSchema(**user.__dict__)
         
         return {Settings.COOKIE_NAME: access_token, "token_type": "bearer", "user": p_user}
+    
+    
+    async def forgotten_password(self, request: Request):
+        credentials = json.loads(await request.body())
+        result = ForgotPasswordController.send_reset_password_email(credentials['email'], self.db)
+        
+        return result
+    
+    async def reset_password(self, request: Request, token: str):
+        credentials = json.loads(await request.body())
+        
+        if credentials['password'] != credentials['confirm_password']:
+            return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content='Password and confirm password is not correct!') 
+        
+        result = ForgotPasswordController.reset_password(token, credentials['password'], self.db)
+        # Check if the token is valid
+        return result
