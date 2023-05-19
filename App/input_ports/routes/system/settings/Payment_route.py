@@ -50,7 +50,8 @@ async def update_payment_method(request: Request, payment_method_id: int, db_loc
 @route.post('/update/credential/{id}')
 @requires_permission('write', ModelNameEnum.SETTING_MODEL.value)
 async def update_credential_method(request: Request, id: int, schema: updatePaymentMethod, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart), _user: dict = Depends(is_authenticated), payload: dict = Depends(validate_token)):
-    return PaymentController.update_credential_payment_method_by_vendor(request, id, schema, db_local, db_cscart)
+    pay_cont = PaymentController(db_local=db_local)
+    return pay_cont.update_credential_payment_method_by_vendor(request=request, id=id, schema=schema)
 
 # Modify secret credential
 def extract_credentials(payload: str):

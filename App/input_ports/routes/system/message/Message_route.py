@@ -5,7 +5,6 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from App.Enums.UserRoleEnum import ModelNameEnum
 from sqlalchemy.orm import Session
 from rich.console import Console
-from App.Http.Controllers.PaymentController import PaymentController
 from typing import List
 from App.core.Decorators.auth_decorators import requires_permission
 from App.core.auth.Acls.RoleChecker import Role_checker

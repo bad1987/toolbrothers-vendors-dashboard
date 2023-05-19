@@ -3,67 +3,34 @@ from fastapi import Request, status
 from App.core.auth import LoginController
 from App.output_ports.models.Models import Payment_method_vendor
 from fastapi.responses import JSONResponse
-from App.Http.Schema.Settings.PaymentMethodSchema import PaymentMethodSchema, updatePaymentMethod
+from App.Http.Schema.Settings.PaymentMethodSchema import updatePaymentMethod
+from App.output_ports.repositories.payment_repository import PaymentRepository
 
 
 class PaymentController:
-    def get_payment_method_by_vendor(request: Request, db_local: Session):
+
+    def __init__(self, db_local: Session) -> None:
+        self.db_local = db_local
+        self.pay_repo = PaymentRepository(self.db_local)
+
+    def get_payment_method_by_vendor(self, request: Request):
         
-        user = LoginController.get_current_user_from_cookie(request, db_local)
-        payment_method = db_local.query(Payment_method_vendor).filter(Payment_method_vendor.user_id == user.id).all()
-        return {"payment_method": payment_method}
+        user = LoginController.get_current_user_from_cookie(request, self.db_local)
+        if user is None:
+            return None
+        return self.pay_repo.get_payment_method_by_vendor(user.id)
 
 
     # Enable or disable payment method
-    def update_payment_method_by_vendor(id: int, db_local: Session, request):
-        user = LoginController.get_current_user_from_cookie(request, db_local)
-        payment_method = db_local\
-                        .query(Payment_method_vendor)\
-                        .filter(Payment_method_vendor.id == id)\
-                        .filter(Payment_method_vendor.user_id == user.id)\
-                        .first()
-        
-        if not payment_method:
-            return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content='This payment method not fund!')
-
-        if payment_method.status == "A":
-            payment_method.status = "D"
-            
-            db_local.commit()
-            db_local.flush(payment_method)
-            return JSONResponse(status_code=status.HTTP_200_OK, content='Status change successful') 
-        
-        payment_method.status = "A"
-        
-        db_local.commit()
-        db_local.flush(payment_method)
-        return JSONResponse(status_code=status.HTTP_200_OK, content='Status change successful') 
+    def update_payment_method_by_vendor(self, request: Request, id: int):
+        user = LoginController.get_current_user_from_cookie(request, self.db_local)
+        if user is None:
+            return None
+        return self.pay_repo.update_payment_method_by_vendor(payment_id=id, user_id=user.id)
     
     # Update credential payment method
-    def update_credential_payment_method_by_vendor(request: Request, id: int, schema: updatePaymentMethod, db_local: Session):
-        is_user_authenticate = LoginController.get_current_user_from_cookie(request, db_local)
+    def update_credential_payment_method_by_vendor(self, request: Request, id: int, schema: updatePaymentMethod):
+        is_user_authenticate = LoginController.get_current_user_from_cookie(request, self.db_local)
         
         if is_user_authenticate:
-            payment_method = db_local\
-                .query(Payment_method_vendor)\
-                .filter(Payment_method_vendor.id == id)\
-                .filter(Payment_method_vendor.user_id == is_user_authenticate.id)\
-                .first()
-            if payment_method:
-                payment_method.client_secret = schema.client_secret
-                payment_method.client_secret_id = schema.client_secret_id
-                
-                db_local.commit()
-                db_local.flush(payment_method)
-                
-                return JSONResponse(status_code=status.HTTP_201_CREATED, content='Update successful') 
-            
-            add_payment_credential = Payment_method_vendor()
-            add_payment_credential.client_secret = schema.client_secret
-            add_payment_credential.client_secret_id = schema.client_secret_id
-            
-            db_local.add(add_payment_credential)
-            db_local.commit()
-            db_local.flush(add_payment_credential)
-            
-            return JSONResponse(status_code=status.HTTP_201_CREATED, content='Created successful') 
+            return self.pay_repo.update_credential_payment_method_by_vendor(payment_id=id, user_id=is_user_authenticate.id, schema=schema)
