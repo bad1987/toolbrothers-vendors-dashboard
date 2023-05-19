@@ -9,66 +9,26 @@ from dateutil.parser import parse
 
 from App.core.auth import LoginController
 from App.output_ports.models.CscartModels import CscartOrders
+from App.output_ports.repositories.order_repository import OrderRepository
 
 class OrderController:
-    def get_orders_by_vendor_connected(request: Request, db_local: Session, db_cscart: Session, skip: int, limit: int):
-        
-        user = LoginController.get_current_user_from_cookie(request, db_local)
 
-        query = db_cscart.query(CscartOrders).filter(CscartOrders.company_id == user.company_id)
+    def __init__(self, db_local, db_cscart) -> None:
+        self.db_local = db_local
+        self.db_cscart = db_cscart
+        self.order_repo = OrderRepository(db_cscart=db_cscart, db_local=db_local)
 
-        total = query.count()
-        orders = query.offset(skip).limit(limit).all()
+    def get_orders_by_vendor_connected(self, request: Request, skip: int, limit: int):
         
-        return {"orders": orders, "total": total}
+        return self.order_repo.get_orders_by_vendor_connected(request=request, skip=skip, limit=limit)
     
-    def get_order_stats(db_cscart: Session, start_date: str, end_date: str, company_id):
-        # get the number of orders and total revenue for March 25 to April 25, 2023
-        num_orders = db_cscart.query(func.count(CscartOrders.order_id))\
-            .filter(CscartOrders.company_id == company_id, CscartOrders.timestamp >= func.unix_timestamp(start_date), CscartOrders.timestamp <= func.unix_timestamp(end_date))\
-            .scalar()
-        # total_revenue = db_cscart.query(func.sum(CscartOrders.total)).filter(CscartOrders.timestamp >= start_date, CscartOrders.timestamp <= end_date).scalar()
-        total_sales = db_cscart.query(func.sum(CscartOrders.total).label('total_sales')) \
-            .filter(CscartOrders.company_id == company_id) \
-            .filter(CscartOrders.status.in_(['C', 'P'])) \
-            .filter(CscartOrders.timestamp >= func.unix_timestamp(start_date)) \
-            .filter(CscartOrders.timestamp <= func.unix_timestamp(end_date)) \
-            .one()
+    def get_order_stats(self, start_date: str, end_date: str, company_id):
+        return self.order_repo.get_order_stats(start_date=start_date, end_date=end_date, company_id=company_id)
 
-        total_income = db_cscart.query(func.sum(CscartOrders.total).label('total_income')) \
-            .filter(CscartOrders.company_id == company_id) \
-            .filter(CscartOrders.status.in_(['C', 'P', 'O'])) \
-            .filter(CscartOrders.timestamp >= func.unix_timestamp(start_date)) \
-            .filter(CscartOrders.timestamp <= func.unix_timestamp(end_date)) \
-            .one()
+    def get_grouped_orders(self, start_date: str, end_date: str, company_id: int):
+        return self.order_repo.get_grouped_orders(start_date=start_date, end_date=end_date, company_id=company_id)
 
-        return {
-            'orders': num_orders or 0,
-            'income': total_income.total_income or 0,
-            'sales': total_sales.total_sales or 0
-        }
-
-    def get_grouped_orders(db_cscart: Session, user: UserSchema, start_date: str, end_date: str, company_id: int):
-        start = datetime.strptime(f"{start_date} 00:00:00", "%Y-%m-%d %H:%M:%S").timestamp()
-        end = datetime.strptime(f"{end_date} 23:59:59", "%Y-%m-%d %H:%M:%S").timestamp()
-
-
-        query = text(f""" 
-                SELECT FROM_UNIXTIME(cscart_orders.timestamp, '%Y-%m-%d') AS date, sum(cscart_orders.total) AS order_total 
-                FROM cscart_orders 
-                WHERE company_id={company_id} and
-                timestamp >= {start} and timestamp <= {end} and
-                status in ('C', 'P') 
-                GROUP BY date
-            """)
-
-        result = db_cscart.execute(query)
-
-        ans = [{ "date": row[0], "count": row[1] } for row in result]
-
-        return ans
-
-    def get_previous_interval(date_range):
+    def get_previous_interval(self, date_range):
         # Parse the input dates into datetime objects
         start_date = parse(date_range[0])
         end_date = parse(date_range[1])
@@ -96,7 +56,7 @@ class OrderController:
         print(res)
         return res
 
-    def progression_percentage(current, previous):
+    def progression_percentage(self, current, previous):
         if current is None:
             current = 0
         if previous is None:

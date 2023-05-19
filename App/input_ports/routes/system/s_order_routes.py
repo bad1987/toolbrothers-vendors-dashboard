@@ -30,7 +30,8 @@ roles_checker = Role_checker()
 @route.get('/orders/list/', response_class=JSONResponse)
 @requires_permission('read', ModelNameEnum.ORDER_MODEL.value)
 async def get_all_orders(request: Request, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart), _user: dict = Depends(is_authenticated), skip: int = 0, limit: int = 10):
-    result = OrderController.get_orders_by_vendor_connected(request, db_local, db_cscart, skip, limit)
+    order_cont = OrderController(db_local=db_local, db_cscart=db_cscart)
+    result = order_cont.get_orders_by_vendor_connected(request, skip, limit)
     return {'orders': result["orders"], 'total': result["total"]}
 
 @route.get('/orders/stats')
@@ -44,12 +45,12 @@ async def get_orders_stats(request: Request, start_date: str, end_date: str, db_
         parent = db_local.query(User).filter(User.id == _user.parent_id).first()
 
         company_id = parent.company_id
-
-    res = OrderController.get_order_stats(db_cscart, start_date_string, end_date_string, company_id)
+    order_cont = OrderController(db_local=db_local, db_cscart=db_cscart)
+    res = order_cont.get_order_stats(start_date_string, end_date_string, company_id)
     p_res = ProductController.get_product_stats(db_cscart, company_id)
 
     # Chart data
-    chart_datas = OrderController.get_grouped_orders(db_cscart, _user, start_date, end_date, company_id)
+    chart_datas = order_cont.get_grouped_orders(start_date, end_date, company_id)
 
     res.update(p_res)
     res.update({ "chart_datas": chart_datas })
@@ -57,13 +58,13 @@ async def get_orders_stats(request: Request, start_date: str, end_date: str, db_
     res.update(p_res)
 
     # dealing with the previous period
-    prev_period = OrderController.get_previous_interval([start_date, end_date])
-    p_stats = OrderController.get_order_stats(db_cscart, prev_period[0], prev_period[1], company_id)
-    p_chart_datas = OrderController.get_grouped_orders(db_cscart, _user, prev_period[0], prev_period[1], company_id)
+    prev_period = order_cont.get_previous_interval([start_date, end_date])
+    p_stats = order_cont.get_order_stats(prev_period[0], prev_period[1], company_id)
+    p_chart_datas = order_cont.get_grouped_orders(prev_period[0], prev_period[1], company_id)
     p_stats.update({
-        'percent_income': OrderController.progression_percentage(res['income'], p_stats['income']),
-        'percent_sales': OrderController.progression_percentage(res['sales'], p_stats['sales']),
-        'percent_orders': OrderController.progression_percentage(res['orders'], p_stats['orders']),
+        'percent_income': order_cont.progression_percentage(res['income'], p_stats['income']),
+        'percent_sales': order_cont.progression_percentage(res['sales'], p_stats['sales']),
+        'percent_orders': order_cont.progression_percentage(res['orders'], p_stats['orders']),
         'label': "previous period",
         'prev_chart': p_chart_datas
     })

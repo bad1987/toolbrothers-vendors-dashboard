@@ -1,7 +1,7 @@
 from datetime import datetime, time
 from typing import List, Optional
 from sqlalchemy.orm import Session
-from sqlalchemy import and_, desc
+from sqlalchemy import and_, desc, func, text
 from fastapi.encoders import jsonable_encoder
 from fastapi import Request, status
 from App.Enums.OrderEnums import OrderOrderBy, SortOrder
@@ -113,3 +113,47 @@ class OrderRepository(IOrderRepository):
             
         return result
     
+    def get_order_stats(self, start_date: str, end_date: str, company_id):
+        # get the number of orders and total revenue
+        num_orders = self.db_cscart.query(func.count(CscartOrders.order_id))\
+            .filter(CscartOrders.company_id == company_id, CscartOrders.timestamp >= func.unix_timestamp(start_date), CscartOrders.timestamp <= func.unix_timestamp(end_date))\
+            .scalar()
+        total_sales = self.db_cscart.query(func.sum(CscartOrders.total).label('total_sales')) \
+            .filter(CscartOrders.company_id == company_id) \
+            .filter(CscartOrders.status.in_(['C', 'P'])) \
+            .filter(CscartOrders.timestamp >= func.unix_timestamp(start_date)) \
+            .filter(CscartOrders.timestamp <= func.unix_timestamp(end_date)) \
+            .one()
+
+        total_income = self.db_cscart.query(func.sum(CscartOrders.total).label('total_income')) \
+            .filter(CscartOrders.company_id == company_id) \
+            .filter(CscartOrders.status.in_(['C', 'P', 'O'])) \
+            .filter(CscartOrders.timestamp >= func.unix_timestamp(start_date)) \
+            .filter(CscartOrders.timestamp <= func.unix_timestamp(end_date)) \
+            .one()
+
+        return {
+            'orders': num_orders or 0,
+            'income': total_income.total_income or 0,
+            'sales': total_sales.total_sales or 0
+        }
+    
+    def get_grouped_orders(self, start_date: str, end_date: str, company_id: int):
+        start = datetime.strptime(f"{start_date} 00:00:00", "%Y-%m-%d %H:%M:%S").timestamp()
+        end = datetime.strptime(f"{end_date} 23:59:59", "%Y-%m-%d %H:%M:%S").timestamp()
+
+
+        query = text(f""" 
+                SELECT FROM_UNIXTIME(cscart_orders.timestamp, '%Y-%m-%d') AS date, sum(cscart_orders.total) AS order_total 
+                FROM cscart_orders 
+                WHERE company_id={company_id} and
+                timestamp >= {start} and timestamp <= {end} and
+                status in ('C', 'P') 
+                GROUP BY date
+            """)
+
+        result = self.db_cscart.execute(query)
+
+        ans = [{ "date": row[0], "count": row[1] } for row in result]
+
+        return ans
