@@ -21,7 +21,7 @@ from App.output_ports.models.Models import User
 
 
 
-route = APIRouter(prefix='', tags=['Orders system'], include_in_schema=False)
+route = APIRouter(prefix='/api', tags=['Orders system'], include_in_schema=False)
 
 
 roles_checker = Role_checker()
