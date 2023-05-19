@@ -1,39 +1,47 @@
 from sqlalchemy.orm import Session
-from fastapi import Request, status, HTTPException
-from Security.Controllers import LoginController
-from Database.Models import Platform_settings
+from fastapi import Request, status
 from fastapi.responses import JSONResponse
 from App.Http.Schema.Settings.PlentyMarketSchema import PlentyMarketSchema
 from rich.console import Console
+from App.core.auth import LoginController
+
+from App.output_ports.models.Models import Platform_settings
+from App.output_ports.repositories.platform_repository import PlatformRepository
 console = Console()
 
 class PlentyMarketController:
-    def get_plenty_market_information_by_vendor (request: Request, db_local: Session):
-        user = LoginController.get_current_user_from_cookie(request, db_local)
-        setting = db_local.query(Platform_settings).filter(Platform_settings.user_id == user.id).all()
+
+    def __init__(self, db_local) -> None:
+        self.db_local = db_local
+        self.plat_rep = PlatformRepository(self.db_local)
+
+    def get_plenty_market_information_by_vendor (self, request: Request):
+        user = LoginController.get_current_user_from_cookie(request, self.db_local)
+        if user is None:
+            return None
+        return self.plat_rep.get_platform_info(user.id)
         
-        return setting
     
-    def update_or_add_setting_information(request: Request, schema: PlentyMarketSchema, db_local: Session):
-        user = LoginController.get_current_user_from_cookie(request, db_local)
-        setting = db_local.query(Platform_settings).filter(Platform_settings.user_id == user.id).first()
+    def update_or_add_setting_information(self, request: Request, schema: PlentyMarketSchema):
+        user = LoginController.get_current_user_from_cookie(request, self.db_local)
+        if user is None:
+            return None
+        
+        setting = self.plat_rep.get_platform_info(user.id)
  
         if not setting:
-            result = PlentyMarketController.persist_setting_information(request, user.id, schema, None)
-            db_local.add(result)
-            db_local.commit()
-            db_local.flush(result)
+            result = self.persist_setting_information(user.id, schema, None)
+            self.plat_rep.add_setting_information(result)
 
             return JSONResponse(status_code=status.HTTP_201_CREATED, content='Create successful') 
 
-        result = PlentyMarketController.persist_setting_information(request, user.id, schema, setting)
-        db_local.commit()
-        db_local.flush(result)
+        result = self.persist_setting_information(user.id, schema, setting)
+        self.plat_rep.update_setting_information(result)
 
         return JSONResponse(status_code=status.HTTP_201_CREATED, content='Update successful') 
     
     # Persist information 
-    def persist_setting_information(request: Request, user_id, schema: PlentyMarketSchema, setting):
+    def persist_setting_information(self, user_id, schema: PlentyMarketSchema, setting):
         if not setting:
             add_setting = Platform_settings()
             add_setting.user_id = user_id
