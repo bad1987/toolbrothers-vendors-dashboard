@@ -17,6 +17,7 @@ class AuthenticationUsecase:
     def __init__(self, db_local: Session) -> None:
         self.db = db_local
         self.auth_repo = AuthenticationRepository(self.db)
+        self.f_pass_cont = ForgotPasswordController(self.db)
     
     def login_access_token(self,request: Request, form_data: dict) -> LoginAccessTokenResponseSchema:
         user = LoginController.authenticate_user(form_data['username'], form_data['password'], self.db)
@@ -45,7 +46,8 @@ class AuthenticationUsecase:
     
     async def forgotten_password(self, request: Request):
         credentials = json.loads(await request.body())
-        result = ForgotPasswordController.send_reset_password_email(credentials['email'], self.db)
+        
+        result = self.f_pass_cont.send_reset_password_email(credentials['email'])
         
         return result
     
@@ -55,6 +57,6 @@ class AuthenticationUsecase:
         if credentials['password'] != credentials['confirm_password']:
             return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content='Password and confirm password is not correct!') 
         
-        result = ForgotPasswordController.reset_password(token, credentials['password'], self.db)
+        result = self.f_pass_cont.reset_password(token, credentials['password'])
         # Check if the token is valid
         return result

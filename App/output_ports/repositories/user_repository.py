@@ -54,6 +54,7 @@ class UserRepository(IUserRepository):
         if userToken is None:
             return None
         
+        
         expire_time = datetime.utcnow() + timedelta(days=Settings.API_TOKEN_EXPIRE_DAYS)
         playload = {"exp": expire_time, "email": userToken.email}
         encoded_token = jwt.encode(playload, Settings.SECRET_KEY, algorithm=Settings.ALGORITHM)
@@ -63,6 +64,14 @@ class UserRepository(IUserRepository):
 
         return encoded_token
 
+    def update_password(self, new_hashed_password: str, email: str) -> User:
+        user: User = self.get_user(email=email)
+        if user:
+            user.password = new_hashed_password
+            self.db.commit()
+            self.db.flush(user)
+        return user
+    
     def get_permissions(self) -> List[PermissionSchema]:
         permissions = self.db.query(Permission).all()
         # permissions = [PermissionSchema(**{"text": perm.name, "value": perm.id, "description": perm.description}) for perm in permissions]

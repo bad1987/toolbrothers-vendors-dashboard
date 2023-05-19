@@ -5,7 +5,6 @@ from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from sqlalchemy.orm import Session
 from rich.console import Console
 from fastapi.encoders import jsonable_encoder
-from App.Http.Controllers.resset_password.ForgotPasswordController import ForgotPasswordController
 from App.core.auth.Configs.OAuth2PasswordBearerWithCookie import OAuth2PasswordBearerWithCookie
 from App.core.auth.Configs.Settings import Settings
 from App.core.use_cases.authentication_use_case import AuthenticationUsecase
