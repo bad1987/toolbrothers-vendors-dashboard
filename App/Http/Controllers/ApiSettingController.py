@@ -15,24 +15,28 @@ security = HTTPBearer()
 console = Console()
 
 class ApiSettingController:
-    def generate_token_for_api (request: Request, db_local: Session):
-        user = LoginController.get_current_user_from_cookie(request, db_local)
-        user_repo = UserRepository(db_local)
+
+    def __init__(self, db_local) -> None:
+        self.db_local = db_local
+
+    def generate_token_for_api (self, request: Request):
+        user = LoginController.get_current_user_from_cookie(request, self.db_local)
+        user_repo = UserRepository(self.db_local)
         if user is None:
             return None
         encoded_token = user_repo.generate_api_token(email=user.email)
         return encoded_token
  
-    def get_token_api (request: Request, db_local: Session):
-        user_repo = UserRepository(db_local)
-        user = LoginController.get_current_user_from_cookie(request, db_local)
+    def get_token_api (self, request: Request):
+        user_repo = UserRepository(self.db_local)
+        user = LoginController.get_current_user_from_cookie(request, self.db_local)
         if user is None:
             return None
         userToken = user_repo.get_user(email=user.email)
         
         return userToken.api_token
 
-    async def validate_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    async def validate_token(self, credentials: HTTPAuthorizationCredentials = Depends(security)):
         # get token from credentials
         token = credentials.credentials
         # sanitize token

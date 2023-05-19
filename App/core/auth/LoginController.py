@@ -16,14 +16,6 @@ from rich.console import Console
 
 from App.output_ports.repositories.user_repository import UserRepository
 
-# Dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
 
 oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="token")
 
