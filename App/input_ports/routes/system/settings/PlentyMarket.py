@@ -15,6 +15,7 @@ from App.core.auth.auth import is_authenticated
 from App.core.use_cases.settings.PaymentUseCase import PaymentUseCase
 from App.core.dependencies.db_dependencies import get_db, get_db_cscart
 from App.core.auth.auth import validate_token
+from App.core.use_cases.settings.PlentyMarketUseCase import PlentyMarketUseCase
 
 console = Console()
 
@@ -31,10 +32,9 @@ def timestamp_to_date(s):
 @route.get('/vendor', response_model=List[PlentyMarketSchema], responses={200:{"model": PlentyMarketSchema}})
 @requires_permission('read', ModelNameEnum.SETTING_MODEL.value)
 async def get_plenty_market_information(request: Request, db_local: Session = Depends(get_db), _user: dict = Depends(is_authenticated)):
-    _user = get_current_user_from_cookie(request=request, db=self.db_local)
-    model_permissions = ModelPermissions(_user)
+    plenty_market_user_case = PlentyMarketUseCase(db_local)
         
-    result = PlentyMarketController.get_plenty_market_information_by_vendor(request, db_local)
+    result = plenty_market_user_case.get_plenty_market_information_by_vendor(request)
     res = []
     for u in result:
         res.append(PlentyMarketSchema(**jsonable_encoder(u)))
@@ -43,4 +43,5 @@ async def get_plenty_market_information(request: Request, db_local: Session = De
 @route.post('/update')
 @requires_permission('write', ModelNameEnum.SETTING_MODEL.value)
 async def update_or_create(request: Request, schema: PlentyMarketSchema, db_local: Session = Depends(get_db), _user: dict = Depends(is_authenticated)):
-    return PlentyMarketController.update_or_add_setting_information(request, schema, db_local)
+    plenty_market_user_case = PlentyMarketUseCase(db_local)
+    return plenty_market_user_case.update_or_add_setting_information(request, schema)

@@ -10,8 +10,8 @@ from App.input_ports.schemas.Settings.PaymentMethodSchema import PaymentMethodSc
 
 class IPaymentRepository(ABC):
     
-    def get_plenty_market_information_by_vendor(self, request: Request)->List[PaymentMethodSchema]:
+    def get_payment_method(self, request: Request)->List[PaymentMethodSchema]:
         ...
     
-    def update_or_add_setting_information(self, request: Request, payment_method_id: int):
+    def update_payment_method(self, request: Request, payment_method_id: int):
         ...

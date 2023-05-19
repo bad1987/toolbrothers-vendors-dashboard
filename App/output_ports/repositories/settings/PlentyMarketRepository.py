@@ -46,7 +46,7 @@ class PlentyMarketRepository(IPlentyMarketRepository):
         return JSONResponse(status_code=status.HTTP_201_CREATED, content='Update successful') 
     
     # Persist information 
-    def persist_setting_information(request: Request, user_id, schema: PlentyMarketSchema, setting):
+    def persist_setting_information(self, request: Request, user_id, schema: PlentyMarketSchema, setting):
         if not setting:
             add_setting = Platform_settings()
             add_setting.user_id = user_id
