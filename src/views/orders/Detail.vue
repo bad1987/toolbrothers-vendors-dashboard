@@ -112,7 +112,7 @@
                             </div>
                             <div class="flex justify-between items-center w-full">
                             <p class="text-base dark:text-gray-300 leading-4 text-gray-800">Shipping</p>
-                            <p class="text-base dark:text-gray-300 leading-4 text-gray-600">00 €</p>
+                            <p class="text-base dark:text-gray-300 leading-4 text-gray-600" v-if="order">{{ order.shipping_cost }} €</p>
                             </div>
                         </div>
                         <div class="flex justify-between items-center w-full">
@@ -131,7 +131,7 @@
                                     <p class="text-lg leading-6 dark:text-gray-300 font-semibold text-gray-800">DPD Delivery<br /><span class="font-normal" v-if="order">{{ order.b_address }}</span></p>
                                 </div>
                             </div>
-                            <p class="text-lg font-semibold leading-6 dark:text-gray-300 text-gray-800">00.00 €</p>
+                            <p class="text-lg font-semibold leading-6 dark:text-gray-300 text-gray-800" v-if="order">{{ order.shipping_cost }} €</p>
                         </div>
                         <div class="w-full flex justify-center items-center">
                             <button class="hover:bg-black dark:bg-white dark:text-gray-800 dark:hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 py-5 w-96 md:w-full bg-gray-800 text-base font-medium leading-4 text-white">View Carrier Details</button>
