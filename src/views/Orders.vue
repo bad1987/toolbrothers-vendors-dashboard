@@ -3,8 +3,13 @@ import axios from 'axios'
 import { useRouter } from 'vue-router';
 import { ref, onMounted, onBeforeMount } from 'vue'
 import { acl } from '../router/acl';
+import CheckboxGroup from './components/CheckboxGroup.vue';
+import { initFlowbite } from 'flowbite';
+import { useLoaderStore } from '@/stores/statestore'
+import { storeToRefs } from 'pinia';
 
   const userRef = ref({user: null, isAdmin: false})
+  const loadStore = useLoaderStore()
 
   onBeforeMount( async () => {
 
@@ -12,7 +17,6 @@ import { acl } from '../router/acl';
       userRef.value = test
       userRef.value.user = test
       userRef.value.isAdmin = test.roles == "Role_admin"
-      console.log("get user information from acl", userRef.value.email );
   })
 
 const orders = ref([])
@@ -21,13 +25,33 @@ const actuaLimit = ref(5)
 const totalOrders = ref(0)
 const availableLimits = [5, 10, 25, 50, 75, 100]
 const skeletonCnt = ref(5)
+const statuses = [
+  { text: 'Processed', value: 'P' },
+  { text: 'Complete', value: 'C' },
+  { text: 'Open', value: 'O' },
+  { text: 'Failed', value: 'F' },
+  { text: 'Declined', value: 'D' },
+  { text: 'Backordered', value: 'B' },
+  { text: 'Cancelled', value: 'I' },
+  { text: 'Awaiting call', value: 'Y' },
+]
+const selectedStatuses = ref([])
+const { isLoading } = storeToRefs(loadStore)
 
 const router = useRouter()
 
 
 const fetchOrders = () => {
+  isLoading.value = true
+  var params = new URLSearchParams()
+  params.append("skip", actualSkip.value)
+  params.append("limit", actuaLimit.value)
+  if (selectedStatuses.value) selectedStatuses.value.forEach(status => {
+    params.append("statuses", status)
+  })
+
   axios.get('/orders/list', {
-    params: { skip: actualSkip.value, limit: actuaLimit.value }
+    params
   }).then(resp => {
     orders.value = resp.data.orders
     orders.value.map(order => {
@@ -52,6 +76,10 @@ const fetchOrders = () => {
         }
       }
       skeletonCnt.value = 0;
+    })
+    .finally(() => {
+      initFlowbite()
+      isLoading.value = false
     })
 }
 
@@ -84,6 +112,18 @@ function fastBackward() {
   fetchOrders()
 }
 
+function filterByStatus(item) {
+  if (selectedStatuses.value.indexOf(item.value) >= 0) 
+      selectedStatuses.value = selectedStatuses.value.filter(x => x != item.value)
+  else selectedStatuses.value.push(item.value)
+
+  fetchOrders()
+}
+
+function fullStatus(status) {
+  return statuses.find(x => x.value == status).text
+}
+
 onMounted(() => {
 })
 
@@ -101,7 +141,7 @@ fetchOrders()
           </span>
           </div>
           <div class="items-center sm:flex">
-          <div class="flex items-center">
+            <div class="flex items-center">
               <button id="dropdownDefault" data-dropdown-toggle="dropdown"
               class="mb-4 sm:mb-0 mr-4 inline-flex items-center text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-4 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
               type="button">
@@ -113,46 +153,10 @@ fetchOrders()
               </button>
               <!-- Dropdown menu -->
               <div id="dropdown" class="z-10 hidden w-56 p-3 bg-white rounded-lg shadow dark:bg-gray-700">
-              <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">
-                  Category
-              </h6>
-              <ul class="space-y-2 text-sm" aria-labelledby="dropdownDefault">
-                  <li class="flex items-center">
-                  <input id="apple" type="checkbox" value=""
-                      class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
-
-                  <label for="apple" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-                      Completed (56)
-                  </label>
-                  </li>
-
-                  <li class="flex items-center">
-                  <input id="fitbit" type="checkbox" value="" checked
-                      class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
-
-                  <label for="fitbit" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-                      Cancelled (56)
-                  </label>
-                  </li>
-
-                  <li class="flex items-center">
-                  <input id="dell" type="checkbox" value=""
-                      class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
-
-                  <label for="dell" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-                      In progress (56)
-                  </label>
-                  </li>
-
-                  <li class="flex items-center">
-                  <input id="asus" type="checkbox" value="" checked
-                      class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
-
-                  <label for="asus" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-                      In review (97)
-                  </label>
-                  </li>
-              </ul>
+                <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">
+                    Status
+                </h6>
+                <CheckboxGroup :items="statuses" @toggle-value="filterByStatus" />
               </div>
           </div>
           <div date-rangepicker id="datePicker" class="flex items-center space-x-4">
@@ -192,7 +196,16 @@ fetchOrders()
           </div>
       </div>
       <!-- Table -->
-      <div class="flex flex-col mt-6">
+      <div class="flex flex-col mt-6 relative">
+        <div v-if="isLoading" class="absolute top-0 left-0 w-full h-full bg-white opacity-50 z-10 flex min-h-[250px]">
+          <div role="status" class="w-max m-auto">
+              <svg aria-hidden="true" class="inline w-12 h-12 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-500" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                  <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+              </svg>
+              <span class="sr-only">Loading...</span>
+          </div>
+        </div>
       <div class="overflow-x-auto rounded-lg">
         <div class="inline-block min-w-full align-middle">
           <div class="overflow-hidden shadow sm:rounded-lg">
@@ -244,7 +257,7 @@ fetchOrders()
                         <span
                           v-if="order.status != 'C'" 
                           class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-gray-700 dark:text-red-400 border border-red-100 dark:border-red-500">
-                          Incomplete
+                          {{ fullStatus(order.status) }}
                         </span>
                       </td>
                       <td class="p-4 text-sm font-semibold text-gray-900 whitespace-nowrap dark:text-white">

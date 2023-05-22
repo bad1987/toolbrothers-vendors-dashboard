@@ -69,7 +69,7 @@ onMounted(async () => {
           <div class="flex items-center justify-between mb-4" v-if="_statstore.stats">
             <div class="flex-shrink-0">
               <span class="text-xl font-bold leading-none text-gray-900 sm:text-2xl dark:text-white" >{{ _statstore.stats.sales }} €</span>
-              <h3 class="text-base font-light text-gray-500 dark:text-gray-400">Sales this month</h3>
+              <h3 class="text-base font-light text-gray-500 dark:text-gray-400">Sales during this period</h3>
             </div>
             <div class="flex items-center justify-end flex-1 text-base font-medium text-green-500 dark:text-green-400">
               <div date-rangepicker id="date-rangepicker" class="flex items-center space-x-4">

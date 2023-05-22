@@ -5,6 +5,7 @@ import { ref, onMounted, onBeforeMount, onUpdated } from 'vue'
 import ButtonComponent from '../components/ButtonComponent.vue'
 import { acl } from '../../router/acl';
 import { initFlowbite } from 'flowbite'
+import CheckboxGroup from '../components/CheckboxGroup.vue';
 
   const userRef = ref({user: null, isAdmin: false})
 
@@ -24,14 +25,28 @@ const availableLimits = [5, 10, 25, 50, 75, 100]
 const skeletonCnt = ref(5)
 const isLoading = ref(false)
 const selectedProduct = ref({})
+const statuses = [
+  { text: 'Active', value: 'A' },
+  { text: 'Hidden', value: 'H' },
+  { text: 'Disable', value: 'D' },
+]
+const selectedStatuses = ref([])
 
 const router = useRouter()
 
 
 const fetchProducts = () => {
   isLoading.value = true
+
+  var params = new URLSearchParams()
+  params.append("skip", actualSkip.value)
+  params.append("limit", actuaLimit.value)
+  if (selectedStatuses.value) selectedStatuses.value.forEach(status => {
+    params.append("statuses", status)
+  })
+
   axios.get('/products/list', {
-    params: { skip: actualSkip.value, limit: actuaLimit.value }
+    params
   }).then(resp => {
     products.value = resp.data.products
     totalProducts.value = resp.data.total
@@ -122,6 +137,18 @@ function changeSelectedProduct(id){
   Object.assign(selectedProduct.value, tmp)
 }
 
+function filterByStatus(item) {
+  if (selectedStatuses.value.indexOf(item.value) >= 0) 
+      selectedStatuses.value = selectedStatuses.value.filter(x => x != item.value)
+  else selectedStatuses.value.push(item.value)
+
+  fetchProducts()
+}
+
+function fullStatus(status) {
+  return statuses.find(x => x.value == status).text
+}
+
 onMounted(() => {
   initFlowbite()
 })
@@ -159,34 +186,7 @@ fetchProducts()
                 <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">
                     Status
                 </h6>
-                <ul class="space-y-2 text-sm" aria-labelledby="dropdownDefault">
-                    <li class="flex items-center">
-                      <input id="apple" type="checkbox" checked value=""
-                          class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
-
-                      <label for="apple" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-                          Online (56)
-                      </label>
-                    </li>
-
-                    <li class="flex items-center">
-                      <input id="fitbit" type="checkbox" value="" 
-                          class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
-
-                      <label for="fitbit" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-                          Offline (56)
-                      </label>
-                    </li>
-
-                    <li class="flex items-center">
-                      <input id="dell" type="checkbox" value=""
-                          class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
-
-                      <label for="dell" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-                        Disable (56)
-                      </label>
-                    </li>
-                </ul>
+                <CheckboxGroup :items="statuses" @toggle-value="filterByStatus" />
               </div>
           </div>
           </div>
@@ -261,7 +261,7 @@ fetchProducts()
                         <span
                           @click="deactivateProduct(product.product_id)"
                           class="cursor-pointer bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-gray-700 dark:text-red-400 border border-red-100 dark:border-red-500">
-                          Offline
+                          {{ fullStatus(product.status) }}
                         </span>
                       </td>
                       
