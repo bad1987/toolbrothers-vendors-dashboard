@@ -38,47 +38,5 @@ class OrderUsecase:
         result = self.order_repository.get_detail_order(request, order_id)
         return result
     
-    def get_orders_by_vendor_connected(self, request: Request, skip: int, limit: int):
-        return self.order_repository.get_orders_by_vendor_connected(request, skip, limit)
-
-    def get_order_statistics(self, request: Request, start_date: str, end_date: str):
-        _user = get_current_user_from_cookie(request=request, db=self.db_local)
-        start_date_string = f"{start_date} 00:00:00"
-        end_date_string = f"{end_date} 23:59:59"
-        company_id=_user.company_id
-
-        if (company_id == None and _user.parent_id != None):
-            parent = self.user_repository.get_parent(_user.parent_id)
-
-            company_id = parent.company_id
-        order_cont = OrderController(db_local=self.db_local, db_cscart=self.db_cscart)
-        res = order_cont.get_order_stats(start_date_string, end_date_string, company_id)
-        p_res = self.prod_repository.get_product_stats(company_id)
-
-        # Chart data
-        chart_datas = order_cont.get_grouped_orders(start_date, end_date, company_id)
-
-        res.update(p_res)
-        res.update({ "chart_datas": chart_datas })
-
-        res.update(p_res)
-
-        # dealing with the previous period
-        prev_period = order_cont.get_previous_interval([start_date, end_date])
-        p_stats = order_cont.get_order_stats(prev_period[0], prev_period[1], company_id)
-        p_chart_datas = order_cont.get_grouped_orders(prev_period[0], prev_period[1], company_id)
-        p_stats.update({
-            'percent_income': order_cont.progression_percentage(res['income'], p_stats['income']),
-            'percent_sales': order_cont.progression_percentage(res['sales'], p_stats['sales']),
-            'percent_orders': order_cont.progression_percentage(res['orders'], p_stats['orders']),
-            'label': "previous period",
-            'prev_chart': p_chart_datas
-        })
-        res.update({
-            'prev_period': p_stats
-        })
-        res.update({
-            'start_date': start_date,
-            'end_date': end_date
-        })
-        return res
+    def get_orders_by_vendor_connected(self, request: Request, skip: int, limit: int, statuses: list):
+        return self.order_repository.get_orders_by_vendor_connected(request, skip, limit, statuses)

@@ -15,7 +15,7 @@ from App.output_ports.models.Models import User
 console = Console()
 
 class ProductController:
-    def get_product_list_by_vendor(user: User, request: Request, db_local: Session, db_cscart: Session, skip: int, limit: int):
+    def get_product_list_by_vendor(user: User, request: Request, db_local: Session, db_cscart: Session, skip: int, limit: int, statuses: list):
         if not user:
             return JSONResponse(status_code=status.HTTP_403_FORBIDDEN, content='Access denied') 
 
@@ -34,6 +34,7 @@ class ProductController:
                     select_from(join(Cscart_products, Cscart_product_descriptions, Cscart_product_descriptions.product_id == Cscart_products.product_id)).\
                     join(Cscart_product_prices, Cscart_product_prices.product_id == Cscart_products.product_id).\
                     where(Cscart_product_descriptions.lang_code == user.default_language.value).\
+                    filter(Cscart_products.status.in_(statuses)).\
                     order_by(Cscart_products.timestamp.desc()).\
                     offset(skip).limit(limit)
 

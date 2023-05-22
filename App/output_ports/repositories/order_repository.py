@@ -73,11 +73,11 @@ class OrderRepository(IOrderRepository):
         result = query.first()
         return OrdersSchema.from_orm(result)
     
-    def get_orders_by_vendor_connected(self, request: Request, skip: int, limit: int):
+    def get_orders_by_vendor_connected(self, request: Request, skip: int, limit: int, statuses: list):
         
         user = LoginController.get_current_user_from_cookie(request, self.db_local)
 
-        query = self.db_cscart.query(CscartOrders).filter(CscartOrders.company_id == user.company_id).order_by(desc(CscartOrders.order_id))
+        query = self.db_cscart.query(CscartOrders).filter(CscartOrders.company_id == user.company_id).filter(CscartOrders.status.in_(statuses)).order_by(desc(CscartOrders.order_id))
 
         total = query.count()
         orders = query.offset(skip).limit(limit).all()
