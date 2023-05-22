@@ -15,6 +15,7 @@ class UserSchema(BaseModel):
     firstname: Optional[str]
     lastname: Optional[str]
     default_language: Optional[LanguageEnum]
+    parent_id: Optional[int]
 
     class Config:
         orm_mode = True
@@ -47,7 +48,6 @@ class UserCreateSubVendorSchema(BaseModel):
     lastname: Optional[str]
     default_language: Optional[str]
     password: Optional[str]
-    parent_id: Optional[int]
     
     class Config:
         orm_mode = True

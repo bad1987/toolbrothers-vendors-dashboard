@@ -5,10 +5,9 @@ from fastapi import Request, status, HTTPException
 from fastapi.responses import JSONResponse
 from App.Http.Schema.Settings.PlentyMarketSchema import PlentyMarketSchema
 from rich.console import Console
-from App.Http.Schema.UserSchema import UserSchema
-from App.Http.Schema.ProductSchema import ProductSchema
 from fastapi.encoders import jsonable_encoder
 from App.core.auth import LoginController
+from App.input_ports.schemas import ProductSchema, UserSchema
 from App.output_ports.models.CscartModels import Cscart_product_descriptions, Cscart_product_prices, Cscart_products
 
 from App.output_ports.models.Models import User

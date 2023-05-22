@@ -39,9 +39,9 @@ def get_product_list(request: Request, db_local: Session = Depends(get_db), db_c
         statuses: List[ProductStatus] = Query([ProductStatus.ACTIVE.value, ProductStatus.DISABLED.value, ProductStatus.HIDDEN.value],
         description="The status of the product. Available options are: A - Active, H - Hidden, D - Disable"),
     ):
-    product_usecase = ProductUseCase()
+    product_usecase = ProductUseCase(db_local=db_local, db_cscart=db_cscart)
 
-    result = product_usecase.get_product_list(request, db_local, db_cscart, [status.value for status in statuses], skip = (page - 1) * items_per_page, limit=items_per_page)
+    result = product_usecase.get_product_list(request, [status.value for status in statuses], skip = (page - 1) * items_per_page, limit=items_per_page)
 
     return result
 
@@ -53,6 +53,6 @@ def get_product(
       db_cscart: Session = Depends(get_db_cscart),
       payload: dict = Depends(validate_token),
     ):
-    product_usecase = ProductUseCase()
+    product_usecase = ProductUseCase(db_local=db_local, db_cscart=db_cscart)
 
-    return product_usecase.get_product(request, product_id, db_local, db_cscart)
+    return product_usecase.get_product(request, product_id)

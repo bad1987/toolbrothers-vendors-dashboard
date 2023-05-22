@@ -49,6 +49,10 @@ class UserRepository(IUserRepository):
             user = self.db.query(User).filter(User.email == email).first()
         return user
     
+    def get_parent(self, parent_id: int) -> UserSchema:
+        parent = self.db.query(User).filter(User.id == parent_id).first()
+        return UserSchema.from_orm(parent)
+    
     def generate_api_token(self, email: str):
         userToken: User = self.get_user(email=email)
         if userToken is None:
