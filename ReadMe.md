@@ -28,3 +28,21 @@ localhost:8000/payment/payment-method-system
  # set these values in seccurity settings
 
  - API_TOKEN_EXPIRE_DAYS
+
+ # LIST ALL VARIABLE SYSTEM
+ # - Connection in MARIA DB local
+MARIADB_HOST
+MARIADB_PORT
+MARIADB_USER
+MARIADB_PASSWORD
+MARIADB_DB
+
+# - Conection in MARIA DB CS-CART
+CSCART_MARIADB_HOST
+CSCART_MARIADB_PORT
+CSCART_MARIADB_USER
+CSCART_MARIADB_PASSWORD
+CSCART_MARIADB_DB
+# - Server host vue js application
+SERVER_HOST
+
