@@ -1,9 +1,9 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-import CscartSettingConnexion
+import Setting
 
-DATABASE_URL = f"mariadb+mariadbconnector://{CscartSettingConnexion.CSCART_MARIADB_USER}:{CscartSettingConnexion.CSCART_MARIADB_PASSWORD}@{CscartSettingConnexion.CSCART_MARIADB_HOST}:{CscartSettingConnexion.CSCART_MARIADB_PORT}/{CscartSettingConnexion.CSCART_MARIADB_DB}"
+DATABASE_URL = f"mariadb+mariadbconnector://{Setting.CSCART_MARIADB_USER}:{Setting.CSCART_MARIADB_PASSWORD}@{Setting.CSCART_MARIADB_HOST}:{Setting.CSCART_MARIADB_PORT}/{Setting.CSCART_MARIADB_DB}"
 
 engine = create_engine(
     DATABASE_URL
