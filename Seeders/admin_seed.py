@@ -1,9 +1,12 @@
 import sys
+sys.path.append('..')
 from App.output_ports.db.Connexion import SessionLocal
 
 from App.output_ports.models.Models import Permission, User
-sys.path.append('.')
+# sys.path.append('.')
 from passlib.handlers.sha2_crypt import sha512_crypt as crypto
+from seed import create_permissions
+from data import permission_data
 
 user = User()
 permissions = [
@@ -15,6 +18,11 @@ permissions = [
 def create_admin():
     try:
         db = SessionLocal()
+
+        # make sure the permissions are created
+        create_permissions(permission_data, db)
+
+        # create the admin user
         user = User()
         user.username = 'admin'
         user.email = "admin@dino.com"
@@ -36,8 +44,13 @@ def create_admin():
             # permission.model_name = p['model_name']
             # db.add(permission)
             user.permissions.append(p)
-        db.add(user)
-        db.commit()
+        # check if the user already exists before adding it
+        if db.query(User).filter(User.username == user.username).first():
+            print("User already exists")
+        else:
+            db.add(user)
+            db.commit()
+            print("Admin user created")
     except Exception as e:
         print(str(e))
     finally:

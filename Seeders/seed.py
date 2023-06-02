@@ -11,79 +11,20 @@ from sqlalchemy.orm import Session
 from rich.console import Console
 from passlib.handlers.sha2_crypt import sha512_crypt as crypto
 
-console = Console()
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
-def filter_direct_sale_perm(db: Session):
+console = Console()
+
+def filter_direct_sale_perm(db_local: Session):
     permission_user = db_local.query(Permission).filter(Permission.model_name == "user").all()
     permission_user = [p for p in permission_user if p.name.startswith('Acl_vendor')]
     permission_others = db_local.query(Permission)\
         .filter(Permission.model_name != "user", Permission.mode != "D").all()
     return permission_user + permission_others
 
-# Create permissions
-permission_data = [
-    {'name': "Acl_product_read", 'description': "This user read all products", 'mode': "R", 'model_name': "product"},
-    {'name': "Acl_product_update", 'description': "This user update all products", 'mode': "W", 'model_name': "product"},
-    {'name': "Acl_product_delete", 'description': "This user delete all products", 'mode': "D", 'model_name': "product"},
-    
-    {'name': "Acl_order_read", 'description': "This user read all orders", 'mode': "R", 'model_name': "order"},
-    {'name': "Acl_order_update", 'description': "This user update all orders", 'mode': "W", 'model_name': "order"},
-    {'name': "Acl_order_delete", 'description': "This user delete all orders", 'mode': "D", 'model_name': "order"},
-    
-    {'name': "Acl_setting_read", 'description': "This user read all settings", 'mode': "R", 'model_name': "setting"},
-    {'name': "Acl_setting_update", 'description': "This user update all settings", 'mode': "W", 'model_name': "setting"},
-    {'name': "Acl_setting_delete", 'description': "This user delete all settings", 'mode': "D", 'model_name': "setting"},
-    
-    {'name': "Acl_vendor_read", 'description': "This user read all vendors", 'mode': "R", 'model_name': "user"},
-    {'name': "Acl_vendor_update", 'description': "This user update all vendors", 'mode': "W", 'model_name': "user"},
-    {'name': "Acl_vendor_delete", 'description': "This user delete all vendors", 'mode': "D", 'model_name': "user"},
-    
-    {'name': "Acl_admin_read", 'description': "This admin read all admins", 'mode': "R", 'model_name': "user"},
-    {'name': "Acl_admin_update", 'description': "This admin update all admins", 'mode': "W", 'model_name': "user"},
-    {'name': "Acl_admin_delete", 'description': "This admin delete all admins", 'mode': "D", 'model_name': "user"},
-    
-]
 
-data_payment_method = [
-    {"name": "PayPal", "processor_id": "122"},
-    {"name": "PayPal plus", "processor_id": "132"},
-    {"name": "Klarna", "processor_id": "134"}
-]
-    
-console.log('************* Operation stated *****************')
-try:
-    # response = requests.get('http://127.0.0.1:8000/admin/cscart-users')
-    # console.log(response.text)
-    db_local = SessionLocal()
-    db_cscart = CscartSession()
-    
-    # Add payment method system
-    console.log('************* Payment method system *****************')
-    for item in data_payment_method:
-        payment_method = db_local.query(Payment_method).filter(Payment_method.name == item['name']).first()
-        if not payment_method:
-            payment_methods = Payment_method()
-            payment_methods.name = item["name"]
-            payment_methods.processor_id = item["processor_id"]
-            
-            db_local.add(payment_methods)
-            db_local.commit()
-            db_local.flush(payment_methods)
-            
-            console.log("Add successful Payment method !! : ", item['name'])
-        else:
-            console.log('This payment method exist :', item['name'])
-            continue
-    
-    # Add permission
+def create_permissions(permissions: list, db_local: Session):
     console.log('************* Permission system *****************')
-    for item in permission_data:
+    for item in permissions:
         permission = db_local.query(Permission).filter(Permission.name == item['name']).first()
         
         if not permission:
@@ -101,8 +42,26 @@ try:
             console.log("Add successful !! : ", item['name'])
         else:
             console.log('This permission exist', item['name'])
- 
-    # Add User
+
+def add_payment_method(payment_methods: list, db_local: Session):
+    console.log('************* Payment method system *****************')
+    for item in payment_methods:
+        payment_method = db_local.query(Payment_method).filter(Payment_method.name == item['name']).first()
+        if not payment_method:
+            payment_methods = Payment_method()
+            payment_methods.name = item["name"]
+            payment_methods.processor_id = item["processor_id"]
+            
+            db_local.add(payment_methods)
+            db_local.commit()
+            db_local.flush(payment_methods)
+            
+            console.log("Add successful Payment method !! : ", item['name'])
+        else:
+            console.log('This payment method exist :', item['name'])
+            continue
+
+def import_vendor(db_local: Session, db_cscart: Session):
     console.log('************* Import user in cscart from db local *****************')
     companies = db_cscart.query(CscartCompanies).all()
     permission_direct_sale = filter_direct_sale_perm(db_local)
@@ -204,6 +163,3 @@ try:
             continue
         
         db_local.flush(user)
-    
-except mariadb.Error as e:
-    console.log(f"Error to insert in table permission : {e}")   
