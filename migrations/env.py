@@ -1,7 +1,8 @@
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
+from sqlalchemy import engine_from_config, create_engine
 from sqlalchemy import pool
+from sqlalchemy_utils import database_exists, create_database
 
 from alembic import context
 
@@ -34,15 +35,11 @@ target_metadata = Connexion.Base.metadata
 #override connection url
 config.set_main_option('sqlalchemy.url', Connexion.DATABASE_URL)
 
-# Replace 'database1' with the name of your database
-database_name = 'database1'
+# check if database exists. if not, create it
+if not database_exists(Connexion.DATABASE_URL):
+    print("Creating database...")
+    create_database(Connexion.DATABASE_URL)
 
-# Check if the database exists
-with Connexion.engine.connect() as connection:
-    reslut = connection.execute("SHOW DATABASES LIKE '{}'".format(database_name))
-    if reslut.rowcount == 0:
-            # Create the database if it doesn't exist
-            connection.execute("CREATE DATABASE {}".format(database_name))
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
