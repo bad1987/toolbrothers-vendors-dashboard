@@ -38,8 +38,8 @@ class OrderUsecase:
         result = self.order_repository.get_detail_order(request, order_id)
         return result
     
-    def get_orders_by_vendor_connected(self, request: Request, skip: int, limit: int):
-        return self.order_repository.get_orders_by_vendor_connected(request, skip, limit)
+    def get_orders_by_vendor_connected(self, request: Request, skip: int, limit: int, statuses: list):
+        return self.order_repository.get_orders_by_vendor_connected(request, skip, limit, statuses)
 
     def get_order_statistics(self, request: Request, start_date: str, end_date: str):
         _user = get_current_user_from_cookie(request=request, db=self.db_local)
@@ -82,3 +82,4 @@ class OrderUsecase:
             'end_date': end_date
         })
         return res
+

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Votre sujet de l'e-mail</title>
+  <style type="text/css">
+    /* Inclure le CSS de Tailwind */
+    @import url('https://unpkg.com/tailwindcss@2.2.7/dist/tailwind.min.css');
+    /* Ajouter des styles personnalisés */
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .button {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background-color: #4f46e5;
+      color: #ffffff;
+      border-radius: 0.25rem;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="text-4xl font-bold text-center mb-8">Titre de l'e-mail</h1>
+    <p class="text-lg mb-8">Bonjour, [nom du client],</p>
+    <p class="text-lg mb-8">Nous sommes ravis de vous informer que vous avez remporté notre concours annuel! Veuillez trouver ci-dessous les détails de votre prix:</p>
+    <ul class="text-lg mb-8">
+      <li>Nom du prix: [nom du prix]</li>
+      <li>Date: [date du prix]</li>
+      <li>Heure: [heure du prix]</li>
+      <li>Lieu: [lieu du prix]</li>
+    </ul>
+    <p class="text-lg mb-8">Pour confirmer votre présence, veuillez cliquer sur le bouton ci-dessous:</p>
+    <a href="[lien de confirmation]" class="button">Confirmer ma présence</a>
+    <p class="text-lg mt-8">Merci et félicitations encore!</p>
+  </div>
+</body>
+</html>

@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, Query, Request
 from App.Enums.OrderEnums import OrderOrderBy, OrderStatus, SortOrder
 from App.Enums.UserRoleEnum import ModelNameEnum
 from App.core.Decorators.auth_decorators import requires_permission
+from App.Enums.ProductEnums import ProductStatus
 from App.core.auth.auth import is_authenticated, validate_token
 from App.core.dependencies.db_dependencies import get_db, get_db_cscart
 from App.core.use_cases.order_use_case import OrderUsecase
@@ -18,9 +19,12 @@ sys_route = APIRouter(prefix='', tags=['Orders system'], include_in_schema=True)
 
 @sys_route.get('/orders/list/', response_model=OrderResponseModel)
 @requires_permission('read', ModelNameEnum.ORDER_MODEL.value)
-async def get_orders_list(request: Request, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart), _user: dict = Depends(is_authenticated), skip: int = 0, limit: int = 10):
+async def get_orders_list(request: Request, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart), _user: dict = Depends(is_authenticated), skip: int = 0, limit: int = 10,
+    statuses: List[OrderStatus] = Query([OrderStatus.AWAITING_CALL.value, OrderStatus.BACKORDERED.value, OrderStatus.CANCELLED.value, OrderStatus.COMPLETE.value, OrderStatus.DECLINED.value, OrderStatus.FAILED.value, OrderStatus.OPEN.value, OrderStatus.PROCESSED.value])                          
+):
     order_usecase = OrderUsecase(db_local=db_local, db_cscart=db_cscart)
-    result = order_usecase.get_orders_by_vendor_connected(request, skip, limit)
+    statuses = [status.value for status in statuses]
+    result = order_usecase.get_orders_by_vendor_connected(request, skip, limit, statuses)
     
     return {'orders': result["orders"], 'total': result["total"]}
 
