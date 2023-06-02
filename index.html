@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <title>Vendor Admin Panel</title>
+    <link rel="icon" href="/faveicon.png" />
     <link rel="stylesheet" href="index.css">
     <script>
       // On page load or when changing themes, best to add inline in `head` to avoid FOUC
@@ -13,8 +14,8 @@
       }
   </script>
   </head>
-  <body class="dark:bg-gray-800 dark:border-gray-700 relative overflow-x-hidden overflow-y-auto">
-    <div id="app-overlay" class="overlay bg-black opacity-60 absolute top-0 w-screen h-screen z-20 hidden"></div>
+  <body class="relative overflow-x-hidden overflow-y-auto dark:bg-gray-800 dark:border-gray-700">
+    <div id="app-overlay" class="absolute top-0 z-20 hidden w-screen h-screen bg-black overlay opacity-60"></div>
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
   </body>

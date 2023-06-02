@@ -92,8 +92,8 @@ const handleLogout = event => {
             </svg>
           </button>
           <a href="https://toolbrothers.com/" class="flex ml-2 md:mr-24">
-            <img src="https://toolbrothers.com/images/toolbrothers_logo.jpeg" class="h-6 mr-3 dark:hidden block" alt="FlowBite Logo">
-            <img src="/logo.png" class="mr-3 dark:block hidden" alt="TB Logo">
+            <img src="https://toolbrothers.com/images/toolbrothers_logo.jpeg" class="block h-6 mr-3 dark:hidden" alt="FlowBite Logo">
+            <img src="/logo.png" class="hidden mr-3 dark:block" alt="TB Logo">
           </a>
         </div>
         <div class="flex items-center">
@@ -146,9 +146,9 @@ const handleLogout = event => {
               </ul>
             </div>
           </div>
-          <div class="flex items-center md:order-2 ml-3 outline-none">
+          <div class="flex items-center ml-3 outline-none md:order-2">
             <button type="button" data-dropdown-toggle="language-dropdown-menu"
-              class="inline-flex items-center font-medium justify-center px-4 py-2 text-sm text-gray-900 dark:text-white rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
+              class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-900 rounded-lg cursor-pointer dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
             <svg aria-hidden="true" class="h-3.5 w-3.5 rounded-full mr-2" xmlns="http://www.w3.org/2000/svg"
               v-if="actual == 'en'"
               id="flag-icon-css-us" viewBox="0 0 512 512">
@@ -185,7 +185,7 @@ const handleLogout = event => {
               <li>
                 <a 
                   @click="changeLanguage('en')"
-                  class="cursor-pointer block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
+                  class="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
                   :class="actual == 'en' ? 'pointer-events-none cursor-default' : ''"
                   role="menuitem">
                   <div class="inline-flex items-center">
@@ -213,7 +213,7 @@ const handleLogout = event => {
               <li>
                 <a 
                   @click="changeLanguage('de')"
-                  class="block cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
+                  class="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
                   :class="actual == 'de' ? 'pointer-events-none cursor-default' : ''"
                   role="menuitem">
                   <div class="inline-flex items-center">

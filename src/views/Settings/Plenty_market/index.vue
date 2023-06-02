@@ -68,10 +68,6 @@ const handSubmit = (e) => {
       console.log("this error", err);
     });
 };
-// setInterval(() => {
-//     isSuccess.value = ""
-//     console.log('yesssssssssssss');
-// }, 5000)
 
 onMounted(() => {});
 getPlentyMarketInformationByVendorPlatform();
@@ -86,12 +82,12 @@ getPlentyMarketInformationByVendorPlatform();
       <h1
         class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-5xl dark:text-white"
       >
-        Plentymarkets API configuration
+        {{ $t('mb_config_plenty_market') }}
       </h1>
       <p
         class="my-5 mb-10 text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400"
       >
-        these settings will alow us to push orders to your platform
+      {{ $t('mb_plenty_market_des') }}
       </p>
     </div>
 
@@ -201,7 +197,7 @@ getPlentyMarketInformationByVendorPlatform();
           <label
             htmlFor="platform_id"
             className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
-            >Plenty ID</label
+            >{{ $t('md_plenty_id') }}</label
           >
         </div>
         <div className="relative">
@@ -215,7 +211,7 @@ getPlentyMarketInformationByVendorPlatform();
           <label
             htmlFor="referrer_id"
             className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
-            >Referrer ID</label
+            >{{ $t('md_referrer_id') }}</label
           >
         </div>
       </div>
@@ -231,7 +227,7 @@ getPlentyMarketInformationByVendorPlatform();
           <label
             htmlFor="api_id"
             className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
-            >API ID</label
+            >{{ $t('md_api_id') }}</label
           >
         </div>
         <div className="relative">
@@ -245,7 +241,7 @@ getPlentyMarketInformationByVendorPlatform();
           <label
             htmlFor="api_secret"
             className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
-            >API SECRET</label
+            >{{ $t('md_api_secret_id') }}</label
           >
         </div>
       </div>
@@ -261,7 +257,7 @@ getPlentyMarketInformationByVendorPlatform();
           <label
             htmlFor="access_token"
             className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
-            >ACCESS TOKEN</label
+            >{{ $t('md_access_token') }}</label
           >
         </div>
         <div className="relative">
@@ -275,7 +271,7 @@ getPlentyMarketInformationByVendorPlatform();
           <label
             htmlFor="platform_url"
             className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
-            >Plenty Url</label
+            >{{ $t('md_plenty_url') }}</label
           >
         </div>
       </div>
@@ -291,7 +287,7 @@ getPlentyMarketInformationByVendorPlatform();
           <label
             htmlFor="method_payment_id"
             className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
-            >Method of payment ID</label
+            >{{ $t('md_method_of_payment') }}</label
           >
         </div>
         <div className="relative">
@@ -305,7 +301,7 @@ getPlentyMarketInformationByVendorPlatform();
           <label
             htmlFor="shipping_profile_id"
             className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
-            >Shipping profile ID: VAT</label
+            >{{ $t('md_shipping') }}</label
           >
         </div>
 
@@ -320,7 +316,7 @@ getPlentyMarketInformationByVendorPlatform();
           <label
             htmlFor="export_product_link"
             className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
-            >Export product link</label
+            >{{ $t('md_export_product') }}</label
           >
         </div>
       </div>
@@ -328,7 +324,7 @@ getPlentyMarketInformationByVendorPlatform();
         @click="handSubmit"
         class="px-5 float-left py-2 text-xl font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
       >
-        Save
+      {{ $t('md_save') }}
       </button>
     </form>
   </div>
