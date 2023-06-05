@@ -22,7 +22,7 @@ console = Console()
 
 roles_checker = Role_checker()
 
-route = APIRouter(prefix='/plenty-market', tags=['Plenty market settings'], include_in_schema=True)
+route = APIRouter(prefix='/plenty-market', tags=['Plenty market settings'], include_in_schema=False)
 
 
 def timestamp_to_date(s):

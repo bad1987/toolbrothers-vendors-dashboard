@@ -21,7 +21,7 @@ console = Console()
 
 roles_checker = Role_checker()
 
-route = APIRouter(prefix='/payment', tags=['Payment settings'], include_in_schema=True)
+route = APIRouter(prefix='/payment', tags=['Payment settings'], include_in_schema=False)
 
 
 def timestamp_to_date(s):

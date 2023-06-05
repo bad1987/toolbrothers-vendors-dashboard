@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 from App.utils.datetime_utils import validate_end_time, validate_start_time
 from App.output_ports.models.Models import User
 
-sys_route = APIRouter(prefix='', tags=['Orders system'], include_in_schema=True)
+sys_route = APIRouter(prefix='', tags=['Orders system'], include_in_schema=False)
 
 @sys_route.get('/orders/list/', response_model=OrderResponseModel)
 @requires_permission('read', ModelNameEnum.ORDER_MODEL.value)

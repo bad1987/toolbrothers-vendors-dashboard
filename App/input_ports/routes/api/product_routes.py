@@ -31,7 +31,7 @@ def get_db_cscart():
     finally:
         db_cscart.close()
 
-api_route = APIRouter(prefix='/api', tags=['Products system'], include_in_schema=True)
+api_route = APIRouter(prefix='/api', tags=['Products system'], include_in_schema=False)
 
 @api_route.get('/products', response_model=ProductListResponseSchema)
 def get_product_list(request: Request, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart),
