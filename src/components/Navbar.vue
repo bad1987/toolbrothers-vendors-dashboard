@@ -68,14 +68,10 @@ onMounted(async () => {
 
 // logout
 const handleLogout = event => {
-  axios.delete('/auth/logout')
-  .then(response => {
-      window.location.href = '/login'
-    })
-  .catch(err => {
-      console.log('Some error occured')
-      console.log(err)
-    })
+  let cookie_name = local_storage_get('cookie_name')
+  let cookie = cookie_name + '=;Max-Age=0'
+  document.cookie = cookie
+  window.location.href = '/login'
 }
 </script>
 
