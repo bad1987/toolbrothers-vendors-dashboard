@@ -20,6 +20,7 @@ import { userStore } from '../stores/UserStore';
 import { getUser } from '../api'
 
 const router = createRouter({
+  async:true,
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
@@ -92,7 +93,9 @@ const router = createRouter({
           console.log(from.fullPath)
           next(from.fullPath)
         }
-        next()
+        else{
+          next()
+        }
       }
     },
     {

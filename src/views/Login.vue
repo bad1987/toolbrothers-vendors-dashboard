@@ -19,13 +19,6 @@
     const router = useRouter()
     const route = useRoute()
     const uStore = userStore()
-    
-    // redirect the user from where he came from if he is authenticated
-    // onBeforeMount(async ()=>{
-    //     if(await is_authenticated()){
-    //         router.back()
-    //     }
-    // })
 
     function handleSubmit(e) {
         const data = {

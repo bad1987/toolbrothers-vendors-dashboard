@@ -71,12 +71,12 @@ const handleLogout = event => {
   let cookie_name = local_storage_get('cookie_name')
   let cookie = cookie_name + '=;Max-Age=0'
   document.cookie = cookie
-  window.location.href = '/'
+  window.location.href = '/login'
 }
 </script>
 
 <template>
-  <nav class="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+  <nav class="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700" id="navbar">
     <div class="px-3 py-3 lg:px-5 lg:pl-3">
       <div class="flex items-center justify-between">
         <div class="flex items-center justify-start">
