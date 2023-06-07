@@ -46,3 +46,10 @@ CSCART_MARIADB_DB
 # - Server host vue js application
 SERVER_HOST
 
+# - cross-origins: commas separated origins
+ALLOWED_ORIGINS
+# - admin user credentials
+ADMIN_USERNAME
+ADMIN_EMAIL
+ADMIN_PASSWORD
+

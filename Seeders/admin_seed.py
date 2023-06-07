@@ -7,6 +7,10 @@ from App.output_ports.models.Models import Permission, User
 from passlib.handlers.sha2_crypt import sha512_crypt as crypto
 from seed import create_permissions
 from data import permission_data
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 user = User()
 permissions = [
@@ -24,9 +28,9 @@ def create_admin():
 
         # create the admin user
         user = User()
-        user.username = 'admin'
-        user.email = "admin@dino.com"
-        user.password = crypto.hash('secret')
+        user.username = os.getenv('ADMIN_USERNAME')
+        user.email = os.getenv('ADMIN_EMAIL')
+        user.password = crypto.hash(os.getenv('ADMIN_PASSWORD'))
         user.roles = "Role_admin"
         user.status = "A"
         user.company_id = -2
@@ -37,12 +41,6 @@ def create_admin():
             print("No permissions found in the permission table")
             exit()
         for p in permissions:
-            # permission = Permission()
-            # permission.name = p['name']
-            # permission.description = p['description']
-            # permission.mode = p['mode']
-            # permission.model_name = p['model_name']
-            # db.add(permission)
             user.permissions.append(p)
         # check if the user already exists before adding it
         if db.query(User).filter(User.username == user.username).first():

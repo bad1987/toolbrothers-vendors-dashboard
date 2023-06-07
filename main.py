@@ -12,15 +12,18 @@ from App.input_ports.routes.system import s_product_routes, user_routes, vendor_
 from App.input_ports.routes.system.message import Message_route
 
 from starlette.middleware.base import BaseHTTPMiddleware
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+allowed_origins_str = os.getenv("ALLOWED_ORIGINS")
+origins = allowed_origins_str.split(',')
+
 
 app = FastAPI(title="TOOLBROTHER API", version="1.0.0", description="This API is to design the Toolbrother dashboard",docs_url="/toolbrothers_api/docs") 
 
 @app.get('/', tags=["Welcome"], include_in_schema=False)
 def welcome(): return {"Message": "Welcome one api on", "Version": "1.0.0", "Build by": "TOOLBROTHER Enterprise"}
-
-origins = [
-    "http://localhost:5173" 
-]
 
 ## Api's routes
 
