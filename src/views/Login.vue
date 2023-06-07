@@ -46,6 +46,7 @@
             local_storage_set('cookie_name', data.cookie_name)
             local_storage_set(data.cookie_name, new Date().getTime() + time*1000)
             //TODO::save the user in the store
+            
             const user = data.user
             uStore.setUser(user)
             local_storage_set('locale', user.default_language)
@@ -57,7 +58,7 @@
             }
             else{
                 if (user.roles == 'Role_admin')
-                    window.location.href = "/users"
+                    window.location.href = "/admin/users/admins"
                 else window.location.href = "/"
             }
         })
