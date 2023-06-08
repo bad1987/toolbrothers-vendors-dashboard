@@ -37,15 +37,15 @@
         .then(response=> {
             let data = response.data;
             console.log('datas: ', data.user)
-            let token_type = data.token_type.charAt(0).toUpperCase() + data.token_type.slice(1);
-            let cookie_val = `${token_type} ${data[data.cookie_name]}`
-            let time = data.expired_at * 60;
-            let temp = `${data.cookie_name}=${cookie_val}; max-age=${time}; SameSite=None; Secure`;
-            document.cookie = temp;
-            //TODO::save the cookie max-age for later use(refresh token)
-            local_storage_set('cookie_name', data.cookie_name)
-            local_storage_set(data.cookie_name, new Date().getTime() + time*1000)
-            //TODO::save the user in the store
+            // let token_type = data.token_type.charAt(0).toUpperCase() + data.token_type.slice(1);
+            // let cookie_val = `${token_type} ${data[data.cookie_name]}`
+            // let time = data.expired_at * 60;
+            // let temp = `${data.cookie_name}=${cookie_val}; max-age=${time}; SameSite=None; Secure`;
+            // document.cookie = temp;
+            // //TODO::save the cookie max-age for later use(refresh token)
+            // local_storage_set('cookie_name', data.cookie_name)
+            // local_storage_set(data.cookie_name, new Date().getTime() + time*1000)
+            // //TODO::save the user in the store
             
             const user = data.user
             uStore.setUser(user)
