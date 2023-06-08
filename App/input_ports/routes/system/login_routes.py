@@ -1,6 +1,6 @@
 import json, time, datetime
 from typing import Dict, List
-from fastapi import Depends, HTTPException, Request, status, APIRouter
+from fastapi import Depends, HTTPException, Request, Response, status, APIRouter
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from sqlalchemy.orm import Session
 from rich.console import Console
@@ -14,6 +14,17 @@ import i18n
 from App.Http.Schema.UserSchema import UserSchema
 
 from App.core.auth import LoginController
+
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+secure_cookie = os.getenv('COOKIE_SECURE')
+# capitalize and convert secure_cookie to bool
+if secure_cookie.lower() == 'true':
+    secure_cookie = True
+else:
+    secure_cookie = False
 
 # instantiate a new translator class
 translator = i18n.Translator('languages/')
@@ -45,21 +56,24 @@ def login_for_access_token(
     return result
 
 @route.post("/auth/login")
-async def login_post(request: Request, db: Session = Depends(get_db)):
+async def login_post(request: Request, response: Response, db: Session = Depends(get_db)):
     credentials = json.loads(await request.body())
     res = login_for_access_token(request, credentials, db)
     res.update({'expired_at': Settings.ACCESS_TOKEN_EXPIRE_MINUTES})
     res.update({'cookie_name': Settings.COOKIE_NAME})
+
+    # setting the cookie
+    max_age = res['expired_at'] * 60
+    response.set_cookie(Settings.COOKIE_NAME, res[Settings.COOKIE_NAME], max_age=max_age, samesite='None', secure=secure_cookie)
     return jsonable_encoder(res)
 
 # --------------------------------------------------------------------------
 # Logout
 # --------------------------------------------------------------------------
-@route.get("/auth/logout", response_class=HTMLResponse)
-def login_get():
-    response = RedirectResponse(url="/")
-    response.delete_cookie(Settings.COOKIE_NAME)
-    return response
+@route.delete("/auth/logout")
+def logout(request: Request, response: Response):
+    response.delete_cookie(Settings.COOKIE_NAME, samesite='None', secure=secure_cookie)
+    return {"message": "Logged out"}
 
 @route.get('/auth/refresh')
 async def refresh_token(request: Request, db: Session = Depends(get_db)):
