@@ -52,4 +52,5 @@ ALLOWED_ORIGINS
 ADMIN_USERNAME
 ADMIN_EMAIL
 ADMIN_PASSWORD
-
+# - secure parameter for cookies: set it to False when running over http otherwise, set it to True
+COOKIE_SECURE
