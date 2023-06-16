@@ -29,7 +29,13 @@ class UserUsecase:
             )
 
     def get_permissions(self) -> List[PermissionSchema]:
-        return self.user_repository.get_permissions()
+        try:
+            return self.user_repository.get_permissions()
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=str(e)
+            )
     
     def get_user(self, request: Request):
         _user = get_current_user_from_cookie(request=request, db=self.db)
