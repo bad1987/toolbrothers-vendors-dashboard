@@ -60,7 +60,7 @@ async def cscart_users(db_cscart: Session = Depends(get_db_cscart), db_local: Se
 
     return result
 
-# delete a user.
+# delete a user
 @s_user_route.delete("/user/{id}")
 @requires_permission('delete', ModelNameEnum.USER_MODEL.value)
 async def delete_user(id: int, request: Request,  db_local: Session = Depends(get_db), _user: dict = Depends(is_authenticated)):
