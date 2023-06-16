@@ -23,7 +23,7 @@ export function interceptor() {
             // config.headers['Accept'] = 'application/json';
             // config.headers['Content-Type'] = 'application/json'
             config.headers['withCredentials'] = true;
-            // config.headers['Authorization'] = getCookie('access_token');
+            config.headers['Authorization'] = getCookie('access_token');
             return config;
         },
         error => {

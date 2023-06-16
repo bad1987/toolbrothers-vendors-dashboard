@@ -12,10 +12,10 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
-  server: {
-    https: {
-      key: path.resolve(__dirname, 'certificates/vendors.toolbrothers.com-selfsigned.key'),
-      cert: path.resolve(__dirname, 'certificates/vendors.toolbrothers.com-selfsigned.crt')
-    }
-  }
+  // server: {
+  //   https: {
+  //     key: path.resolve(__dirname, 'certificates/vendors.toolbrothers.com-selfsigned.key'),
+  //     cert: path.resolve(__dirname, 'certificates/vendors.toolbrothers.com-selfsigned.crt')
+  //   }
+  // }
 })

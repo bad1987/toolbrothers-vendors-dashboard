@@ -1,13 +1,14 @@
 <script setup>
 import axios from "axios";
-import { ref, onMounted, onBeforeMount } from "vue";
+import { ref, onMounted, onBeforeMount, nextTick } from "vue";
 import { initDrawers } from "flowbite";
-
+import VueBasicAlert from "vue-basic-alert";
 import { acl } from "../../../router/acl";
 import { useRouter } from "vue-router";
 
 const userRef = ref({ user: null, isAdmin: false });
 const router = useRouter();
+const alert = ref(null);
 
 onBeforeMount(async () => {
   const test = await acl();
@@ -55,17 +56,21 @@ const handSubmit = (e) => {
     method_payment_id: e.target["method_payment_id"].value,
     shipping_profile_id: e.target["shipping_profile_id"].value,
     platform_id: e.target["platform_id"].value,
-    export_product_link: e.target["export_product_link"].value
+    export_product_link: e.target["export_product_link"].value,
   };
 
   axios
     .post("/plenty-market/update", data)
     .then((res) => {
-      isSuccess.value = "Update Successful!!";
       getPlentyMarketInformationByVendorPlatform();
+      alert.value.showAlert("success", res.data, "Successful!!");
+      console.log(res.data);
     })
     .catch((err) => {
-      console.log("this error", err);
+      if (err.code == "ERR_NETWORK") {
+        alert.value.showAlert("error", err.message, "Error !!");
+      }
+      alert.value.showAlert("error", err.response.data.detail[0].msg, "Error !!");
     });
 };
 
@@ -74,27 +79,30 @@ getPlentyMarketInformationByVendorPlatform();
 </script>
 
 <template>
+  <div id="app">
+    <vue-basic-alert :duration="2000" :closeIn="5000" ref="alert" />
+  </div>
   <div
     v-if="!userRef.isAdmin"
     class="px-[5%] justify-center items-center justify-items-center m-auto md:mt-[5%]"
   >
-    <div class="w-full grid grid-cols-1">
+    <div class="grid w-full grid-cols-1">
       <h1
         class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-5xl dark:text-white"
       >
-        {{ $t('mb_config_plenty_market') }}
+        {{ $t("mb_config_plenty_market") }}
       </h1>
       <p
         class="my-5 mb-10 text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400"
       >
-      {{ $t('mb_plenty_market_des') }}
+        {{ $t("mb_plenty_market_des") }}
       </p>
     </div>
 
     <div
       v-if="isSuccess"
       id="alert-border-3"
-      class="flex p-4 mb-4 text-green-800 border-l-4 border rounded-md border-green-300 bg-green-50 dark:text-green-400 dark:bg-gray-800 dark:border-green-800"
+      class="flex p-4 mb-4 text-green-800 border border-l-4 border-green-300 rounded-md bg-green-50 dark:text-green-400 dark:bg-gray-800 dark:border-green-800"
       role="alert"
     >
       <svg
@@ -138,7 +146,7 @@ getPlentyMarketInformationByVendorPlatform();
     <div
       v-if="isError"
       id="alert-border-4"
-      class="flex p-4 mb-4 text-green-800 border-l-4 border rounded-md border-red-300 bg-red-50 dark:text-red-400 dark:bg-gray-800 dark:border-red-800"
+      class="flex p-4 mb-4 text-green-800 border border-l-4 border-red-300 rounded-md bg-red-50 dark:text-red-400 dark:bg-gray-800 dark:border-red-800"
       role="alert"
     >
       <svg
@@ -183,9 +191,9 @@ getPlentyMarketInformationByVendorPlatform();
       @submit.prevent="handSubmit($event)"
       action="/plenty-market/update"
       method="post"
-      class="space-y-5 m-auto"
+      class="m-auto space-y-5"
     >
-      <div class="m-auto md:grid md:grid-cols-2 gap-2 space-y-5 md:space-y-0">
+      <div class="gap-2 m-auto space-y-5 md:grid md:grid-cols-2 md:space-y-0">
         <div className="relative">
           <input
             type="number"
@@ -197,7 +205,7 @@ getPlentyMarketInformationByVendorPlatform();
           <label
             htmlFor="platform_id"
             className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
-            >{{ $t('md_plenty_id') }}</label
+            >{{ $t("md_plenty_id") }}</label
           >
         </div>
         <div className="relative">
@@ -211,11 +219,11 @@ getPlentyMarketInformationByVendorPlatform();
           <label
             htmlFor="referrer_id"
             className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
-            >{{ $t('md_referrer_id') }}</label
+            >{{ $t("md_referrer_id") }}</label
           >
         </div>
       </div>
-      <div class="m-auto md:grid md:grid-cols-2 gap-2 space-y-5 md:space-y-0">
+      <div class="gap-2 m-auto space-y-5 md:grid md:grid-cols-2 md:space-y-0">
         <div className="relative">
           <input
             type="number"
@@ -227,7 +235,7 @@ getPlentyMarketInformationByVendorPlatform();
           <label
             htmlFor="api_id"
             className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
-            >{{ $t('md_api_id') }}</label
+            >{{ $t("md_api_id") }}</label
           >
         </div>
         <div className="relative">
@@ -241,11 +249,11 @@ getPlentyMarketInformationByVendorPlatform();
           <label
             htmlFor="api_secret"
             className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
-            >{{ $t('md_api_secret_id') }}</label
+            >{{ $t("md_api_secret_id") }}</label
           >
         </div>
       </div>
-      <div class="m-auto md:grid md:grid-cols-2 gap-2 space-y-5 md:space-y-0">
+      <div class="gap-2 m-auto space-y-5 md:grid md:grid-cols-2 md:space-y-0">
         <div className="relative">
           <input
             type="number"
@@ -257,7 +265,7 @@ getPlentyMarketInformationByVendorPlatform();
           <label
             htmlFor="access_token"
             className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
-            >{{ $t('md_access_token') }}</label
+            >{{ $t("md_access_token") }}</label
           >
         </div>
         <div className="relative">
@@ -271,11 +279,11 @@ getPlentyMarketInformationByVendorPlatform();
           <label
             htmlFor="platform_url"
             className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
-            >{{ $t('md_plenty_url') }}</label
+            >{{ $t("md_plenty_url") }}</label
           >
         </div>
       </div>
-      <div class="m-auto md:grid md:grid-cols-2 gap-2 space-y-5 md:space-y-0">
+      <div class="gap-2 m-auto space-y-5 md:grid md:grid-cols-2 md:space-y-0">
         <div className="relative">
           <input
             type="number"
@@ -287,7 +295,7 @@ getPlentyMarketInformationByVendorPlatform();
           <label
             htmlFor="method_payment_id"
             className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
-            >{{ $t('md_method_of_payment') }}</label
+            >{{ $t("md_method_of_payment") }}</label
           >
         </div>
         <div className="relative">
@@ -301,7 +309,7 @@ getPlentyMarketInformationByVendorPlatform();
           <label
             htmlFor="shipping_profile_id"
             className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
-            >{{ $t('md_shipping') }}</label
+            >{{ $t("md_shipping") }}</label
           >
         </div>
 
@@ -316,18 +324,16 @@ getPlentyMarketInformationByVendorPlatform();
           <label
             htmlFor="export_product_link"
             className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
-            >{{ $t('md_export_product') }}</label
+            >{{ $t("md_export_product") }}</label
           >
         </div>
       </div>
       <button
         @click="handSubmit"
-        class="px-5 float-left py-2 text-xl font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        class="float-left px-5 py-2 text-xl font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
       >
-      {{ $t('md_save') }}
+        {{ $t("md_save") }}
       </button>
     </form>
   </div>
 </template>
-
-<style></style>

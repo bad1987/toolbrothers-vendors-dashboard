@@ -1,27 +1,28 @@
 <script setup>
 import axios from "axios";
 import { ref, onMounted, onBeforeMount } from "vue";
-import { initDrawers, initFlowbite } from 'flowbite'
+import { initDrawers, initFlowbite } from "flowbite";
 
 import { acl } from "../../../router/acl";
 import { useRouter } from "vue-router";
+import VueBasicAlert from "vue-basic-alert";
 
-const userRef = ref({user: null, isAdmin: false})
-const router = useRouter()
-onBeforeMount( async () => {
-
-    const test = await acl()
-    userRef.value = test
-    userRef.value.user = test
-    userRef.value.isAdmin = test.roles == "Role_admin"
-    console.log("get user information from acl", userRef.value.email );
-})
+const userRef = ref({ user: null, isAdmin: false });
+const router = useRouter();
+onBeforeMount(async () => {
+  const test = await acl();
+  userRef.value = test;
+  userRef.value.user = test;
+  userRef.value.isAdmin = test.roles == "Role_admin";
+  console.log("get user information from acl", userRef.value.email);
+});
 
 const payment_method = ref([]);
 const skeletonCnt = ref(5);
-const isSuccess = ref("")
-const isError = ref("")
-let is_valid = ref(false)
+const isSuccess = ref("");
+const isError = ref("");
+let is_valid = ref(false);
+const alert = ref(null);
 
 const getPaymentMethodByVendorConnected = () => {
   axios
@@ -31,78 +32,81 @@ const getPaymentMethodByVendorConnected = () => {
       skeletonCnt.value = 0;
     })
     .then(() => {
-      initFlowbite()
+      initFlowbite();
     })
-    .catch(err => {
+    .catch((err) => {
       if (err.response) {
-        let status = err.response.status
+        let status = err.response.status;
         if (status) {
           if (status == 403) {
             console.log(err.response.status);
-            router.push('/error/403')
-          }
-          else if (status == 401) {
-            router.push('/login')
+            router.push("/error/403");
+          } else if (status == 401) {
+            router.push("/login");
           }
         }
       }
       skeletonCnt.value = 0;
-    })
+    });
 };
 
 const disableOrUnablePaymentMethod = (payment_method_id) => {
-  axios
-    .get("/payment/update/"+payment_method_id)
-    .then((response) => {
-      getPaymentMethodByVendorConnected()
-    })
-}
+  axios.get("/payment/update/" + payment_method_id).then((response) => {
+    getPaymentMethodByVendorConnected();
+    alert.value.showAlert("success", response.data, "Successful!!");
+  });
+};
 
 const handleUpdateCredential = (e) => {
   const data = {
-    "client_secret": e.target["client_secret"].value,
-    "client_secret_id": e.target["client_secret_id"].value,
-    "id": e.target["id"].value
-  }
+    client_secret: e.target["client_secret"].value,
+    client_secret_id: e.target["client_secret_id"].value,
+    id: e.target["id"].value,
+  };
 
-  validateForm(data)
-  console.log(is_valid.value);
+  validateForm(data);
   if (!is_valid.value) {
-    return false
-  }else{
+    return false;
+  } else {
     axios
-      .post('/payment/update/credential/'+data.id, data)
+      .post("/payment/update/credential/" + data.id, data)
       .then((res) => {
-        isSuccess.value = res.data
-        isError.value = ''
-        getPaymentMethodByVendorConnected()
+        isSuccess.value = res.data;
+        isError.value = "";
+        getPaymentMethodByVendorConnected();
       })
       .catch((err) => {
-        isError.value = err.data
-        isSuccess.value = ''
-      })
+        isError.value = err.data;
+        isSuccess.value = "";
+      });
   }
-}
+};
 
 const validateForm = (data = {}) => {
-  if (data.client_secret == '' || data.client_secret == '' || data.id == ''){
-    isError.value = "Fill in all fields !"
-    isSuccess.value = ''
-    is_valid.value = false
-    return false
-  }else {
-    is_valid.value = true
-    return true
+  if (data.client_secret == "" || data.client_secret == "" || data.id == "") {
+    isError.value = "Fill in all fields !";
+    isSuccess.value = "";
+    is_valid.value = false;
+    return false;
+  } else {
+    is_valid.value = true;
+    return true;
   }
-}
+};
 
-onMounted(() => {
-})
+onMounted(() => {});
 
 getPaymentMethodByVendorConnected();
 </script>
 <template>
-  <main v-if="!userRef.isAdmin" class="mx-5 mt-[6%] px-[5%] dark:bg-gray-800 dark:border-gray-700 " id="app">
+  <main
+    v-if="!userRef.isAdmin"
+    class="mx-5 mt-[6%] px-[5%] dark:bg-gray-800 dark:border-gray-700"
+    id="app"
+  >
+    <div id="app">
+      <vue-basic-alert :duration="2000" :closeIn="5000" ref="alert" />
+    </div>
     <div
       class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:border-gray-700 sm:p-6 dark:bg-gray-800"
     >
@@ -112,38 +116,104 @@ getPaymentMethodByVendorConnected();
           <div class="mb-4 lg:mb-0">
             <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">
               {{ $t("md_your_payment") }}
-              <span class="px-2 py-1 text-sm text-white bg-green-500 rounded-md"
-                >{{ $t("mb_active") }}</span
-              >
+              <span class="px-2 py-1 text-sm text-white bg-green-500 rounded-md">{{
+                $t("mb_active")
+              }}</span>
             </h3>
-            <span class="text-base font-normal text-gray-500 dark:text-gray-400"
-              >{{ $t("mb_description_payment") }}</span
-            >
+            <span class="text-base font-normal text-gray-500 dark:text-gray-400">{{
+              $t("mb_description_payment")
+            }}</span>
           </div>
         </div>
       </div>
       <!-- Alert -->
-      <div v-if="isSuccess" id="alert-border-3" class="flex p-4 my-4 text-green-800 border-l-4 border rounded-md border-green-300 bg-green-50 dark:text-green-400 dark:bg-gray-800 dark:border-green-800" role="alert">
-            <svg class="flex-shrink-0 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
-            <div class="ml-3 text-sm font-medium">
-                {{ isSuccess }}
-            </div>
-            <button type="button" class="ml-auto -mx-1.5 -my-1.5 bg-green-50 text-green-500 rounded-lg focus:ring-2 focus:ring-green-400 p-1.5 hover:bg-green-200 inline-flex h-8 w-8 dark:bg-gray-800 dark:text-green-400 dark:hover:bg-gray-700"  data-dismiss-target="#alert-border-3" aria-label="Close">
-            <span class="sr-only">Dismiss</span>
-            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-            </button>
+      <div
+        v-if="isSuccess"
+        id="alert-border-3"
+        class="flex p-4 my-4 text-green-800 border-l-4 border rounded-md border-green-300 bg-green-50 dark:text-green-400 dark:bg-gray-800 dark:border-green-800"
+        role="alert"
+      >
+        <svg
+          class="flex-shrink-0 w-5 h-5"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+        <div class="ml-3 text-sm font-medium">
+          {{ isSuccess }}
         </div>
+        <button
+          type="button"
+          class="ml-auto -mx-1.5 -my-1.5 bg-green-50 text-green-500 rounded-lg focus:ring-2 focus:ring-green-400 p-1.5 hover:bg-green-200 inline-flex h-8 w-8 dark:bg-gray-800 dark:text-green-400 dark:hover:bg-gray-700"
+          data-dismiss-target="#alert-border-3"
+          aria-label="Close"
+        >
+          <span class="sr-only">Dismiss</span>
+          <svg
+            aria-hidden="true"
+            class="w-5 h-5"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              clip-rule="evenodd"
+            ></path>
+          </svg>
+        </button>
+      </div>
 
-        <div v-if="isError" id="alert-border-4" class="flex p-4 my-4 text-green-800 border-l-4 border rounded-md border-red-300 bg-red-50 dark:text-red-400 dark:bg-gray-800 dark:border-red-800" role="alert">
-            <svg class="flex-shrink-0 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
-            <div class="ml-3 text-sm font-medium">
-                {{ isError }}
-            </div>
-            <button type="button" class="ml-auto -mx-1.5 -my-1.5 bg-red-50 text-red-500 rounded-lg focus:ring-2 focus:ring-red-400 p-1.5 hover:bg-red-200 inline-flex h-8 w-8 dark:bg-gray-800 dark:text-red-400 dark:hover:bg-gray-700"  data-dismiss-target="#alert-border-4" aria-label="Close">
-            <span class="sr-only">Dismiss</span>
-            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-            </button>
+      <div
+        v-if="isError"
+        id="alert-border-4"
+        class="flex p-4 my-4 text-green-800 border-l-4 border rounded-md border-red-300 bg-red-50 dark:text-red-400 dark:bg-gray-800 dark:border-red-800"
+        role="alert"
+      >
+        <svg
+          class="flex-shrink-0 w-5 h-5"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+        <div class="ml-3 text-sm font-medium">
+          {{ isError }}
         </div>
+        <button
+          type="button"
+          class="ml-auto -mx-1.5 -my-1.5 bg-red-50 text-red-500 rounded-lg focus:ring-2 focus:ring-red-400 p-1.5 hover:bg-red-200 inline-flex h-8 w-8 dark:bg-gray-800 dark:text-red-400 dark:hover:bg-gray-700"
+          data-dismiss-target="#alert-border-4"
+          aria-label="Close"
+        >
+          <span class="sr-only">Dismiss</span>
+          <svg
+            aria-hidden="true"
+            class="w-5 h-5"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              clip-rule="evenodd"
+            ></path>
+          </svg>
+        </button>
+      </div>
       <!-- Table -->
       <div class="flex flex-col mt-6">
         <div class="overflow-x-auto rounded-lg">
@@ -156,43 +226,43 @@ getPaymentMethodByVendorConnected();
                       scope="col"
                       class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white"
                     >
-                    {{ $t("mb_name") }}
+                      {{ $t("mb_name") }}
                     </th>
                     <th
                       scope="col"
                       class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white"
                     >
-                    {{ $t("mb_data_time") }}
+                      {{ $t("mb_data_time") }}
                     </th>
                     <th
                       scope="col"
                       class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white"
                     >
-                    {{ $t("mb_amount") }}
+                      {{ $t("mb_amount") }}
                     </th>
                     <th
                       scope="col"
                       class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white"
                     >
-                    {{ $t("mb_reference_number") }}
+                      {{ $t("mb_reference_number") }}
                     </th>
                     <th
                       scope="col"
                       class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white"
                     >
-                    {{ $t("mb_payment_payment_method") }}
+                      {{ $t("mb_payment_payment_method") }}
                     </th>
                     <th
                       scope="col"
                       class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white"
                     >
-                    {{ $t("mb_status") }}
+                      {{ $t("mb_status") }}
                     </th>
                     <th
                       scope="col"
                       class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white"
                     >
-                    {{ $t("mb_option") }}
+                      {{ $t("mb_option") }}
                     </th>
                   </tr>
                 </thead>
@@ -216,7 +286,11 @@ getPaymentMethodByVendorConnected();
                     <div class="h-1"></div>
                   </tr>
 
-                  <tr v-for="item in payment_method" :key="item.id" class="border-b border-b-gray-200 dark:border-b-gray-600">
+                  <tr
+                    v-for="item in payment_method"
+                    :key="item.id"
+                    class="border-b border-b-gray-200 dark:border-b-gray-600"
+                  >
                     <td
                       :data-modal-target="`staticModal${item.id}`"
                       :data-modal-toggle="`staticModal${item.id}`"
@@ -278,71 +352,129 @@ getPaymentMethodByVendorConnected();
                       <span
                         v-if="item.status == 'A'"
                         class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-gray-700 dark:text-green-400 border border-green-100 dark:border-green-500"
-                        >{{ $t('mb_enable') }}</span
+                        >{{ $t("mb_enable") }}</span
                       >
                       <span
-                        v-if="item.status == 'D'"                        
+                        v-if="item.status == 'D'"
                         class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-gray-700 dark:text-red-400 border border-red-100 dark:border-red-500"
-                        >{{ $t('mb_disable') }}</span
+                        >{{ $t("mb_disable") }}</span
                       >
                     </td>
                     <td class="p-4 whitespace-nowrap">
                       <span
                         v-if="item.status == 'D'"
-                        :data-drawer-target="`confirmPaymentMethod${item.id}`" :data-drawer-show="`confirmPaymentMethod${item.id}`" data-drawer-placement="right" :aria-controls="`confirmPaymentMethod${item.id}`"
+                        :data-drawer-target="`confirmPaymentMethod${item.id}`"
+                        :data-drawer-show="`confirmPaymentMethod${item.id}`"
+                        data-drawer-placement="right"
+                        :aria-controls="`confirmPaymentMethod${item.id}`"
                         class="px-5 py-1 mb-2 mr-2 text-sm font-medium text-center text-green-700 border border-green-700 rounded-lg cursor-pointer hover:text-white hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-900"
-                        >{{ $t('mb_enable') }}</span
+                        >{{ $t("mb_enable") }}</span
                       >
                       <span
-                      :data-drawer-target="`confirmPaymentMethod${item.id}`" :data-drawer-show="`confirmPaymentMethod${item.id}`" data-drawer-placement="right" :aria-controls="`confirmPaymentMethod${item.id}`"
+                        :data-drawer-target="`confirmPaymentMethod${item.id}`"
+                        :data-drawer-show="`confirmPaymentMethod${item.id}`"
+                        data-drawer-placement="right"
+                        :aria-controls="`confirmPaymentMethod${item.id}`"
                         v-if="item.status == 'A'"
                         class="px-5 py-1 mb-2 mr-2 text-sm font-medium text-center text-red-700 border border-red-700 rounded-lg cursor-pointer hover:text-white hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-500 dark:focus:ring-blue-800"
-                        >{{ $t('mb_disable') }}</span>
+                        >{{ $t("mb_disable") }}</span
+                      >
                     </td>
 
                     <!-- Confirm update payment method -->
-                    <div :id="`confirmPaymentMethod${item.id}`" class="fixed right-0 z-40 h-screen p-4 overflow-y-auto transition-transform translate-x-full bg-white w-80 dark:bg-gray-800" tabindex="-1" :aria-labelledby="`drawer-right-label${item.id}`">
-                        <h5 :id="`drawer-right-label${item.id}`" class="inline-flex items-center mb-4 text-base font-semibold text-gray-500 dark:text-gray-400 mt-16"><svg class="w-5 h-5 mr-2" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
-                          <span v-if="item.status == 'A'">Disable <strong class="text-gray-700 dark:text-gray-200">{{ item.name }}</strong></span>
-                          <span v-if="item.status == 'D'">{{ $t('mb_enable') }} <strong class="text-gray-700 dark:text-gray-200">{{ item.name }}</strong></span>
-                        </h5>
-                        <p class="text-gray-500 dark:text-gray-400 mb-3">
-                          {{ $t('mb_info_disable_payment_method') }}
-                        </p>
-                        <button type="button" :data-drawer-hide="`confirmPaymentMethod${item.id}`" :aria-controls="`confirmPaymentMethod${item.id}`" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 absolute top-2.5 right-2.5 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" >
-                            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                            <span class="sr-only">Close menu</span>
-                        </button>
-
-                        <div class="flex mt-16 space-x-5">
-                          <button
-                            @click="disableOrUnablePaymentMethod(item.id)"
-                            :data-drawer-hide="`confirmPaymentMethod${item.id}`" :aria-controls="`confirmPaymentMethod${item.id}`"
-                            v-if="item.status == 'D'"
-                            type="button"
-                            class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
-                          >
-                          {{ $t('mb_confirm') }}
-                        </button>
-                        <button
-                            @click="disableOrUnablePaymentMethod(item.id)"
-                            :data-drawer-hide="`confirmPaymentMethod${item.id}`" :aria-controls="`confirmPaymentMethod${item.id}`"
-                            v-if="item.status == 'A'"
-                            type="button"
-                            class="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-                          >
-                          {{ $t('mb_confirm') }}
-                        </button>
-                        <button
-                            type="button"
-                            :data-drawer-hide="`confirmPaymentMethod${item.id}`" :aria-controls="`confirmPaymentMethod${item.id}`"
-                            class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+                    <div
+                      :id="`confirmPaymentMethod${item.id}`"
+                      class="fixed right-0 z-40 h-screen p-4 overflow-y-auto transition-transform translate-x-full bg-white w-80 dark:bg-gray-800"
+                      tabindex="-1"
+                      :aria-labelledby="`drawer-right-label${item.id}`"
+                    >
+                      <h5
+                        :id="`drawer-right-label${item.id}`"
+                        class="inline-flex items-center mb-4 text-base font-semibold text-gray-500 dark:text-gray-400 mt-16"
+                      >
+                        <svg
+                          class="w-5 h-5 mr-2"
+                          aria-hidden="true"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                          xmlns="http://www.w3.org/2000/svg"
                         >
-                        {{ $t('mb_cancel') }}
+                          <path
+                            fill-rule="evenodd"
+                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                            clip-rule="evenodd"
+                          ></path>
+                        </svg>
+                        <span v-if="item.status == 'A'"
+                          >Disable
+                          <strong class="text-gray-700 dark:text-gray-200">{{
+                            item.name
+                          }}</strong></span
+                        >
+                        <span v-if="item.status == 'D'"
+                          >{{ $t("mb_enable") }}
+                          <strong class="text-gray-700 dark:text-gray-200">{{
+                            item.name
+                          }}</strong></span
+                        >
+                      </h5>
+                      <p class="text-gray-500 dark:text-gray-400 mb-3">
+                        {{ $t("mb_info_disable_payment_method") }}
+                      </p>
+                      <button
+                        type="button"
+                        :data-drawer-hide="`confirmPaymentMethod${item.id}`"
+                        :aria-controls="`confirmPaymentMethod${item.id}`"
+                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 absolute top-2.5 right-2.5 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                      >
+                        <svg
+                          aria-hidden="true"
+                          class="w-5 h-5"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd"
+                          ></path>
+                        </svg>
+                        <span class="sr-only">Close menu</span>
+                      </button>
+
+                      <div class="flex mt-16 space-x-5">
+                        <button
+                          @click="disableOrUnablePaymentMethod(item.id)"
+                          :data-drawer-hide="`confirmPaymentMethod${item.id}`"
+                          :aria-controls="`confirmPaymentMethod${item.id}`"
+                          v-if="item.status == 'D'"
+                          type="button"
+                          class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
+                        >
+                          {{ $t("mb_confirm") }}
                         </button>
-                        </div>
+                        <button
+                          @click="disableOrUnablePaymentMethod(item.id)"
+                          :data-drawer-hide="`confirmPaymentMethod${item.id}`"
+                          :aria-controls="`confirmPaymentMethod${item.id}`"
+                          v-if="item.status == 'A'"
+                          type="button"
+                          class="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                        >
+                          {{ $t("mb_confirm") }}
+                        </button>
+                        <button
+                          type="button"
+                          :data-drawer-hide="`confirmPaymentMethod${item.id}`"
+                          :aria-controls="`confirmPaymentMethod${item.id}`"
+                          class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+                        >
+                          {{ $t("mb_cancel") }}
+                        </button>
+                      </div>
                     </div>
-                    
+
                     <!-- Update or create payment method credential -->
                     <div
                       :id="`staticModal${item.id}`"
@@ -421,7 +553,11 @@ getPaymentMethodByVendorConnected();
                                 :role="`tabpanel${item.id}`"
                                 :aria-labelledby="`faq-tab${item.id}`"
                               >
-                                <form @submit.prevent="handleUpdateCredential($event)" method="post" action="/payment/update/credential/">
+                                <form
+                                  @submit.prevent="handleUpdateCredential($event)"
+                                  method="post"
+                                  action="/payment/update/credential/"
+                                >
                                   <div class="relative">
                                     <input
                                       type="text"
@@ -431,7 +567,12 @@ getPaymentMethodByVendorConnected();
                                       v-model="item.client_secret_id"
                                       class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                                     />
-                                    <input type="number" id="id" hidden v-model="item.id">
+                                    <input
+                                      type="number"
+                                      id="id"
+                                      hidden
+                                      v-model="item.id"
+                                    />
                                     <label
                                       for="client_secret_id"
                                       class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
@@ -453,7 +594,7 @@ getPaymentMethodByVendorConnected();
                                       >Client Secret</label
                                     >
                                   </div>
-                                   <!-- Modal footer -->
+                                  <!-- Modal footer -->
                                   <div
                                     class="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600"
                                   >
@@ -484,7 +625,6 @@ getPaymentMethodByVendorConnected();
                               </div>
                             </div>
                           </div>
-                         
                         </div>
                       </div>
                     </div>
@@ -495,7 +635,6 @@ getPaymentMethodByVendorConnected();
           </div>
         </div>
       </div>
-      
     </div>
   </main>
 </template>
