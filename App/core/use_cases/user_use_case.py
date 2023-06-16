@@ -39,12 +39,12 @@ class UserUsecase:
         resolved = None
         try:
             resolved = self.user_repository.create_user(model)
-            send_email(resolved.user.email, 'New account infos', 
+            send_email(resolved['user'].email, 'New account infos', 
                 f"""
                     Login to your vendor dashboard
                     Your infos\n\n
-                    email: {resolved.user.email}\n
-                    password: {resolved.password}\n\n
+                    email: {resolved['user'].email}\n
+                    password: {resolved['password']}\n\n
                 """
             )
         except Exception as e:
@@ -55,14 +55,19 @@ class UserUsecase:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail= str(e)
             )
-        return resolved.user
+        return resolved['user']
     
     def update_user(self, id: int, model: UserCreateSchema) -> UserSchema:
         try:
             user = self.user_repository.update_user(model=model, id=id)
             return user
-        except:
-            raise
+        except Exception as e:
+            if isinstance(e, HTTPException) and e.status_code == 404:
+                raise e
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail= str(e)
+            )
 
     def import_cscart_users(self, db_cscart: Session, db_local: Session) -> List[UserSchema]:
         try:
