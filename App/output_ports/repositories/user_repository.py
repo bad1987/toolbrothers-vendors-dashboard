@@ -17,7 +17,7 @@ from App.input_ports.schemas.UserSchema import PermissionSchema, UserCreateSchem
 
 from App.input_ports.schemas.UserSchema import PermissionSchema, UserSchema
 from App.output_ports.models.CscartModels import Cscart_payments, CscartCompanies
-from App.output_ports.models.Models import Payment_method, Payment_method_vendor, Permission, User
+from App.output_ports.models.Models import Payment_method, Payment_method_vendor, Permission, User, User_Permission
 from passlib.handlers.sha2_crypt import sha512_crypt as crypto
 
 class UserRepository(IUserRepository):
@@ -85,7 +85,7 @@ class UserRepository(IUserRepository):
         user = User()
         pwd_pattern = string.ascii_letters + string.digits + "@#$%^&*()./+-!"
         pwd = ''.join(random.choices(pwd_pattern, k = random.randrange(8, 18)))
-        
+
         # check if email already. if yes, raise a 422 exception
         _user = self.get_user(email=model.email)
         if _user:
@@ -135,6 +135,16 @@ class UserRepository(IUserRepository):
         self.db.refresh(user_to_update)
 
         return user_to_update
+    
+    # delete a user by id
+    def delete_user(self, id: int) -> bool:
+        user = self.db.query(User).filter(User.id == id).first()
+        if user:
+            self.db.query(User_Permission).filter(User_Permission.id == id).delete()
+            self.db.delete(user)
+            self.db.commit()
+            return True
+        return False
 
     def import_cscart_users(self, db_cscart: Session, db_local: Session) -> List[UserSchema]:
         companies = db_cscart.query(CscartCompanies).all()

@@ -59,3 +59,12 @@ async def cscart_users(db_cscart: Session = Depends(get_db_cscart), db_local: Se
     result = user_usecase.import_cscart_users(db_cscart, db_local)
 
     return result
+
+# delete a user.
+@s_user_route.delete("/user/{id}")
+@requires_permission('delete', ModelNameEnum.USER_MODEL.value)
+async def delete_user(id: int, request: Request,  db_local: Session = Depends(get_db), _user: dict = Depends(is_authenticated)):
+    user_usecase = UserUsecase(db_local)
+    result = user_usecase.delete_user(id)
+
+    return result

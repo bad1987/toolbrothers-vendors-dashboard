@@ -74,6 +74,22 @@ class UserUsecase:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail= str(e)
             )
+    
+    def delete_user(self, id: int) -> dict:
+        try:
+            res:bool = self.user_repository.delete_user(id=id)
+            message = "User deleted successfully" if res else "Failed to delete user"
+            if not res:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND, 
+                    detail= message
+                )
+            return {'message': message}
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=str(e)
+            )
 
     def import_cscart_users(self, db_cscart: Session, db_local: Session) -> List[UserSchema]:
         try:
