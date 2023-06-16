@@ -9,7 +9,7 @@
 
 <template>
 
-    <footer class="bg-white fixed dark:bg-gray-800 z-50 w-full bottom-0 border-t border-gray-200 dark:border-gray-600">
+    <footer class="bg-white fixed dark:bg-gray-800 z-40 w-full bottom-0 border-t border-gray-200 dark:border-gray-600">
         <div class="mx-auto w-full p-4 py-6 lg:py-8">
             <div class="text-center">
                 <span class="text-sm text-gray-500 text-center dark:text-gray-400 m-auto">

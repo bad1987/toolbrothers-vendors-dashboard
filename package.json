@@ -17,6 +17,7 @@
     "moment": "^2.29.4",
     "pinia": "^2.0.32",
     "plotly.js-dist": "^2.21.0",
+    "tw-elements": "^1.0.0-beta2",
     "vue": "^3.2.47",
     "vue-basic-alert": "^1.1.0",
     "vue-google-charts": "^1.1.0",

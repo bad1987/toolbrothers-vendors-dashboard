@@ -7,6 +7,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { initFlowbite } from 'flowbite';
 import CheckboxGroup from './components/CheckboxGroup.vue';
 import ButtonComponent from './components/ButtonComponent.vue';
+import { Modal, Ripple, initTE } from "tw-elements"
 
     const loadStore = useLoaderStore()
     const route = useRoute()
@@ -57,6 +58,8 @@ import ButtonComponent from './components/ButtonComponent.vue';
         userApi.fetchUsers(users, permissions, router, route, false)
         .finally(() => {
             loadStore.changeLoadingStatus(false)
+
+            initTE({ Modal, Ripple }, true)
         })
     }
 
@@ -151,10 +154,14 @@ import ButtonComponent from './components/ButtonComponent.vue';
                         </form>
                     </div>
                     <div class="flex items-center ml-auto space-x-2 sm:space-x-3">
-                        <button 
+                        <button
                             @click="selectedPermissions = []"
-                            type="button" data-modal-toggle="add-user-modal"
-                            class="inline-flex items-center justify-center w-1/2 px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 sm:w-auto dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                            type="button"
+                            class="inline-flex items-center justify-center w-1/2 px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 sm:w-auto dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                            data-te-toggle="modal"
+                            data-te-target="#add-user-modal"
+                            data-te-ripple-init
+                            data-te-ripple-color="light">
                             <svg class="w-5 h-5 mr-2 -ml-1" fill="currentColor" viewBox="0 0 20 20"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd"
@@ -223,9 +230,14 @@ import ButtonComponent from './components/ButtonComponent.vue';
                                         </div>
                                     </td>
                                     <td class="p-4 space-x-2 whitespace-nowrap">
-                                        <button type="button" data-modal-toggle="edit-user-modal"
-                                            @click="changeSelectedUser(u.email)"   
-                                            class="inline-flex items-center px-3 py-1 text-sm font-medium text-center text-white rounded-lg bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-400 dark:bg-blue-500 dark:hover:bg-blue-800 dark:focus:ring-blue-500">
+                                        <button
+                                            @click="changeSelectedUser(u.email)" 
+                                            type="button"
+                                            class="inline-flex items-center px-3 py-1 text-sm font-medium text-center text-white rounded-lg bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-400 dark:bg-blue-500 dark:hover:bg-blue-800 dark:focus:ring-blue-500"
+                                            data-te-toggle="modal"
+                                            data-te-target="#edit-user-modal"
+                                            data-te-ripple-init
+                                            data-te-ripple-color="light">
                                             <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"
                                                 xmlns="http://www.w3.org/2000/svg">
                                                 <path
@@ -272,29 +284,50 @@ import ButtonComponent from './components/ButtonComponent.vue';
             </div>
         </div>
         <!-- Modals -->
-        <div class="fixed left-0 right-0 z-50 items-center justify-center hidden overflow-x-hidden overflow-y-auto top-4 md:inset-0 h-modal sm:h-full"
-            id="add-user-modal">
-            <div class="relative w-full h-full max-w-2xl px-4 md:h-auto">
-                <div v-if="isLoading" class="absolute top-5 bottom-5 left-5 right-5 z-[10000] opacity-50 bg-white"></div>
-                <!-- Modal content -->
-                <div class="relative bg-white rounded-lg shadow dark:bg-gray-800">
-                    <!-- Modal header -->
-                    <div class="flex items-start justify-between p-5 border-b rounded-t dark:border-gray-700">
-                        <h3 class="text-xl font-semibold dark:text-white">
-                            Add a new user
-                        </h3>
-                        <button type="button"
-                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-700 dark:hover:text-white"
-                            data-modal-toggle="add-user-modal" id="closeBtn-add-form">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    <!-- Modal body -->
-                    <div class="p-6 space-y-6">
+        <div
+            data-te-modal-init
+            class="fixed left-0 top-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+            id="add-user-modal"
+            tabindex="-1"
+            aria-labelledby="add-user-modalTitle"
+            aria-modal="true"
+            role="dialog">
+            <div
+                data-te-modal-dialog-ref
+                class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:min-h-[calc(100%-3.5rem)] min-[576px]:max-w-[500px]"
+                >
+                <div
+                class="pointer-events-auto relative flex w-full flex-col rounded-md border-none bg-white bg-clip-padding text-current shadow-lg outline-none dark:bg-neutral-600">
+                <div
+                    class="flex flex-shrink-0 items-center justify-between rounded-t-md border-b-2 border-neutral-100 border-opacity-100 p-4 dark:border-opacity-50">
+                    <!--Modal title-->
+                    <h5
+                    class="text-xl font-medium leading-normal text-neutral-800 dark:text-neutral-200"
+                    id="add-user-modalScrollableLabel">
+                    Add a new user
+                    </h5>
+                    <!--Close button-->
+                    <button
+                    type="button"
+                    class="box-content rounded-none border-none hover:no-underline hover:opacity-75 focus:opacity-100 focus:shadow-none focus:outline-none"
+                    data-te-modal-dismiss
+                    aria-label="Close">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="h-6 w-6">
+                        <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    </button>
+                </div>
+                <!--Modal body-->
+                <div class="p-6 space-y-6">
                         <form action="#" id="add-user-form" autocomplete="off">
                             <div class="grid grid-cols-6 gap-6">
                                 <div class="col-span-6 sm:col-span-3">
@@ -317,7 +350,7 @@ import ButtonComponent from './components/ButtonComponent.vue';
                                         class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                         placeholder="xxxxxx" required="">
                                 </div>
-                                <div class="mt-9">
+                                <div class="mt-9 flex">
                                     <input @change="changeSelectedStatus" v-model="newUser.status" id="checkbox-activate-create-vendor" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                     <label for="checkbox-activate-create-vendor" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Activate</label>
                                 </div>
@@ -336,40 +369,61 @@ import ButtonComponent from './components/ButtonComponent.vue';
                             </div>
                         </form>
                     </div>
-                    <!-- Modal footer -->
-                    <div class="items-center p-6 border-t border-gray-200 rounded-b dark:border-gray-700">
+
+                <!--Modal footer-->
+                <div class="items-center p-6 border-t border-gray-200 rounded-b dark:border-gray-700">
                         <button
                             @click="addUser"
                             class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                             type="submit" id="btn-add-user">Add user</button>
                     </div>
-
                 </div>
             </div>
         </div>
-        <div v-if="selectedUser" class="fixed left-0 right-0 z-50 items-center justify-center hidden overflow-x-hidden overflow-y-auto top-4 md:inset-0 h-modal sm:h-full"
-            id="edit-user-modal">
-            <div class="relative w-full h-full max-w-2xl px-4 md:h-auto">
-                <div v-if="isLoading" class="absolute top-5 bottom-5 left-5 right-5 z-[10000] opacity-50 bg-white"></div>
-                <!-- Modal content -->
-                <div class="relative bg-white rounded-lg shadow dark:bg-gray-800">
-                    <!-- Modal header -->
-                    <div class="flex items-start justify-between p-5 border-b rounded-t dark:border-gray-700">
-                        <h3 class="text-xl font-semibold dark:text-white">
-                            Edit user
-                        </h3>
-                        <button type="button"
-                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-700 dark:hover:text-white"
-                            data-modal-toggle="edit-user-modal">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    <!-- Modal body -->
-                    <div class="p-6 space-y-6" v-if="selectedUser != undefined">
+        <div
+            data-te-modal-init
+            class="fixed left-0 top-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+            id="edit-user-modal"
+            tabindex="-1"
+            aria-labelledby="edit-user-modalTitle"
+            aria-modal="true"
+            role="dialog">
+            <div
+                data-te-modal-dialog-ref
+                class="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out min-[576px]:mx-auto min-[576px]:mt-7 min-[576px]:min-h-[calc(100%-3.5rem)] min-[576px]:max-w-[500px]"
+                >
+                <div
+                class="pointer-events-auto relative flex w-full flex-col rounded-md border-none bg-white bg-clip-padding text-current shadow-lg outline-none dark:bg-neutral-600">
+                <div
+                    class="flex flex-shrink-0 items-center justify-between rounded-t-md border-b-2 border-neutral-100 border-opacity-100 p-4 dark:border-opacity-50">
+                    <!--Modal title-->
+                    <h5
+                    class="text-xl font-medium leading-normal text-neutral-800 dark:text-neutral-200"
+                    id="edit-user-modalScrollableLabel">
+                    Edit user
+                    </h5>
+                    <!--Close button-->
+                    <button
+                    type="button"
+                    class="box-content rounded-none border-none hover:no-underline hover:opacity-75 focus:opacity-100 focus:shadow-none focus:outline-none"
+                    data-te-modal-dismiss
+                    aria-label="Close">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="h-6 w-6">
+                        <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    </button>
+                </div>
+                <!--Modal body-->
+                <div class="p-6 space-y-6" v-if="selectedUser != undefined">
                         <form action="#" id="add-admin-form">
                             <div class="grid grid-cols-6 gap-6">
                                 <div class="col-span-6 sm:col-span-3">
@@ -394,7 +448,7 @@ import ButtonComponent from './components/ButtonComponent.vue';
                                         <option :selected="selectedUser.roles == 'Role_direct_sale'" value="Role_direct_sale">Direct sale</option>
                                     </select>
                                 </div>
-                                <div class="mt-9">
+                                <div class="mt-9 flex">
                                     <input @change="changeSelectedStatus" :checked="selectedUser.status == 'A'" id="checkbox-activate-create" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                     <label for="checkbox-activate-create" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Activate</label>
                                 </div>
@@ -414,8 +468,9 @@ import ButtonComponent from './components/ButtonComponent.vue';
                             </div>
                         </form>
                     </div>
-                    <!-- Modal footer -->
-                    <div class="items-center p-6 border-t border-gray-200 rounded-b dark:border-gray-700">
+
+                <!--Modal footer-->
+                <div class="items-center p-6 border-t border-gray-200 rounded-b dark:border-gray-700">
                         <ButtonComponent
                             @click="updateUser(null)"
                             text="Save all"
