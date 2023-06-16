@@ -203,7 +203,7 @@ class UserRepository(IUserRepository):
 
 
     # Extract secret credential
-    def extract_credentials(payload: str):
+    def extract_credentials(self, payload: str):
         if not payload:
             return None
         regex = '^.*?"username".*?"(.*?)".*?"password".*?"(.*?)"'
