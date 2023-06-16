@@ -53,7 +53,7 @@ async def update_user(id: int, model: UserSchema, request: Request,  db: Session
 # Scrap user vendor in cscart database
 @s_user_route.get('/cscart-users')
 @requires_permission('write', ModelNameEnum.USER_MODEL.value)
-async def cscart_users(db_cscart: Session = Depends(get_db_cscart), db_local: Session = Depends(get_db)):
+async def cscart_users(db_cscart: Session = Depends(get_db_cscart), db_local: Session = Depends(get_db), _user: dict = Depends(is_authenticated)):
 
     user_usecase = UserUsecase(db_local)
     result = user_usecase.import_cscart_users(db_cscart, db_local)

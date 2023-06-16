@@ -62,4 +62,4 @@ app.add_middleware(
 # app.add_middleware(BaseHTTPMiddleware, dispatch=token_middleware)
 
 if __name__ == '__main__':
-    uvicorn.run(app, host="127.0.0.1", port=6540)
+    uvicorn.run(app, host="192.168.100.7", port=8000)

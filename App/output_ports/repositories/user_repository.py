@@ -86,6 +86,21 @@ class UserRepository(IUserRepository):
         pwd_pattern = string.ascii_letters + string.digits + "@#$%^&*()./+-!"
         pwd = ''.join(random.choices(pwd_pattern, k = random.randrange(8, 18)))
 
+        # check if username already exists. if yes, raise a 422 exception
+        _user: User = self.get_user(username=model.username)
+        if _user:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Username already exists"
+            )
+        # check if email already. if yes, raise a 422 exception
+        _user = self.get_user(email=model.email)
+        if _user:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Email already exists"
+            )
+
         user.username = model.username
         user.email = model.email
         user.password = crypto.hash(pwd) # TODO: Create a random password and send mail
