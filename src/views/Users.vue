@@ -9,7 +9,7 @@ import {
   resolveComponent,
   computed,
 } from "vue";
-import { initFlowbite, initModals, Modal } from "flowbite";
+import { initFlowbite } from "flowbite";
 import { useRouter, useRoute } from "vue-router";
 import { acl } from "../router/acl";
 import CheckboxGroup from "./components/CheckboxGroup.vue";
@@ -18,6 +18,7 @@ import { userApi } from "../api/api";
 import { useI18n } from "vue-i18n";
 import { useLoaderStore } from "../stores/statestore";
 import { storeToRefs } from "pinia";
+import { Modal, Ripple, initTE } from "tw-elements"
 import VueBasicAlert from "vue-basic-alert";
 
 const userRef = ref({ user: null, isAdmin: false });
@@ -25,14 +26,16 @@ const loadStore = useLoaderStore();
 
 const { t, locale } = useI18n();
 const { isLoading } = storeToRefs(loadStore);
-const alert = ref(null);
 
+const alert = ref(null);
 const users = ref([]);
 const permissions = ref([]);
 const selectedPermissions = ref([]);
 const isImporting = ref(false);
 const selectedUser = ref({});
 const searchTerm = ref("");
+
+
 const filteredUsers = computed(() => {
   return users.value.filter(
     (user) =>
@@ -66,6 +69,7 @@ const fetchUsers = () => {
   loadStore.changeLoadingStatus(true);
   userApi.fetchUsers(users, permissions, router, route).finally(() => {
     loadStore.changeLoadingStatus(false);
+    initTE({ Modal, Ripple })
   });
 };
 

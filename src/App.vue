@@ -6,7 +6,6 @@ import { refresh_token } from './utils'
 import { onBeforeMount, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { userStore } from './stores/UserStore'
-import { initFlowbite } from 'flowbite';
 
 
 const classes = ref("")
@@ -44,10 +43,6 @@ router.beforeEach(to => {
     if(!to.meta.hideNavigation){
         classes.value = "p-4 sm:ml-64"
     }
-})
-
-router.afterEach(to => {
-    initFlowbite()
 })
 
 onBeforeMount(async ()=>{
