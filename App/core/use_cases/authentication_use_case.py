@@ -39,8 +39,19 @@ class AuthenticationUsecase:
 
         if attempt != None:
             self.auth_repo.reset_attempt(connected_ip)
-        p_user = UserSchema(**user.__dict__)
-        
+        p_user = UserSchema(
+            id=user.id,
+            email=user.email,
+            username=user.username,
+            firstname=user.firstname,
+            lastname=user.lastname,
+            default_language=user.default_language,
+            roles=user.roles,
+            status=user.status,
+            parent_id=user.parent_id,
+            permissions=user.permissions
+        )
+
         return {Settings.COOKIE_NAME: access_token, "token_type": "bearer", "user": p_user}
     
     

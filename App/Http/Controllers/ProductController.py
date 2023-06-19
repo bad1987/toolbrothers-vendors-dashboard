@@ -1,3 +1,5 @@
+import sys
+import traceback
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import and_, func, literal_column, select, join
 from sqlalchemy.sql import text
@@ -7,7 +9,8 @@ from App.Http.Schema.Settings.PlentyMarketSchema import PlentyMarketSchema
 from rich.console import Console
 from fastapi.encoders import jsonable_encoder
 from App.core.auth import LoginController
-from App.input_ports.schemas import ProductSchema, UserSchema
+from App.input_ports.schemas.ProductSchema import ProductSchema
+from App.input_ports.schemas.UserSchema import UserSchema 
 from App.output_ports.models.CscartModels import Cscart_product_descriptions, Cscart_product_prices, Cscart_products
 
 from App.output_ports.models.Models import User
@@ -118,10 +121,10 @@ class ProductController:
             return product_model
         
         except Exception as e:
-            # traceback.print_exc(file=sys.stdout)
+            traceback.print_exc(file=sys.stdout)
             
             transaction.rollback()
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="An error occured"
+                detail="An error occured while updating the product"
             )

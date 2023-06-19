@@ -38,6 +38,6 @@ async def create_dub_vendor_by_vendor(request: Request, schema: UserCreateSubVen
 @route.put('/update/{id}', response_model=UserSchema | Dict[str, str])
 @requires_permission('write', ModelNameEnum.USER_MODEL.value)
 async def update_user(id: int, model: UserSchema, request: Request,  db: Session = Depends(get_db), _user: User = Depends(is_authenticated)):
-    return UserController.update_subvendor(model, db, _user)
+    return UserController.update_subvendor(id, model, db, _user)
 
 

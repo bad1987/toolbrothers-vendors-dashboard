@@ -1,4 +1,6 @@
-from fastapi import Request, status
+import sys
+import traceback
+from fastapi import HTTPException, Request, status
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from typing import List
@@ -33,40 +35,52 @@ class UserController:
         return {"users": user_vendor, "permissions": user_permissions}
     
     def create_sub_vendor_by_vendor(request: Request, schema: UserCreateSubVendorSchema, db_local: Session, user_vendor: UserSchema):
-        userSubVendor = User()
+        try:
+            userSubVendor = User()
         
-        userSubVendor.email = schema.email
-        userSubVendor.username = schema.username
-        userSubVendor.firstname = schema.firstname
-        userSubVendor.lastname = schema.lastname
-        userSubVendor.default_language = user_vendor.default_language
-        userSubVendor.roles = user_vendor.roles
-        userSubVendor.status = schema.status
-        userSubVendor.parent_id = user_vendor.id
-        userSubVendor.password = crypto.hash(f"{schema.password}")
+            userSubVendor.email = schema.email
+            userSubVendor.username = schema.username
+            userSubVendor.firstname = schema.firstname
+            userSubVendor.lastname = schema.lastname
+            userSubVendor.default_language = user_vendor.default_language
+            userSubVendor.roles = user_vendor.roles
+            userSubVendor.status = schema.status
+            userSubVendor.parent_id = user_vendor.id
+            userSubVendor.password = crypto.hash(f"{schema.password}")
 
-        db_local.add(userSubVendor)
+            db_local.add(userSubVendor)
 
-        if schema.permissions:
-            for perm_id in schema.permissions:
-                permission = db_local.query(Permission).filter(Permission.id == int(perm_id)).first()
+            if schema.permissions:
+                for perm_id in schema.permissions:
+                    permission = db_local.query(Permission).filter(Permission.id == int(perm_id)).first()
 
-                if permission != None: 
-                    userSubVendor.permissions.append(permission)
-                
-        db_local.commit()
-        
-        return {"user": userSubVendor} 
+                    if permission != None: 
+                        userSubVendor.permissions.append(permission)
+                    
+            db_local.commit()
+            
+            return {"user": userSubVendor} 
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="An error occured while creating the user"
+            )
 
-    def update_subvendor(model: UserSchema, db_local: Session, _user: User):
+    def update_subvendor(id: int, model: UserSchema, db_local: Session, _user: User):
         try:
             if db_local.in_transaction():
                 db_local.rollback()
             transaction = db_local.begin()
             user_to_update = db_local.query(User).filter(User.parent_id == _user.id).filter(User.id == id).first()
 
+            console.log(_user.id)
+
             if not user_to_update or (user_to_update.parent_id != _user.id):
-                return {"status": False, "message": "Invalid user"}
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid user"
+                )
+            
             
             for field, value in model.dict(exclude_unset=True, exclude={'permissions'}).items():
                 setattr(user_to_update, field, value)
@@ -88,4 +102,7 @@ class UserController:
             return user_to_update
         except Exception as e:
             transaction.rollback()
-            return { "status": False, "message": str(e) }
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="An error occured while updating the user"
+            )
