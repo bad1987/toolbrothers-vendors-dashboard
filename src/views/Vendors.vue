@@ -55,8 +55,10 @@ import VueBasicAlert from "vue-basic-alert";
             document.getElementById('add-user-close')?.click()
             alert.value.showAlert("success", "User added successfuly", "Successful!!");
         })
-        .catch((error) => {
-            alert.value.showAlert("error", error.response.data.detail, "Error!!");
+        .catch((err) => {
+            if (err.response.status == 422)
+                alert.value.showAlert("error", err.response.data.detail[0].msg, "Error!!");
+            else alert.value.showAlert("error", err.response.data.detail, "Error!!");
         })
         .finally(() => loadStore.changeLoadingStatus(false) )
     }
