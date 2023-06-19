@@ -13,8 +13,6 @@ from App.core.auth.Configs.Settings import Settings
 from App.core.entities.user_repository import IUserRepository
 from sqlalchemy.orm import Session
 from App.input_ports.schemas.UserSchema import PermissionSchema, UserCreateSchema
-
-
 from App.input_ports.schemas.UserSchema import PermissionSchema, UserSchema
 from App.output_ports.models.CscartModels import Cscart_payments, CscartCompanies
 from App.output_ports.models.Models import Payment_method, Payment_method_vendor, Permission, User, User_Permission

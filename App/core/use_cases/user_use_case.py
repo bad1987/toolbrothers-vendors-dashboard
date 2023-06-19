@@ -8,6 +8,11 @@ from App.core.auth.LoginController import get_current_user_from_cookie
 from App.input_ports.schemas.UserSchema import PermissionSchema, UserCreateSchema, UserSchema
 from App.output_ports.repositories.user_repository import UserRepository
 from sqlalchemy.orm import Session
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+site_url = os.getenv("SERVER_HOST")
 
 
 class UserUsecase:
@@ -47,7 +52,7 @@ class UserUsecase:
             resolved = self.user_repository.create_user(model)
             send_email(resolved['user'].email, 'New account infos', 
                 f"""
-                    Login to your vendor dashboard
+                    Login to your vendor dashboard at {site_url}\n
                     Your infos\n\n
                     email: {resolved['user'].email}\n
                     password: {resolved['password']}\n\n
@@ -56,7 +61,10 @@ class UserUsecase:
         except Exception as e:
             # if it is a 422 code, raise as it is
             if isinstance(e, HTTPException) and e.status_code == 422:
-                raise e
+                raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail= str(e)
+            )
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail= str(e)
