@@ -46,6 +46,9 @@ CSCART_MARIADB_DB
 # - Server host vue js application
 SERVER_HOST
 
+# - Domain for cookies setting
+DOMAIN
+
 # - cross-origins: commas separated origins
 ALLOWED_ORIGINS
 # - admin user credentials

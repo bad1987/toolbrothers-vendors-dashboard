@@ -32,6 +32,7 @@ async def get_users_list(
 
 @s_user_route.get("/user", response_model= UserSchema | None)
 def get_user(request: Request, db: Session = Depends(get_db)):
+    print(request.cookies)
     user_usecase = UserUsecase(db)
     user = user_usecase.get_user(request=request)
     return user

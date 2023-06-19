@@ -1,9 +1,0 @@
-.venv
-__pycache__
-.env
-.idea
-.env.cscart
-test_main.py
-midleware.py
-test.py
-Frontend
