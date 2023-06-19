@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 from App.input_ports.schemas.UserSchema import PermissionSchema, UserCreateSchema
 from App.input_ports.schemas.UserSchema import PermissionSchema, UserSchema
 from App.output_ports.models.CscartModels import Cscart_payments, CscartCompanies
-from App.output_ports.models.Models import Payment_method, Payment_method_vendor, Permission, User, User_Permission
+from App.output_ports.models.Models import Payment_method, Payment_method_vendor, Permission, Platform_settings, User, User_Permission
 from passlib.handlers.sha2_crypt import sha512_crypt as crypto
 
 class UserRepository(IUserRepository):
@@ -100,6 +100,11 @@ class UserRepository(IUserRepository):
         user.default_language = LanguageEnum.DE.value
 
         self.db.add(user)
+
+        pm = Platform_settings()
+
+        pm.user_id = user.id
+        self.db.add(pm)
 
         permission_ids = [int(perm_id) for perm_id in model.permissions]
         permissions = self.db.query(Permission).filter(Permission.id.in_(permission_ids)).all()
