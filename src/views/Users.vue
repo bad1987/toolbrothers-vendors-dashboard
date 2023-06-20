@@ -85,8 +85,11 @@ function addUser() {
       document.getElementById("add-user-modal")?.click();
     })
     .catch((err) => {
-      if (err.response.status == 422)
-        alert.value.showAlert("error", err.response.data.detail[0].msg, "Error!!");
+      if (err.response.status == 422){
+        if (typeof err.response.data.detail == "string")
+          alert.value.showAlert("error", err.response.data.detail, "Error!!");
+        else alert.value.showAlert("error", err.response.data.detail[0].msg, "Error!!");
+      }
       else alert.value.showAlert("error", err.response.data.detail, "Error!!");
     })
     .finally(() => loadStore.changeLoadingStatus(false));
