@@ -1,6 +1,7 @@
 
 from typing import List
 from fastapi import HTTPException, Request, status
+from App.Enums.UserEnums import UserStatusEnum
 from App.core.Services.SendEmail import send_email
 from App.core.auth.Acls.ModelPermissions import ModelPermissions
 from App.core.auth.LoginController import get_current_user_from_cookie
@@ -44,6 +45,13 @@ class UserUsecase:
     
     def get_user(self, request: Request):
         _user = get_current_user_from_cookie(request=request, db=self.db)
+
+        if _user != None and _user.status.value != UserStatusEnum.ACTIVE.value:
+            raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail=f"This account is not active, please contact admins"
+                )
+
         return _user
     
     def create_user(self, model: UserCreateSchema) -> UserSchema:
@@ -76,7 +84,7 @@ class UserUsecase:
             user = self.user_repository.update_user(model=model, id=id)
             return user
         except Exception as e:
-            if isinstance(e, HTTPException) and e.status_code == 404:
+            if isinstance(e, HTTPException) and (e.status_code == 404 or e.status_code == 400):
                 raise e
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

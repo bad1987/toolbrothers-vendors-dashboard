@@ -1,6 +1,7 @@
 from typing import Dict
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy.orm import Session
+from App.Enums.UserEnums import UserStatusEnum
 from App.Enums.UserRoleEnum import ModelNameEnum
 from App.core.Decorators.auth_decorators import requires_permission
 from App.core.auth.auth import is_authenticated
@@ -32,9 +33,9 @@ async def get_users_list(
 
 @s_user_route.get("/user", response_model= UserSchema | None)
 def get_user(request: Request, db: Session = Depends(get_db)):
-    print(request.cookies)
     user_usecase = UserUsecase(db)
     user = user_usecase.get_user(request=request)
+
     return user
 
 @s_user_route.post('/users', response_model= UserSchema | Dict[str, str], status_code=201)

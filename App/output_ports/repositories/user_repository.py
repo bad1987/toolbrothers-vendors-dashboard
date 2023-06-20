@@ -7,6 +7,7 @@ import jwt
 
 from sqlalchemy import and_
 from App.Enums.LanguageEnum import LanguageEnum
+from App.Enums.UserEnums import UserStatusEnum
 from App.Enums.UserRoleEnum import UserRoleEnum
 from App.Http.Schema.UserSchema import UserCreateResponse, UserSchema
 from App.core.auth.Configs.Settings import Settings
@@ -95,7 +96,7 @@ class UserRepository(IUserRepository):
         user.username = model.username
         user.email = model.email
         user.password = crypto.hash(pwd) # TODO: Create a random password and send mail
-        user.status = model.status.value
+        user.status = UserStatusEnum.PENDING.value # status is pending until the user is assigned a company_id
         user.roles = model.roles.value
         user.default_language = LanguageEnum.DE.value
 
@@ -123,8 +124,16 @@ class UserRepository(IUserRepository):
                 detail="User Not Found"
             )
         
-        for field, value in model.dict(exclude_unset=True, exclude={'permissions'}).items():
+        for field, value in model.dict(exclude_unset=True, exclude={'permissions', "status"}).items():
             setattr(user_to_update, field, value)
+
+        if (user_to_update.status.value != UserStatusEnum.ACTIVE.value 
+            and model.status == UserStatusEnum.ACTIVE
+            and user_to_update.company_id is None):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="This user cannot be activated, unknown company"
+            )
 
         if model.permissions != None:
             user_to_update.permissions.clear()
