@@ -87,16 +87,16 @@ const router = createRouter({
       name: 'login',
       component: Login,
       meta: { hideNavigation: true },
-      // beforeEnter: async (to, from, next) => {
-      //   let is_auth = await is_authenticated()
-      //   if(is_auth){
-      //     console.log(from.fullPath)
-      //     next(from.fullPath)
-      //   }
-      //   else{
-      //     next()
-      //   }
-      // }
+      beforeEnter: async (to, from, next) => {
+        let is_auth = await is_authenticated()
+        if(is_auth){
+          console.log(from.fullPath)
+          next(from.fullPath)
+        }
+        else{
+          next()
+        }
+      }
     },
     {
       path: '/payment-method',
