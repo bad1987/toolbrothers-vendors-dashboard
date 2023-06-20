@@ -135,6 +135,8 @@ class UserRepository(IUserRepository):
                 detail="This user cannot be activated, unknown company"
             )
 
+        else: user_to_update.status = model.status.value
+
         if model.permissions != None:
             user_to_update.permissions.clear()
 
