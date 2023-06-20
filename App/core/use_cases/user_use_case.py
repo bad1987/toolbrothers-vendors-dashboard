@@ -69,10 +69,7 @@ class UserUsecase:
         except Exception as e:
             # if it is a 422 code, raise as it is
             if isinstance(e, HTTPException) and e.status_code == 422:
-                raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail= str(e)
-            )
+                raise e
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail= str(e)
