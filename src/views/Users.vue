@@ -94,7 +94,13 @@ function addUser() {
 
 function updateUser(obj = null) {
   loadStore.changeLoadingStatus(true);
-  userApi.updateUser(obj, users, selectedUser, selectedPermissions).finally(() => {
+  userApi.updateUser(obj, users, selectedUser, selectedPermissions)
+  .catch((err) => {
+    if (err.response.status == 422)
+      alert.value.showAlert("error", err.response.data.detail[0].msg, "Error!!");
+    else alert.value.showAlert("error", err.response.data.detail, "Error!!");
+  })
+  .finally(() => {
     loadStore.changeLoadingStatus(false);
   });
 }
