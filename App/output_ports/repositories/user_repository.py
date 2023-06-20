@@ -102,11 +102,6 @@ class UserRepository(IUserRepository):
 
         self.db.add(user)
 
-        pm = Platform_settings()
-
-        pm.user_id = user.id
-        self.db.add(pm)
-
         permission_ids = [int(perm_id) for perm_id in model.permissions]
         permissions = self.db.query(Permission).filter(Permission.id.in_(permission_ids)).all()
         user.permissions.extend(permissions)
