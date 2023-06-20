@@ -58,30 +58,12 @@ const userApi = {
                  permissions: selectedPermissions.value,
                  status: selectedUser.value.status
                 }
-            axios.put(url + selectedUser.value.id, datas)
-            .then(response => {
-                let ans = users.value.map(x => x.id === selectedUser.value.id ? response.data : x)
-                users.value = ans
-
-                document.getElementById('edit-user-modal')?.click()
-
-            })
-            .catch(err => {
-                console.log(err)
-            })
+            return axios.put(url + selectedUser.value.id, datas)
         } else if (obj != null) {
-            axios.put(url + selectedUser.value.id, obj)
-            .then(response => {
-                let ans = users.value.map(x => x.id === selectedUser.value.id ? response.data : x)
-                users.value = ans
-
-                document.getElementById('edit-user-modal')?.click()
-
-            }).then()
-            .catch(err => {
-                console.log(err)
-            })
+            return axios.put(url + selectedUser.value.id, obj)
         }
+
+        else return false
     }
 }
 

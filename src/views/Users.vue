@@ -95,6 +95,12 @@ function addUser() {
 function updateUser(obj = null) {
   loadStore.changeLoadingStatus(true);
   userApi.updateUser(obj, users, selectedUser, selectedPermissions)
+  .then((response) => {
+    if (response == false) return;
+    fetchUsers();
+    alert.value.showAlert("success", "User updated successfuly", "Successful!!");
+    document.getElementById("edit-user-modal")?.click();
+  })
   .catch((err) => {
     if (err.response.status == 422)
       alert.value.showAlert("error", err.response.data.detail[0].msg, "Error!!");
@@ -173,7 +179,7 @@ const newUser = ref({
 </script>
 
 <template>
-  <vue-basic-alert :duration="1000" :closeIn="2000" ref="alert" />
+  <vue-basic-alert :duration="1000" :closeIn="3000" ref="alert" />
   <main class="mt-7 dark:bg-gray-800 dark:border-gray-700">
     <div
       class="p-4 bg-white block sm:flex items-center justify-between border-b border-gray-200 lg:mt-1.5 dark:bg-gray-800 dark:border-gray-700"
