@@ -148,12 +148,12 @@ function handleInput(e) {
   });
 }
 
-const fetchProducts = (searchTerm) => {
+const fetchProducts = () => {
   isLoading.value = true;
   var params = new URLSearchParams();
   params.append("skip", actualSkip.value);
   params.append("limit", actuaLimit.value);
-  params.append("search", searchTerm);
+  params.append("search", searchTerm.value);
   if (selectedStatuses.value)
     selectedStatuses.value.forEach((status) => {
       params.append("statuses", status);
@@ -184,10 +184,13 @@ const fetchProducts = (searchTerm) => {
         }
       }
       skeletonCnt.value = 0;
+    })
+    .finally(() => {
+      initTE({ Modal, Ripple });
     });
 };
 
-function extPage() {
+function nextPage() {
   actualSkip.value += actuaLimit.value;
 
   fetchProducts();
