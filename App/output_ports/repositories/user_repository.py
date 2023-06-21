@@ -19,6 +19,9 @@ from App.output_ports.models.CscartModels import Cscart_payments, CscartCompanie
 from App.output_ports.models.Models import Payment_method, Payment_method_vendor, Permission, Platform_settings, User, User_Permission
 from passlib.handlers.sha2_crypt import sha512_crypt as crypto
 
+from Seeders.seed import add_payment_method
+from Seeders.data import data_payment_method
+
 class UserRepository(IUserRepository):
     def __init__(self, db: Session):
         self.db = db
@@ -156,6 +159,10 @@ class UserRepository(IUserRepository):
         return False
 
     def import_cscart_users(self, db_cscart: Session, db_local: Session) -> List[UserSchema]:
+
+        # Create payment methods first
+        add_payment_method(data_payment_method, db_local)
+
         companies = db_cscart.query(CscartCompanies).all()
         
         for item in companies:
