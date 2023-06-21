@@ -8,6 +8,7 @@ import { initFlowbite } from "flowbite";
 import CheckboxGroup from "../components/CheckboxGroup.vue";
 import { Modal, Ripple, initTE } from "tw-elements";
 import VueBasicAlert from "vue-basic-alert";
+import { watchEffect } from "vue";
 
 const userRef = ref({ user: null, isAdmin: false });
 const searchTerm = ref("");
@@ -42,47 +43,47 @@ onMounted(() => {
   fetchProducts();
 });
 
-const fetchProducts = async () => {
-  isLoading.value = true;
+// const fetchProducts = async () => {
+//   isLoading.value = true;
 
-  var params = new URLSearchParams();
-  params.append("skip", actualSkip.value);
-  params.append("limit", actuaLimit.value);
-  if (selectedStatuses.value)
-    selectedStatuses.value.forEach((status) => {
-      params.append("statuses", status);
-    });
+//   var params = new URLSearchParams();
+//   params.append("skip", actualSkip.value);
+//   params.append("limit", actuaLimit.value);
+//   if (selectedStatuses.value)
+//     selectedStatuses.value.forEach((status) => {
+//       params.append("statuses", status);
+//     });
 
-  axios
-    .get("/products/list", {
-      params,
-    })
-    .then((resp) => {
-      products.value = resp.data.products;
-      totalProducts.value = resp.data.total;
-      skeletonCnt.value = 0;
+//   axios
+//     .get("/products/list", {
+//       params,
+//     })
+//     .then((resp) => {
+//       products.value = resp.data.products;
+//       totalProducts.value = resp.data.total;
+//       skeletonCnt.value = 0;
 
-      initFlowbite();
-    })
-    .catch((err) => {
-      if (err.response) {
-        let status = err.response.status;
-        if (status) {
-          if (status == 403) {
-            console.log(err.response.status);
-            router.push("/error/403");
-          } else if (status == 401) {
-            router.push("/login");
-          }
-        }
-      }
-      skeletonCnt.value = 0;
-    })
-    .finally(() => {
-      isLoading.value = false;
-      initTE({ Modal, Ripple });
-    });
-};
+//       initFlowbite();
+//     })
+//     .catch((err) => {
+//       if (err.response) {
+//         let status = err.response.status;
+//         if (status) {
+//           if (status == 403) {
+//             console.log(err.response.status);
+//             router.push("/error/403");
+//           } else if (status == 401) {
+//             router.push("/login");
+//           }
+//         }
+//       }
+//       skeletonCnt.value = 0;
+//     })
+//     .finally(() => {
+//       isLoading.value = false;
+//       initTE({ Modal, Ripple });
+//     });
+// };
 
 async function updateProduct(obj = null) {
   isLoading.value = true;
@@ -134,17 +135,59 @@ function changeManually(id) {
     product_id: id,
   }).catch(() => {});
 }
+function handleInput(e) {
+  searchTerm.value = e.target.value;
+  watchEffect(() => {
+    // Attendre 2 secondes avant de lancer la recherche
+    const timer = setTimeout(() => {
+      fetchProducts(searchTerm.value);
+    }, 2000);
 
-const filteredProduct = computed(() => {
-  return products.value.filter((product) => {
-    return (
-      product.product_code.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
-      product.product.toLowerCase().includes(searchTerm.value.toLowerCase())
-    );
+    // Annuler le timer précédent si l'utilisateur modifie rapidement le terme de recherche
+    return () => clearTimeout(timer);
   });
-});
+}
 
-function nextPage() {
+const fetchProducts = (searchTerm) => {
+  isLoading.value = true;
+  var params = new URLSearchParams();
+  params.append("skip", actualSkip.value);
+  params.append("limit", actuaLimit.value);
+  params.append("search", searchTerm);
+  if (selectedStatuses.value)
+    selectedStatuses.value.forEach((status) => {
+      params.append("statuses", status);
+    });
+
+  axios
+    .get("/products/list", {
+      params,
+    })
+    .then((resp) => {
+      products.value = resp.data.products;
+      totalProducts.value = resp.data.total;
+      skeletonCnt.value = 0;
+      isLoading.value = false;
+      initFlowbite();
+    })
+    .catch((err) => {
+      isLoading.value = false;
+      if (err.response) {
+        let status = err.response.status;
+        if (status) {
+          if (status == 403) {
+            console.log(err.response.status);
+            router.push("/error/403");
+          } else if (status == 401) {
+            router.push("/login");
+          }
+        }
+      }
+      skeletonCnt.value = 0;
+    });
+};
+
+function extPage() {
   actualSkip.value += actuaLimit.value;
 
   fetchProducts();
@@ -238,6 +281,7 @@ onUpdated(() => {
               </div>
               <input
                 v-model="searchTerm"
+                @input="handleInput"
                 type="text"
                 id="simple-search"
                 class="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
@@ -385,7 +429,7 @@ onUpdated(() => {
                     </td>
                     <div class="h-3"></div>
                   </tr>
-                  <tr v-for="product in filteredProduct" :key="product.product_id">
+                  <tr v-for="product in products" :key="product.product_id">
                     <td
                       class="p-4 text-sm font-normal text-gray-900 whitespace-nowrap dark:text-white"
                     >
