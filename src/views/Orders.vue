@@ -54,7 +54,6 @@ const fetchOrders = () => {
       params,
     })
     .then((resp) => {
-      console.log(resp.data.orders);
       orders.value = resp.data.orders;
       totalOrders.value = resp.data.total;
       skeletonCnt.value = 0;
