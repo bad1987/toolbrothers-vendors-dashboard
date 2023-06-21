@@ -17,7 +17,7 @@ from App.output_ports.models.Models import User
 
 sys_route = APIRouter(prefix='', tags=['Orders system'], include_in_schema=False)
 
-@sys_route.get('/orders/list/', response_model=OrderResponseModel)
+@sys_route.get('/orders/list', response_model=OrderResponseModel)
 @requires_permission('read', ModelNameEnum.ORDER_MODEL.value)
 async def get_orders_list(request: Request, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart), _user: dict = Depends(is_authenticated), skip: int = 0, limit: int = 10,
     statuses: List[OrderStatus] = Query([OrderStatus.AWAITING_CALL.value, OrderStatus.BACKORDERED.value, OrderStatus.CANCELLED.value, OrderStatus.COMPLETE.value, OrderStatus.DECLINED.value, OrderStatus.FAILED.value, OrderStatus.OPEN.value, OrderStatus.PROCESSED.value])                          
