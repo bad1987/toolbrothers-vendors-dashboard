@@ -19,8 +19,12 @@ from App.output_ports.models.CscartModels import Cscart_payments, CscartCompanie
 from App.output_ports.models.Models import Payment_method, Payment_method_vendor, Permission, Platform_settings, User, User_Permission
 from passlib.handlers.sha2_crypt import sha512_crypt as crypto
 
-from Seeders.seed import add_payment_method
 from Seeders.data import data_payment_method
+
+
+from rich.console import Console
+
+console = Console()
 
 class UserRepository(IUserRepository):
     def __init__(self, db: Session):
@@ -161,7 +165,7 @@ class UserRepository(IUserRepository):
     def import_cscart_users(self, db_cscart: Session, db_local: Session) -> List[UserSchema]:
 
         # Create payment methods first
-        add_payment_method(data_payment_method, db_local)
+        self.add_payment_method(data_payment_method, db_local)
 
         companies = db_cscart.query(CscartCompanies).all()
         
@@ -216,6 +220,24 @@ class UserRepository(IUserRepository):
             db_local.flush(user)
             
         return {'status': True, 'message': 'Finished'}
+    
+    def add_payment_method(self, payment_methods: list, db_local: Session):
+        console.log('************* Payment method system *****************')
+        for item in payment_methods:
+            payment_method = db_local.query(Payment_method).filter(Payment_method.name == item['name']).first()
+            if not payment_method:
+                payment_methods = Payment_method()
+                payment_methods.name = item["name"]
+                payment_methods.processor_id = item["processor_id"]
+                
+                db_local.add(payment_methods)
+                db_local.commit()
+                db_local.flush(payment_methods)
+                
+                console.log("Add successful Payment method !! : ", item['name'])
+            else:
+                console.log('This payment method exist :', item['name'])
+                continue
 
 
     # Extract secret credential
