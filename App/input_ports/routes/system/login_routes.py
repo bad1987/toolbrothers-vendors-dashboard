@@ -64,7 +64,7 @@ async def login_post(request: Request, response: Response, db: Session = Depends
 
     # setting the cookie
     max_age = res['expired_at'] * 60
-    response.set_cookie(Settings.COOKIE_NAME, res[Settings.COOKIE_NAME], domain='.toolbrothers.space', path='/', max_age=max_age, samesite='None', secure=secure_cookie)
+    response.set_cookie(Settings.COOKIE_NAME, res[Settings.COOKIE_NAME], domain='localhost', path='/', max_age=max_age, samesite='lax', secure=secure_cookie)
     return jsonable_encoder(res)
 
 # --------------------------------------------------------------------------
@@ -72,7 +72,7 @@ async def login_post(request: Request, response: Response, db: Session = Depends
 # --------------------------------------------------------------------------
 @route.delete("/auth/logout")
 def logout(request: Request, response: Response):
-    response.delete_cookie(Settings.COOKIE_NAME, domain='.toolbrothers.space', path='/', samesite='None', secure=secure_cookie)
+    response.delete_cookie(Settings.COOKIE_NAME, domain='localhost', path='/', samesite='lax', secure=secure_cookie)
     return {"message": "Logged out"}
 
 @route.get('/auth/refresh')

@@ -19,8 +19,6 @@ from App.output_ports.models.CscartModels import Cscart_payments, CscartCompanie
 from App.output_ports.models.Models import Payment_method, Payment_method_vendor, Permission, Platform_settings, User, User_Permission
 from passlib.handlers.sha2_crypt import sha512_crypt as crypto
 
-from Seeders.data import data_payment_method
-
 
 from rich.console import Console
 
@@ -164,98 +162,17 @@ class UserRepository(IUserRepository):
 
     def import_cscart_users(self, db_cscart: Session, db_local: Session) -> List[UserSchema]:
 
-        # Create payment methods first
-        self.add_payment_method(data_payment_method, db_local)
+        # the import is made inside the method in order to avoid the circular import problem
+        from Seeders.seed import add_payment_method, create_permissions, import_vendor
+        from Seeders.data import data_payment_method, permission_data
 
-        companies = db_cscart.query(CscartCompanies).all()
+        # Add payment method system
+        add_payment_method(data_payment_method, db_local)
         
-        for item in companies:
-            is_exist = db_local.query(User).filter(User.email == item.email).first()
-            
-            if is_exist:
-                continue
-            
-            user = User()
-            
-            user.company_id = item.company_id
-            user.username = item.company
-            user.email = item.email
-            user.password = crypto.hash(f"{item.email}".split("@")[0]+"@!"+str(item.company_id))
-            user.roles = "Role_direct_sale" if (item.company_id == 4 or item.company_id ==205) else "Role_affiliate"
-            user.status = item.status
-            
-            db_local.add(user) 
-            db_local.commit() 
-            
-            payment_method_vendor = db_cscart.query(Cscart_payments).filter(Cscart_payments.company_id == item.company_id).all()
-            if payment_method_vendor:
-                
-                for item_cscart in payment_method_vendor:
-                    payment_method_vendor_local = Payment_method_vendor()
-                    method_vendor = db_local.query(Payment_method).filter(Payment_method.processor_id == item_cscart.processor_id).first()
-                    
-                    if method_vendor:
-                        result = self.extract_credentials(item_cscart.processor_params)
-                        
-                        # Add secret credentials
-                        if result:
-                            payment_method_vendor_local.client_secret = result['password']
-                            payment_method_vendor_local.client_secret_id = result['username']
-                        
-                        payment_method_vendor_local.payment_id = user.company_id
-                        payment_method_vendor_local.name = method_vendor.name
-                        payment_method_vendor_local.processor_params = item_cscart.processor_params
-                        payment_method_vendor_local.status = item_cscart.status
-                        payment_method_vendor_local.user_id = user.id
-                        payment_method_vendor_local.processor_id = method_vendor.processor_id
-                        payment_method_vendor_local.payment_method_id = method_vendor.id
-                        
-                        db_local.add(payment_method_vendor_local)
-                        db_local.commit()
-                        db_local.flush(payment_method_vendor)
-                    
-                        continue
-                continue
-            
-            db_local.flush(user)
+        # Add permission system
+        create_permissions(permission_data, db_local)
+        
+        # Import user in cscart from db local
+        import_vendor(db_local, db_cscart)
             
         return {'status': True, 'message': 'Finished'}
-    
-    def add_payment_method(self, payment_methods: list, db_local: Session):
-        console.log('************* Payment method system *****************')
-        for item in payment_methods:
-            payment_method = db_local.query(Payment_method).filter(Payment_method.name == item['name']).first()
-            if not payment_method:
-                payment_methods = Payment_method()
-                payment_methods.name = item["name"]
-                payment_methods.processor_id = item["processor_id"]
-                
-                db_local.add(payment_methods)
-                db_local.commit()
-                db_local.flush(payment_methods)
-                
-                console.log("Add successful Payment method !! : ", item['name'])
-            else:
-                console.log('This payment method exist :', item['name'])
-                continue
-
-
-    # Extract secret credential
-    def extract_credentials(self, payload: str):
-        if not payload:
-            return None
-        regex = '^.*?"username".*?"(.*?)".*?"password".*?"(.*?)"'
-        res = re.findall(regex, payload)
-        if len(res) and isinstance(res[0], tuple):
-            return {
-                'username': res[0][0],
-                'password': res[0][1],
-            }
-        regex = '^.*?"client_id".*?"(.*?)".*?"secret".*?"(.*?)"'
-        res = re.findall(regex, payload)
-        if len(res) and isinstance(res[0], tuple):
-            return {
-                'username': res[0][0],
-                'password': res[0][1],
-            }
-        return None
