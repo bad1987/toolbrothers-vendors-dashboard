@@ -1,7 +1,7 @@
 import sys
 import traceback
 from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import and_, func, literal_column, select, join
+from sqlalchemy import String, and_, cast, func, literal_column, or_, select, join
 from sqlalchemy.sql import text
 from fastapi import Request, status, HTTPException
 from fastapi.responses import JSONResponse
@@ -18,12 +18,39 @@ from App.output_ports.models.Models import User
 console = Console()
 
 class ProductController:
-    def get_product_list_by_vendor(user: User, request: Request, db_local: Session, db_cscart: Session, skip: int, limit: int, statuses: list):
+    # def get_product_list_by_vendor(user: User, request: Request, db_local: Session, db_cscart: Session, skip: int, limit: int, statuses: list):
+    #     if not user:
+    #         return JSONResponse(status_code=status.HTTP_403_FORBIDDEN, content='Access denied') 
+
+    #     company_id = user.company_id
+                    
+    #     query = db_cscart.query(Cscart_products).filter(Cscart_products.company_id == company_id)
+
+    #     if user.parent_id != None:
+    #         parent = db_local.query(User).filter(User.id == user.parent_id).first()
+    #         company_id = parent.company_id
+    #         query = db_cscart.query(Cscart_products).filter(Cscart_products.company_id == company_id)
+
+    #     total = query.count()
+
+    #     query = select(Cscart_products,Cscart_product_descriptions, Cscart_product_prices, Cscart_product_descriptions).where(Cscart_products.company_id == company_id).\
+    #                 select_from(join(Cscart_products, Cscart_product_descriptions, Cscart_product_descriptions.product_id == Cscart_products.product_id)).\
+    #                 join(Cscart_product_prices, Cscart_product_prices.product_id == Cscart_products.product_id).\
+    #                 where(Cscart_product_descriptions.lang_code == user.default_language.value).\
+    #                 filter(Cscart_products.status.in_(statuses)).\
+    #                 order_by(Cscart_products.timestamp.desc()).\
+    #                 offset(skip).limit(limit)
+
+    #     products = db_cscart.execute(query).all()
+
+    #     return {"products": products, "total": total}
+
+    def search_products_by_name_or_code(user: User, request: Request, db_local: Session, db_cscart: Session, skip: int, limit: int, statuses: list, search: str):
         if not user:
             return JSONResponse(status_code=status.HTTP_403_FORBIDDEN, content='Access denied') 
 
         company_id = user.company_id
-                    
+
         query = db_cscart.query(Cscart_products).filter(Cscart_products.company_id == company_id)
 
         if user.parent_id != None:
@@ -38,12 +65,14 @@ class ProductController:
                     join(Cscart_product_prices, Cscart_product_prices.product_id == Cscart_products.product_id).\
                     where(Cscart_product_descriptions.lang_code == user.default_language.value).\
                     filter(Cscart_products.status.in_(statuses)).\
+                    filter(or_(Cscart_product_descriptions.product.ilike(f"%{search}%"), cast(Cscart_products.product_code, String).ilike(f"%{search}%"))).\
                     order_by(Cscart_products.timestamp.desc()).\
                     offset(skip).limit(limit)
 
         products = db_cscart.execute(query).all()
 
         return {"products": products, "total": total}
+
 
     def get_product_by_id(product_id: int, request: Request, db_cscart: Session, user: UserSchema) -> ProductSchema:
         query = select(Cscart_products,Cscart_product_descriptions, Cscart_product_prices, Cscart_product_descriptions).where(Cscart_products.company_id == user.company_id).\

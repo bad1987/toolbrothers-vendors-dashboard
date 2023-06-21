@@ -23,11 +23,11 @@ route = APIRouter(prefix='/products', tags=['Import products from cs-cart'], inc
 
 @route.get('/list')
 @requires_permission('read', ModelNameEnum.PRODUCT_MODEL.value)
-async def getProductListByVendor(request: Request, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart), _user: dict = Depends(is_authenticated), skip: int = 0, limit: int = 10,
+async def getProductListByVendor(request: Request, search: str, db_local: Session = Depends(get_db), db_cscart: Session = Depends(get_db_cscart), _user: dict = Depends(is_authenticated), skip: int = 0, limit: int = 10,
         statuses: List[ProductStatus] = Query([ProductStatus.ACTIVE.value, ProductStatus.DISABLED.value, ProductStatus.HIDDEN.value])
     ):
     statuses = [status.value for status in statuses]
-    result = ProductController.get_product_list_by_vendor(_user,request, db_local, db_cscart, skip, limit, statuses)
+    result = ProductController.search_products_by_name_or_code(_user,request, db_local, db_cscart, skip, limit, statuses, search)
     
     data = [{ **p[0].__dict__, **p[1].__dict__, **p[2].__dict__} for p in result['products']]
 
