@@ -52,6 +52,14 @@ async def update_user(id: int, model: UserSchema, request: Request,  db: Session
     result = user_usecase.update_user(model=model, id=id)
     return result
 
+# Send password to user email
+@s_user_route.post('/users/{id}/send-password', response_model=Dict[str, str])
+@requires_permission('write', ModelNameEnum.USER_MODEL.value)
+async def send_password(id: int, request: Request,  db: Session = Depends(get_db), _user: dict = Depends(is_authenticated)):
+    user_usecase = UserUsecase(db)
+    result = user_usecase.send_password(id=id)
+    return result
+
 # Scrap user vendor in cscart database
 @s_user_route.get('/cscart-users')
 @requires_permission('write', ModelNameEnum.USER_MODEL.value)

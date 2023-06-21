@@ -52,6 +52,10 @@ class UserRepository(IUserRepository):
         elif email:
             user = self.db.query(User).filter(User.email == email).first()
         return user
+
+    def get_user_by_id(self, id: int) -> Optional[UserSchema]:
+        user = self.db.query(User).filter(User.id == id).first()
+        return user
     
     def get_parent(self, parent_id: int) -> UserSchema:
         parent = self.db.query(User).filter(User.id == parent_id).first()
@@ -127,9 +131,13 @@ class UserRepository(IUserRepository):
         for field, value in model.dict(exclude_unset=True, exclude={'permissions', "status"}).items():
             setattr(user_to_update, field, value)
 
+        print(user_to_update.roles.value != UserRoleEnum.ADMIN.value, user_to_update.roles.value, UserRoleEnum.ADMIN.value)
+
         if (user_to_update.status.value != UserStatusEnum.ACTIVE.value 
             and model.status == UserStatusEnum.ACTIVE
-            and user_to_update.company_id is None):
+            and user_to_update.company_id is None
+            and user_to_update.roles.value != UserRoleEnum.ADMIN.value
+            ):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="This user cannot be activated, unknown company"

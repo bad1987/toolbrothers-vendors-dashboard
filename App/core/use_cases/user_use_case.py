@@ -1,4 +1,5 @@
 
+import traceback
 from typing import List
 from fastapi import HTTPException, Request, status
 from App.Enums.UserEnums import UserStatusEnum
@@ -75,6 +76,40 @@ class UserUsecase:
                 detail= str(e)
             )
         return resolved['user']
+
+    def send_password(self, id: int) -> dict:
+        try:
+            user = self.user_repository.get_user_by_id(id=id)
+
+            if user is None:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="User not found"
+                )
+            
+            elif user.status.value != UserStatusEnum.ACTIVE.value or user.company_id is None:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail=f"This account is not active, cannot send password"
+                )
+            else:
+                send_email(user.email, 'New password', 
+                    f"""
+                        Your new password is: {user.email.split("@")[0]}@!{user.company_id}\n
+
+                        You can connect on your vendor dashboard at {site_url}\n
+                    """
+                )
+
+                return {'message': 'Password sent successfully'}
+        except Exception as e:
+            if e.status_code == 403:
+                raise e
+            
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail= str(e)
+            )
     
     def update_user(self, id: int, model: UserCreateSchema) -> UserSchema:
         try:

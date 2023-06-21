@@ -121,7 +121,7 @@ class ProductController:
             return product_model
         
         except Exception as e:
-            traceback.print_exc(file=sys.stdout)
+            # traceback.print_exc(file=sys.stdout)
             
             transaction.rollback()
             raise HTTPException(
