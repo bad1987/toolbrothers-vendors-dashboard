@@ -17,7 +17,7 @@ onBeforeMount(async () => {
   userRef.value.isAdmin = test.roles == "Role_admin";
   console.log("get user information from acl", userRef.value.email);
 });
-const plenty_market = ref([]);
+const plenty_market = ref(null);
 const isSuccess = ref("");
 const isError = ref("");
 
@@ -25,7 +25,7 @@ const getPlentyMarketInformationByVendorPlatform = () => {
   axios
     .get("/plenty-market/vendor")
     .then((res) => {
-      plenty_market.value = res.data[0];
+      plenty_market.value = res.data[0] ?? {};
     })
     .then(() => {
       initDrawers();
@@ -192,6 +192,7 @@ getPlentyMarketInformationByVendorPlatform();
       action="/plenty-market/update"
       method="post"
       class="m-auto space-y-5"
+      v-if="plenty_market"
     >
       <div class="gap-2 m-auto space-y-5 md:grid md:grid-cols-2 md:space-y-0">
         <div className="relative">
