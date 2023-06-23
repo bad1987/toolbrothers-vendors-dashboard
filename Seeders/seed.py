@@ -1,7 +1,7 @@
 import mariadb
 import sys
 
-sys.path.append('./')
+sys.path.append('..')
 from App.output_ports.db.Connexion import SessionLocal
 from App.output_ports.db.CscartConnexion import CscartSession
 from App.output_ports.models.CscartModels import Cscart_payments, CscartCompanies, CscartUsers

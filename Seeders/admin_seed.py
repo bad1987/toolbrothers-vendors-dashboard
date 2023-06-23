@@ -1,6 +1,6 @@
 import sys
 
-sys.path.append('./')
+sys.path.append('..')
 from fastapi import HTTPException, status
 from App.output_ports.db.Connexion import SessionLocal
 
