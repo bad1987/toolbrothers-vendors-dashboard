@@ -15,6 +15,7 @@ from App.output_ports.models.CscartModels import CscartOrderDetails
 from App.input_ports.schemas.OrderSchema import OrderResponseModel, OrdersSchema
 from App.core.entities.order_repository import IOrderRepository
 from App.output_ports.models.CscartModels import CscartOrders
+from App.output_ports.models.Models import User
 
 class OrderRepository(IOrderRepository):
     def __init__(self, db_local: Session, db_cscart: Session) -> None:
@@ -77,7 +78,9 @@ class OrderRepository(IOrderRepository):
         
         user = LoginController.get_current_user_from_cookie(request, self.db_local)
 
-        query = self.db_cscart.query(CscartOrders).filter(CscartOrders.company_id == user.company_id).filter(CscartOrders.status.in_(statuses)).order_by(desc(CscartOrders.order_id))
+        parent = self.db_local.query(User).filter(User.id == user.parent_id).first()
+
+        query = self.db_cscart.query(CscartOrders).filter(CscartOrders.company_id == parent.company_id).filter(CscartOrders.status.in_(statuses)).order_by(desc(CscartOrders.order_id))
 
         total = query.count()
         orders = query.offset(skip).limit(limit).all()

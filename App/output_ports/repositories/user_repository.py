@@ -9,6 +9,7 @@ from sqlalchemy import and_
 from App.Enums.LanguageEnum import LanguageEnum
 from App.Enums.UserEnums import UserStatusEnum
 from App.Enums.UserRoleEnum import UserRoleEnum
+from App.Http.Schema.PlatformSchema import PlatformSimpleSchema
 from App.Http.Schema.UserSchema import UserCreateResponse, UserSchema
 from App.core.auth.Configs.Settings import Settings
 from App.core.entities.user_repository import IUserRepository
@@ -16,7 +17,7 @@ from sqlalchemy.orm import Session
 from App.input_ports.schemas.UserSchema import PermissionSchema, UserCreateSchema
 from App.input_ports.schemas.UserSchema import PermissionSchema, UserSchema
 from App.output_ports.models.CscartModels import Cscart_payments, CscartCompanies
-from App.output_ports.models.Models import Payment_method, Payment_method_vendor, Permission, Platform_settings, User, User_Permission
+from App.output_ports.models.Models import Payment_method, Payment_method_vendor, Permission, Platform, Platform_settings, User, User_Permission
 from passlib.handlers.sha2_crypt import sha512_crypt as crypto
 
 
@@ -37,6 +38,12 @@ class UserRepository(IUserRepository):
             )
         ).all()
         result = [UserSchema.from_orm(p) for p in result]
+        return result
+
+    def get_platform_simple_list(self) -> List[PlatformSimpleSchema]:
+        result = self.db.query(Platform).all()
+        result = [PlatformSimpleSchema(**{'id': p.id, 'name': p.name}) for p in result]
+
         return result
 
     def get_admins(self, user_id: int) -> List[UserSchema]:
