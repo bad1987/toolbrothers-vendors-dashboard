@@ -4,6 +4,7 @@ from typing import List, Optional
 
 from fastapi import Request
 from sqlalchemy.orm import Session
+from App.Http.Schema.PlatformSchema import PlatformSimpleSchema
 from App.Http.Schema.UserSchema import UserCreateResponse
 
 from App.input_ports.schemas.UserSchema import PermissionSchema, UserCreateSchema, UserSchema
@@ -26,4 +27,6 @@ class IUserRepository(ABC):
         ...
 
     def get_user(self, username:str = None, email: str = None) -> Optional[UserSchema]:
+        ...
+    def get_platform_simple_list(self) -> List[PlatformSimpleSchema]:
         ...

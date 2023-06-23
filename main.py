@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from App.input_ports.routes.api import order_routes, product_routes
 from App.input_ports.routes.system.settings import Payment_route, PlentyMarket, Setting_route
 from App.input_ports.routes.system import s_product_routes, user_routes, vendor_routes, login_routes
-from App.input_ports.routes.system import s_product_routes, user_routes, vendor_routes, login_routes, order_routes_sys
+from App.input_ports.routes.system import s_product_routes, user_routes, vendor_routes, login_routes, order_routes_sys, platform_routes
 from App.input_ports.routes.system.message import Message_route
 
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -43,6 +43,7 @@ app.include_router(Message_route.route)
 app.include_router(order_routes_sys.sys_route)
 app.include_router(PlentyMarket.route)
 app.include_router(Setting_route.route)
+app.include_router(platform_routes.route)
  
 # static files
 # app.mount("/static", StaticFiles(directory="static"), name="static")

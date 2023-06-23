@@ -3,6 +3,7 @@ from typing import Text, List, Optional
 from App.Enums.UserEnums import UserStatusEnum
 from App.Enums.UserRoleEnum import UserRoleEnum
 from App.Enums.LanguageEnum import LanguageEnum
+from App.Http.Schema.PlatformSchema import PlatformSimpleSchema
 
 class UserSchema(BaseModel):
     id: Optional[int]
@@ -63,3 +64,4 @@ class UserCreateSchema(BaseModel):
 class UserListSchema(BaseModel):
     users: List[UserSchema] = []
     permissions: List[PermissionReturnModel] = []
+    platforms: Optional[List[PlatformSimpleSchema]]

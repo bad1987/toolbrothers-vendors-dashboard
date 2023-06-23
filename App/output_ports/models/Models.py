@@ -1,4 +1,4 @@
-from sqlalchemy import TIMESTAMP, Column, ForeignKey, Integer, String, text, BigInteger, Enum
+from sqlalchemy import TIMESTAMP, Boolean, Column, ForeignKey, Integer, String, text, BigInteger, Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy.types import Text
 from App.Enums.UserRoleEnum import UserRoleEnum
@@ -25,6 +25,7 @@ class User(Base):
     parent_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
 
     permissions = relationship("Permission", secondary='user_permissions')
+    # platform = relationship("Platfom", secondary='user_perplatforms')
     
     
     # payment_method_vendor = relationship("Payment_method_vendor",  back_populates="users", cascade="all, delete")
@@ -73,6 +74,23 @@ class Platform_settings(Base):
     created_at = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"), nullable=True)
     
     # payment_method_vendor = relationship("Payment_method_vendor",  back_populates="payment_method", cascade="all, delete")
+
+class Platform(Base):
+    __tablename__ = "platforms"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255), unique=True, index=True, nullable=False)
+    fields = Column(Text, nullable=True)
+    status = Column(Boolean, nullable=False, default=True)
+
+class User_Platform(Base):
+    __tablename__ = "user_platforms"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    platform_id = Column(Integer, ForeignKey("platforms.id", ondelete="CASCADE"), nullable=False)
+    values = Column(Text, nullable=True)
+    
 
 class Permission(Base):
     __tablename__ = "permissions"

@@ -3,6 +3,7 @@ import traceback
 from typing import List
 from fastapi import HTTPException, Request, status
 from App.Enums.UserEnums import UserStatusEnum
+from App.Http.Schema.PlatformSchema import PlatformSchemaOut, PlatformSimpleSchema
 from App.core.Services.SendEmail import send_email
 from App.core.auth.Acls.ModelPermissions import ModelPermissions
 from App.core.auth.LoginController import get_current_user_from_cookie
@@ -34,6 +35,11 @@ class UserUsecase:
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Access forbidden"
             )
+
+    def get_platform_simple_list(self, request: Request, type: str) -> List[PlatformSimpleSchema]:
+        platforms = self.user_repository.get_platform_simple_list()
+
+        return platforms
 
     def get_permissions(self) -> List[PermissionSchema]:
         try:

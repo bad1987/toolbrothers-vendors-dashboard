@@ -25,10 +25,12 @@ async def get_users_list(
     user_usecase = UserUsecase(db)
     users = user_usecase.get_users_by_type(request, type)
     permissions = user_usecase.get_permissions()
+    platforms = user_usecase.get_platform_simple_list(request, type)
     permissions = [PermissionReturnModel(**{'text': p.name, 'value': p.id, 'description': p.description}) for p in permissions]
     return {
         "users": users,
         "permissions": permissions,
+        "platforms": platforms
     }
 
 @s_user_route.get("/user", response_model= UserSchema | None)
