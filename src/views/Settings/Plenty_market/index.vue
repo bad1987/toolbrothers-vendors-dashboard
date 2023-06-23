@@ -15,7 +15,6 @@ onBeforeMount(async () => {
   userRef.value = test;
   userRef.value.user = test;
   userRef.value.isAdmin = test.roles == "Role_admin";
-  console.log("get user information from acl", userRef.value.email);
 });
 const plenty_market = ref(null);
 const isSuccess = ref("");
