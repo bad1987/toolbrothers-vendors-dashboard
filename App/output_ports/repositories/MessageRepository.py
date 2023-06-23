@@ -14,6 +14,7 @@ from App.core.auth import LoginController
 from fastapi.responses import JSONResponse
 from App.input_ports.schemas.MessageSchema import ChatSchema
 from App.output_ports.models.CscartModels import Cscart_vendor_communication_messages, Cscart_vendor_communications, CscartUsers
+from App.output_ports.models.Models import User
 
 
 class MessageRepository(ImessageRepository):
@@ -23,21 +24,34 @@ class MessageRepository(ImessageRepository):
         
     def get_all_message_by_vendor(self, request: Request, skip: int = 0, limit: int = 10):
         _user = get_current_user_from_cookie(request, db=self.db_local)
-        
         if not _user:
             return JSONResponse(status_code=status.HTTP_403_FORBIDDEN, content='Access denied')
-         
-        query = self.db_cscart.query(Cscart_vendor_communications)\
-        .join(CscartUsers, CscartUsers.user_id == Cscart_vendor_communications.user_id)\
-        .filter(Cscart_vendor_communications.company_id == _user.company_id)\
-        .order_by(Cscart_vendor_communications.last_updated.desc())\
-                    
-        total = query.count()
-        messages = query.offset(skip).limit(limit)\
-            .add_columns(CscartUsers)\
-            .all()
+        parent = self.db_local.query(User).filter(User.id == _user.parent_id).first()
+        if not parent:
+            query = self.db_cscart.query(Cscart_vendor_communications)\
+            .join(CscartUsers, CscartUsers.user_id == Cscart_vendor_communications.user_id)\
+            .filter(Cscart_vendor_communications.company_id == _user.company_id)\
+            .order_by(Cscart_vendor_communications.last_updated.desc())\
+                        
+            total = query.count()
+            messages = query.offset(skip).limit(limit)\
+                .add_columns(CscartUsers)\
+                .all()
+            
+            return {"messages": messages, "total": total}
         
-        return {"messages": messages, "total": total}
+        else:
+            query = self.db_cscart.query(Cscart_vendor_communications)\
+                .join(CscartUsers, CscartUsers.user_id == Cscart_vendor_communications.user_id)\
+                .filter(Cscart_vendor_communications.company_id == parent.company_id)\
+                .order_by(Cscart_vendor_communications.last_updated.desc())\
+                        
+            total = query.count()
+            messages = query.offset(skip).limit(limit)\
+                .add_columns(CscartUsers)\
+                .all()
+            
+            return {"messages": messages, "total": total}
     
     def get_all_message_with_thread(self, request: Request, thread_id: int):
         _user = get_current_user_from_cookie(request, db=self.db_local)
@@ -45,15 +59,28 @@ class MessageRepository(ImessageRepository):
         if not _user:
             return JSONResponse(status_code=status.HTTP_403_FORBIDDEN, content='Access denied')
         
-        query = self.db_cscart.query(Cscart_vendor_communication_messages)\
-            .join(Cscart_vendor_communications, Cscart_vendor_communications.thread_id == Cscart_vendor_communication_messages.thread_id)\
-            .join(CscartUsers, CscartUsers.user_id == Cscart_vendor_communication_messages.user_id)\
-            .filter(Cscart_vendor_communication_messages.thread_id == thread_id)\
-            .filter(Cscart_vendor_communications.company_id == _user.company_id)\
-            .add_columns(CscartUsers)\
-            .all()
+        parent = self.db_local.query(User).filter(User.id == _user.parent_id).first()
         
-        return query
+        if not parent:
+            query = self.db_cscart.query(Cscart_vendor_communication_messages)\
+                .join(Cscart_vendor_communications, Cscart_vendor_communications.thread_id == Cscart_vendor_communication_messages.thread_id)\
+                .join(CscartUsers, CscartUsers.user_id == Cscart_vendor_communication_messages.user_id)\
+                .filter(Cscart_vendor_communication_messages.thread_id == thread_id)\
+                .filter(Cscart_vendor_communications.company_id == _user.company_id)\
+                .add_columns(CscartUsers)\
+                .all()
+        
+            return query
+        else:
+            query = self.db_cscart.query(Cscart_vendor_communication_messages)\
+                .join(Cscart_vendor_communications, Cscart_vendor_communications.thread_id == Cscart_vendor_communication_messages.thread_id)\
+                .join(CscartUsers, CscartUsers.user_id == Cscart_vendor_communication_messages.user_id)\
+                .filter(Cscart_vendor_communication_messages.thread_id == thread_id)\
+                .filter(Cscart_vendor_communications.company_id == parent.company_id)\
+                .add_columns(CscartUsers)\
+                .all()
+        
+            return query
 
     def send_message(self, request: Request, chatSchema: ChatSchema):
         print("dzfczdec", chatSchema)

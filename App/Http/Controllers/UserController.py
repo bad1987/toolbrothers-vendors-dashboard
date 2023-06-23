@@ -29,8 +29,12 @@ class UserController:
     
     def get_sub_vendor_for_vendor(db_local: Session, request: Request, user: User):
         parent = db_local.query(User).filter(User.id == user.parent_id).first()
-        user_vendor = db_local.query(User).filter(User.parent_id == parent.id).filter(User.id != user.id).all()
-
+        if not parent:
+            user_vendor = db_local.query(User).filter(User.parent_id == user.id).filter(User.connect_with_admin == False).all()
+        else:
+            console.log(parent)
+            user_vendor = db_local.query(User).filter(User.parent_id == parent.id).filter(User.id != user.id).all()
+        
         user_permissions = [{"text": permission.name, "value": permission.id, "description": permission.description} for permission in user.permissions]
 
         return {"users": user_vendor, "permissions": user_permissions}
