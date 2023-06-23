@@ -28,7 +28,8 @@ class UserController:
         return permission_schemas
     
     def get_sub_vendor_for_vendor(db_local: Session, request: Request, user: User):
-        user_vendor = db_local.query(User).filter(User.parent_id == user.id).all()
+        parent = db_local.query(User).filter(User.id == user.parent_id).first()
+        user_vendor = db_local.query(User).filter(User.parent_id == parent.id).filter(User.id != user.id).all()
 
         user_permissions = [{"text": permission.name, "value": permission.id, "description": permission.description} for permission in user.permissions]
 
