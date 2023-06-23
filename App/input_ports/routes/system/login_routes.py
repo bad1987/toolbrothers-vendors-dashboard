@@ -65,7 +65,7 @@ async def login_post(request: Request, response: Response, db: Session = Depends
 
     # setting the cookie
     max_age = res['expired_at'] * 60
-    response.set_cookie(Settings.COOKIE_NAME, res[Settings.COOKIE_NAME], domain='.localhost', path='/', max_age=max_age, samesite='None', secure=secure_cookie)
+    response.set_cookie(Settings.COOKIE_NAME, res[Settings.COOKIE_NAME], domain='.toolbrothers.space', path='/', max_age=max_age, samesite='None', secure=secure_cookie)
     return jsonable_encoder(res)
 
 # --------------------------------------------------------------------------
@@ -73,7 +73,7 @@ async def login_post(request: Request, response: Response, db: Session = Depends
 # --------------------------------------------------------------------------
 @route.delete("/auth/logout")
 def logout(request: Request, response: Response):
-    response.delete_cookie(Settings.COOKIE_NAME, domain='.localhost', path='/', samesite='None', secure=secure_cookie)
+    response.delete_cookie(Settings.COOKIE_NAME, domain='.toolbrothers.space', path='/', samesite='None', secure=secure_cookie)
     return {"message": "Logged out"}
 
 @route.get('/auth/refresh')
@@ -104,7 +104,7 @@ async def reset_password(token: str, request: Request, db_local: Session = Depen
 
 @route.get("/login_as_vendor/{vendor_id}")
 def login_as_vendor(request: Request, response: Response, vendor_id: int, db: Session = Depends(get_db)):
-    response.delete_cookie(Settings.COOKIE_NAME, domain='.localhost', path='/', samesite='None', secure=secure_cookie)
+    response.delete_cookie(Settings.COOKIE_NAME, domain='.toolbrothers.space', path='/', samesite='None', secure=secure_cookie)
     
     auth_usecase = AuthenticationUsecase(db)
     res = auth_usecase.login_access_token_by_vendor(request, vendor_id)
@@ -114,5 +114,5 @@ def login_as_vendor(request: Request, response: Response, vendor_id: int, db: Se
 
     # setting the cookie
     max_age = res['expired_at'] * 60
-    response.set_cookie(Settings.COOKIE_NAME, res[Settings.COOKIE_NAME], domain='.localhost', path='/', max_age=max_age, samesite='None', secure=secure_cookie)
+    response.set_cookie(Settings.COOKIE_NAME, res[Settings.COOKIE_NAME], domain='.toolbrothers.space', path='/', max_age=max_age, samesite='None', secure=secure_cookie)
     return jsonable_encoder(res)
