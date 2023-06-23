@@ -144,6 +144,24 @@ const router = createRouter({
       },
     },
     {
+      path: '/platforms',
+      name: 'platforms',
+      component: () => import('../views/Platforms.vue'),
+      meta: {
+        requiresAuth: true,
+        roles: ['Role_admin']
+      },
+    },
+    {
+      path: '/platform-settings',
+      name: 'platforms-settings',
+      component: () => import('../views/Settings/PlatformSetting.vue'),
+      meta: {
+        requiresAuth: true,
+        roles: ['Role_direct_sale', 'Role_affiliate']
+      },
+    },
+    {
       path: '/chat/:threat_id/:user_id/:username',
       name: 'chat',
       component: Chat,

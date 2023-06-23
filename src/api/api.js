@@ -2,22 +2,20 @@ import axios from 'axios'
 import { initFlowbite, initModals } from 'flowbite'
 import { useRoute, useRouter } from 'vue-router'
 
-// A revoir...
-
 const userApi = {
-    fetchUsers: async (users, permissions, router, route, isAdmin = true) => {
+    fetchUsers: async (users, permissions, router, route, isAdmin = true, platforms = []) => {
         const url = isAdmin ? `/admin/users/${route.params.type}/list` : '/sub-vendor/get'
 
         axios.get(url).then((response) => {
             users.value = response.data.users
             permissions.value = response.data.permissions
+            platforms.value = response.data.platforms
         })
         .catch(err => {
             if (err.response) {
                 let status = err.response.status
                 if (status) {
                     if (status == 403) {
-                        // console.log(err.response.status);
                         router.push('/error/403')
                     }
                     else if (status == 401) {
