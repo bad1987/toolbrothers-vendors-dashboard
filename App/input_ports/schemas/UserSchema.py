@@ -17,6 +17,8 @@ class UserSchema(BaseModel):
     lastname: Optional[str]
     default_language: Optional[LanguageEnum]
     parent_id: Optional[int]
+    platform_id: Optional[int]
+    platform: Optional[PlatformSimpleSchema]
 
     class Config:
         orm_mode = True
@@ -64,4 +66,4 @@ class UserCreateSchema(BaseModel):
 class UserListSchema(BaseModel):
     users: List[UserSchema] = []
     permissions: List[PermissionReturnModel] = []
-    platforms: Optional[List[PlatformSimpleSchema]]
+    platforms: List[PlatformSimpleSchema] = []

@@ -23,3 +23,16 @@ class PlatformFieldValuesSchema(BaseModel):
 class PlatformUserSchema(BaseModel):
     name: str
     values: Optional[List[PlatformFieldValuesSchema]]
+
+## User platform schema
+
+class UserPlatformSchema(BaseModel):
+    id: int
+    name: Optional[str]
+    fields: Optional[List[PlatformTypeSchema]]
+    status: Optional[bool]
+    values: List[PlatformFieldValuesSchema]
+
+class UserPlatformSchemaIn(BaseModel):
+    id: int
+    values: List[PlatformFieldValuesSchema]

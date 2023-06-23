@@ -37,7 +37,21 @@ class UserRepository(IUserRepository):
                 User.id != user_id,
             )
         ).all()
-        result = [UserSchema.from_orm(p) for p in result]
+        result = [UserSchema(
+            platform_id=p.platform_id,
+            platform=PlatformSimpleSchema(**{'id': p.platform.id, 'name': p.platform.name}) if p.platform else None,
+            company_id=p.company_id,
+            id=p.id,
+            email=p.email,
+            username=p.username,
+            roles=p.roles,
+            status=p.status,
+            permissions=[PermissionSchema(**{'id': perm.id, 'name': perm.name, 'description': perm.description}) for perm in p.permissions],
+            firstname=p.firstname,
+            lastname=p.lastname,
+            default_language=p.default_language,
+            parent_id=p.parent_id
+        ) for p in result]
         return result
 
     def get_platform_simple_list(self) -> List[PlatformSimpleSchema]:
@@ -135,10 +149,8 @@ class UserRepository(IUserRepository):
                 detail="User Not Found"
             )
         
-        for field, value in model.dict(exclude_unset=True, exclude={'permissions', "status"}).items():
+        for field, value in model.dict(exclude_unset=True, exclude={'permissions', "status", "platform"}).items():
             setattr(user_to_update, field, value)
-
-        print(user_to_update.roles.value != UserRoleEnum.ADMIN.value, user_to_update.roles.value, UserRoleEnum.ADMIN.value)
 
         if (user_to_update.status.value != UserStatusEnum.ACTIVE.value 
             and model.status == UserStatusEnum.ACTIVE
@@ -159,7 +171,10 @@ class UserRepository(IUserRepository):
             permissions = self.db.query(Permission).filter(Permission.id.in_(permission_ids)).all()
 
             user_to_update.permissions.extend(permissions)
-                
+
+        if (model.platform_id != None and user_to_update.platform_id != model.platform_id):
+            user_to_update.platform_id = model.platform_id
+
         self.db.commit()
         self.db.refresh(user_to_update)
 

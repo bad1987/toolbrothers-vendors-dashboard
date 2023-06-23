@@ -1,8 +1,10 @@
+import json
 from typing import Dict
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy.orm import Session
 from App.Enums.UserEnums import UserStatusEnum
 from App.Enums.UserRoleEnum import ModelNameEnum
+from App.Http.Schema.PlatformSchema import PlatformSimpleSchema
 from App.core.Decorators.auth_decorators import requires_permission
 from App.core.auth.auth import is_authenticated
 
@@ -38,6 +40,22 @@ def get_user(request: Request, db: Session = Depends(get_db)):
     user_usecase = UserUsecase(db)
     user = user_usecase.get_user(request=request)
 
+    user = UserSchema(
+        id=user.id,
+        email=user.email,
+        username=user.username,
+        company_id=user.company_id,
+        roles=user.roles,
+        status=user.status,
+        permissions=[PermissionReturnModel(**{'text': p.name, 'value': p.id, 'description': p.description}) for p in user.permissions],
+        firstname=user.firstname,
+        lastname=user.lastname,
+        default_language=user.default_language,
+        parent_id=user.parent_id,
+        platform_id=user.platform_id if user.platform and user.platform.status else None,
+        platform=PlatformSimpleSchema(**{'id': user.platform.id, 'name': user.platform.name}) if user.platform and user.platform.status else None
+    ) if user else None
+
     return user
 
 @s_user_route.post('/users', response_model= UserSchema | Dict[str, str], status_code=201)
@@ -52,7 +70,10 @@ async def add_user(request: Request, model: UserCreateSchema, db: Session = Depe
 async def update_user(id: int, model: UserSchema, request: Request,  db: Session = Depends(get_db), _user: dict = Depends(is_authenticated)):
     user_usecase = UserUsecase(db)
     result = user_usecase.update_user(model=model, id=id)
-    return result
+
+    return {
+        "message": "User updated successfully"
+    }
 
 # Send password to user email
 @s_user_route.post('/users/{id}/send-password', response_model=Dict[str, str])

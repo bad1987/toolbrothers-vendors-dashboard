@@ -26,10 +26,8 @@ class User(Base):
     parent_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
 
     permissions = relationship("Permission", secondary='user_permissions')
-    # platform = relationship("Platfom", secondary='user_perplatforms')
-    
-    
-    # payment_method_vendor = relationship("Payment_method_vendor",  back_populates="users", cascade="all, delete")
+    platform_id = Column(Integer, ForeignKey("platforms.id", ondelete="CASCADE"), nullable=True)
+    platform = relationship("Platform", back_populates="users")
 
 class Payment_method(Base):
     __tablename__ = "payment_method"
@@ -83,6 +81,7 @@ class Platform(Base):
     name = Column(String(255), unique=True, index=True, nullable=False)
     fields = Column(Text, nullable=True)
     status = Column(Boolean, nullable=False, default=True)
+    users = relationship("User", back_populates="platform")
 
 class User_Platform(Base):
     __tablename__ = "user_platforms"
