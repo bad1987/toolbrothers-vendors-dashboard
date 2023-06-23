@@ -1,5 +1,7 @@
 import sys
-sys.path.append('..')
+
+sys.path.append('./')
+from fastapi import HTTPException, status
 from App.output_ports.db.Connexion import SessionLocal
 
 from App.output_ports.models.Models import Permission, User
@@ -49,6 +51,34 @@ def create_admin():
             db.add(user)
             db.commit()
             print("Admin user created")
+            
+        if db.query(User).filter(User.username == "admin@vendor.com").first():
+            print("User already exists")
+            exit()
+        else:
+            userSubVendor = User()
+    
+            userSubVendor.email = "admin@vendor.com"
+            userSubVendor.username = "admin vendor"
+            userSubVendor.firstname = "admin vendor firstname"
+            userSubVendor.lastname = "admin vendor lastname"
+            userSubVendor.default_language = "en"
+            userSubVendor.roles = "Role_admin"
+            userSubVendor.status = "A"
+            userSubVendor.parent_id = "1"
+            userSubVendor.connect_with_admin = True
+            userSubVendor.password = crypto.hash(f"admin_vendor")
+
+            permissions = db.query(Permission).filter(Permission.mode == "R").all()
+            if not len(permissions):
+                print("No permissions found in the permission table")
+                exit()
+            for p in permissions:
+                userSubVendor.permissions.append(p)
+            # check if the user already exists before adding it
+            db.add(userSubVendor)
+            db.commit()
+            print("Vendor admin created")
     except Exception as e:
         print(str(e))
     finally:

@@ -1,12 +1,12 @@
 import mariadb
 import sys
-from App.input_ports.routes.system.settings.Payment_route import extract_credentials
 
+sys.path.append('./')
 from App.output_ports.db.Connexion import SessionLocal
 from App.output_ports.db.CscartConnexion import CscartSession
 from App.output_ports.models.CscartModels import Cscart_payments, CscartCompanies, CscartUsers
 from App.output_ports.models.Models import Payment_method, Payment_method_vendor, Permission, User, User_Permission
-sys.path.append('./')
+from App.input_ports.routes.system.settings.Payment_route import extract_credentials
 from sqlalchemy.orm import Session
 from rich.console import Console
 from passlib.handlers.sha2_crypt import sha512_crypt as crypto
@@ -20,7 +20,6 @@ def filter_direct_sale_perm(db_local: Session):
     permission_others = db_local.query(Permission)\
         .filter(Permission.model_name != "user", Permission.mode != "D").all()
     return permission_user + permission_others
-
 
 def create_permissions(permissions: list, db_local: Session):
     console.log('************* Permission system *****************')
@@ -120,7 +119,6 @@ def import_vendor(db_local: Session, db_cscart: Session):
                     user_permission_affiliate = User_Permission()
                     user_permission_affiliate.permission_id = permission_affiliate_item.id
                     user_permission_affiliate.user_id = user.id
-                    console.log(permission_affiliate_item.id)
                     
                     db_local.add(user_permission_affiliate)
                     db_local.commit()

@@ -31,7 +31,7 @@ async def get_sub_vendor_by_vendor(request: Request, db_local: Session = Depends
 
 @route.post("/create")
 @requires_permission('write', ModelNameEnum.SETTING_MODEL.value)
-async def create_dub_vendor_by_vendor(request: Request, schema: UserCreateSubVendorSchema, db_local: Session = Depends(get_db), _user: dict = Depends(is_authenticated)):
+async def create_sub_vendor_by_vendor(request: Request, schema: UserCreateSubVendorSchema, db_local: Session = Depends(get_db), _user: dict = Depends(is_authenticated)):
     return UserController.create_sub_vendor_by_vendor(request, schema, db_local, _user)
 
 

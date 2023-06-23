@@ -4,6 +4,8 @@ import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi.staticfiles import StaticFiles
+from App.output_ports.models import Models
+from App.output_ports.db.Connexion import engine
 
 from App.input_ports.routes.api import order_routes, product_routes
 from App.input_ports.routes.system.settings import Payment_route, PlentyMarket, Setting_route
@@ -14,7 +16,7 @@ from App.input_ports.routes.system.message import Message_route
 from starlette.middleware.base import BaseHTTPMiddleware
 from dotenv import load_dotenv
 import os
-
+#Models.Base.metadata.create_all(bind=engine)   
 load_dotenv()
 allowed_origins_str = os.getenv("ALLOWED_ORIGINS")
 origins = allowed_origins_str.split(',')

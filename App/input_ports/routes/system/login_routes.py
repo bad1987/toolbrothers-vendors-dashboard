@@ -1,5 +1,4 @@
 import json, time, datetime
-from typing import Dict, List
 from fastapi import Depends, HTTPException, Request, Response, status, APIRouter
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from sqlalchemy.orm import Session
@@ -9,7 +8,8 @@ from App.core.auth.Configs.OAuth2PasswordBearerWithCookie import OAuth2PasswordB
 from App.core.auth.Configs.Settings import Settings
 from App.core.use_cases.authentication_use_case import AuthenticationUsecase
 from App.output_ports.db.Connexion import SessionLocal
-
+from App.output_ports.models.Models import User
+from typing import Dict, List, Optional
 import i18n
 from App.Http.Schema.UserSchema import UserSchema
 
@@ -58,6 +58,7 @@ def login_for_access_token(
 @route.post("/auth/login")
 async def login_post(request: Request, response: Response, db: Session = Depends(get_db)):
     credentials = json.loads(await request.body())
+ 
     res = login_for_access_token(request, credentials, db)
     res.update({'expired_at': Settings.ACCESS_TOKEN_EXPIRE_MINUTES})
     res.update({'cookie_name': Settings.COOKIE_NAME})
@@ -99,3 +100,19 @@ async def forgot_password(request: Request, db_local: Session = Depends(get_db))
 async def reset_password(token: str, request: Request, db_local: Session = Depends(get_db)):
     auth_usecase = AuthenticationUsecase(db_local)
     return auth_usecase.reset_password(request=request, token=token)
+
+
+@route.get("/login_as_vendor/{vendor_id}")
+def login_as_vendor(request: Request, response: Response, vendor_id: int, db: Session = Depends(get_db)):
+    response.delete_cookie(Settings.COOKIE_NAME, domain='.localhost', path='/', samesite='None', secure=secure_cookie)
+    
+    auth_usecase = AuthenticationUsecase(db)
+    res = auth_usecase.login_access_token_by_vendor(request, vendor_id)
+
+    res.update({'expired_at': Settings.ACCESS_TOKEN_EXPIRE_MINUTES})
+    res.update({'cookie_name': Settings.COOKIE_NAME})
+
+    # setting the cookie
+    max_age = res['expired_at'] * 60
+    response.set_cookie(Settings.COOKIE_NAME, res[Settings.COOKIE_NAME], domain='.localhost', path='/', max_age=max_age, samesite='None', secure=secure_cookie)
+    return jsonable_encoder(res)
