@@ -16,6 +16,7 @@ class UserSchema(BaseModel):
     lastname: Optional[str]
     default_language: Optional[LanguageEnum]
     parent_id: Optional[int]
+    
 
     class Config:
         orm_mode = True

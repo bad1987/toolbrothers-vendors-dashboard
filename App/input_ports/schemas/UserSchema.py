@@ -20,7 +20,9 @@ class UserSchema(BaseModel):
     parent_id: Optional[int]
     platform_id: Optional[int]
     platform: Optional[PlatformSimpleSchema]
-
+    connect_with_admin: Optional[bool]
+    
+    
     class Config:
         orm_mode = True
 

@@ -1,5 +1,5 @@
 import sys
-sys.path.append('..')
+sys.path.append('./')
 from App.output_ports.db.Connexion import SessionLocal
 from App.output_ports.db.CscartConnexion import CscartSession
 from Seeders.seed import add_payment_method, create_permissions, import_vendor
