@@ -70,17 +70,12 @@ class AuthenticationUsecase:
 
         self.db.commit()
         self.db.flush(user)
-
-        connected_ip = request.client.host
-        attempt = self.auth_repo.get_attempts(connected_ip)
         
         if user.status != UserStatusEnum.ACTIVE:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="This account is not active, please contact admins")
             
         access_token = LoginController.create_access_token(data={"username": user.email})
 
-        if attempt != None:
-            self.auth_repo.reset_attempt(connected_ip)
         p_user = UserSchema(
             id=user.id,
             email=user.email,
