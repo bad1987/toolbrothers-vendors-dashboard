@@ -4,6 +4,7 @@ from App.Enums.UserEnums import UserStatusEnum
 from App.Enums.UserRoleEnum import UserRoleEnum
 from App.Enums.LanguageEnum import LanguageEnum
 from App.Http.Schema.PlatformSchema import PlatformSimpleSchema
+from App.output_ports.models.Models import User
 
 class UserSchema(BaseModel):
     id: Optional[int]
@@ -22,6 +23,24 @@ class UserSchema(BaseModel):
 
     class Config:
         orm_mode = True
+
+    @classmethod
+    def from_user(cls, user: User) -> 'UserSchema':
+        return cls(
+            id=user.id,
+            email=user.email,
+            username=user.username,
+            company_id=user.company_id,
+            roles=user.roles,
+            status=user.status,
+            permissions=[PermissionSchema(**{'id': perm.id, 'name': perm.name, 'description': perm.description}) for perm in user.permissions] if user.permissions else None,
+            firstname=user.firstname,
+            lastname=user.lastname,
+            default_language=user.default_language,
+            parent_id=user.parent_id,
+            platform_id=user.platform_id,
+            platform=PlatformSimpleSchema(**{'id': user.platform.id, 'name': user.platform.name}) if user.platform else None
+        )
 
 class PermissionSchema(BaseModel):
     id: Optional[int]

@@ -37,21 +37,7 @@ class UserRepository(IUserRepository):
                 User.id != user_id,
             )
         ).all()
-        result = [UserSchema(
-            platform_id=p.platform_id,
-            platform=PlatformSimpleSchema(**{'id': p.platform.id, 'name': p.platform.name}) if p.platform else None,
-            company_id=p.company_id,
-            id=p.id,
-            email=p.email,
-            username=p.username,
-            roles=p.roles,
-            status=p.status,
-            permissions=[PermissionSchema(**{'id': perm.id, 'name': perm.name, 'description': perm.description}) for perm in p.permissions],
-            firstname=p.firstname,
-            lastname=p.lastname,
-            default_language=p.default_language,
-            parent_id=p.parent_id
-        ) for p in result]
+        result = [UserSchema.from_user(p) for p in result]
         return result
 
     def get_platform_simple_list(self) -> List[PlatformSimpleSchema]:
@@ -80,7 +66,7 @@ class UserRepository(IUserRepository):
     
     def get_parent(self, parent_id: int) -> UserSchema:
         parent = self.db.query(User).filter(User.id == parent_id).first()
-        return UserSchema.from_orm(parent)
+        return UserSchema.from_user(parent)
     
     def generate_api_token(self, email: str):
         userToken: User = self.get_user(email=email)
