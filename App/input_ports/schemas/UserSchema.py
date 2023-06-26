@@ -41,7 +41,9 @@ class UserSchema(BaseModel):
             default_language=user.default_language,
             parent_id=user.parent_id,
             platform_id=user.platform_id,
-            platform=PlatformSimpleSchema(**{'id': user.platform.id, 'name': user.platform.name}) if user.platform else None
+            platform=PlatformSimpleSchema(**{'id': user.platform.id, 'name': user.platform.name}) if user.platform else None,
+            connect_with_admin= user.connect_with_admin
+            
         )
 
 class PermissionSchema(BaseModel):

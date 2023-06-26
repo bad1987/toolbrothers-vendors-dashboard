@@ -40,21 +40,7 @@ def get_user(request: Request, db: Session = Depends(get_db)):
     user_usecase = UserUsecase(db)
     user = user_usecase.get_user(request=request)
 
-    user = UserSchema(
-        id=user.id,
-        email=user.email,
-        username=user.username,
-        company_id=user.company_id,
-        roles=user.roles,
-        status=user.status,
-        permissions=[PermissionReturnModel(**{'text': p.name, 'value': p.id, 'description': p.description}) for p in user.permissions],
-        firstname=user.firstname,
-        lastname=user.lastname,
-        default_language=user.default_language,
-        parent_id=user.parent_id,
-        platform_id=user.platform_id if user.platform and user.platform.status else None,
-        platform=PlatformSimpleSchema(**{'id': user.platform.id, 'name': user.platform.name}) if user.platform and user.platform.status else None
-    ) if user else None
+    user = UserSchema.from_user(user) if user else None
 
     return user
 
