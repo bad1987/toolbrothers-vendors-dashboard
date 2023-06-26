@@ -15,13 +15,17 @@ onBeforeMount(async () => {
   userRef.value = test;
   userRef.value.user = test;
   userRef.value.isAdmin = test.roles == "Role_admin";
+  console.log(userRef.value);
 });
 const token_api = ref([]);
 const isSuccess = ref("");
 const isError = ref("");
 
 const generateTokenApi = () => {
-  axios
+  if (userRef.value.connect_with_admin == true){
+    alert.value.showAlert("error", "Permission denied", "Error!!");
+  }else{
+    axios
     .get("/setting/api-token-user")
     .then((res) => {
       getTokenApi();
@@ -48,6 +52,9 @@ const generateTokenApi = () => {
       }
       isError.value = "You have an error please try again";
     });
+    
+  }
+  
 };
 
 const getTokenApi = () => {
@@ -83,7 +90,7 @@ getTokenApi();
     v-if="!userRef.isAdmin"
     class="px-[5%] justify-center items-center justify-items-center m-auto md:mt-[5%]"
   >
-    <div class="w-full grid grid-cols-1">
+    <div class="grid w-full grid-cols-1">
       <h1
         class="mb-4 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl dark:text-white"
       >
@@ -99,7 +106,7 @@ getTokenApi();
     <div
       v-if="isSuccess"
       id="alert-border-3"
-      class="flex p-4 mb-4 text-green-800 border-l-4 border rounded-md border-green-300 bg-green-50 dark:text-green-400 dark:bg-gray-800 dark:border-green-800"
+      class="flex p-4 mb-4 text-green-800 border border-l-4 border-green-300 rounded-md bg-green-50 dark:text-green-400 dark:bg-gray-800 dark:border-green-800"
       role="alert"
     >
       <svg
@@ -145,7 +152,7 @@ getTokenApi();
     <div
       v-if="isError"
       id="alert-border-4"
-      class="flex p-4 mb-4 text-green-800 border-l-4 border rounded-md border-red-300 bg-red-50 dark:text-red-400 dark:bg-gray-800 dark:border-red-800"
+      class="flex p-4 mb-4 text-green-800 border border-l-4 border-red-300 rounded-md bg-red-50 dark:text-red-400 dark:bg-gray-800 dark:border-red-800"
       role="alert"
     >
       <svg
@@ -204,6 +211,7 @@ getTokenApi();
         class="flex items-center justify-between px-3 py-2 border-t dark:border-gray-600"
       >
         <button
+          
           @click="generateTokenApi"
           type="submit"
           class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800"
