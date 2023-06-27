@@ -22,6 +22,7 @@ const isSuccess = ref("");
 const isError = ref("");
 
 const generateTokenApi = () => {
+  console.log(userRef.value);
   if (userRef.value.connect_with_admin == true){
     alert.value.showAlert("error", "Permission denied", "Error!!");
   }else{

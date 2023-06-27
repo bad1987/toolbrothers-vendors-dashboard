@@ -147,6 +147,16 @@ function handleInput(e) {
     return () => clearTimeout(timer);
   });
 }
+function handleEnter() {
+  // Annuler le timer pour lancer la recherche immédiatement
+  e.preventDefault();
+  clearTimeout(timer);
+  fetchProducts(searchTerm.value);
+}
+
+function clearSearchTerm() {
+  searchTerm.value = "";
+}
 
 const fetchProducts = () => {
   isLoading.value = true;
@@ -262,7 +272,7 @@ onUpdated(() => {
           </span>
         </div>
         <div class="w-full md:w-1/2">
-          <form class="flex items-center md:py-0 py-5">
+          <form onsubmit="return false;" class="flex items-center md:py-0 py-5">
             <label for="simple-search" class="sr-only">Search</label>
             <div class="relative w-full">
               <div
@@ -285,12 +295,30 @@ onUpdated(() => {
               <input
                 v-model="searchTerm"
                 @input="handleInput"
+                @keydown.enter="handleEnter"
                 type="text"
                 id="simple-search"
-                class="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                class="block w-full p-2 pl-10 pr-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                 placeholder="Search"
                 required=""
               />
+              <button
+                v-if="searchTerm"
+                @click="clearSearchTerm"
+                class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-500 focus:outline-none"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="w-5 h-5"
+                  fill="currentColor"
+                  viewbox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M6 8a2 2 0 114 0v4a2 2 0 11-4 0V8zM14.586 4.586a2 2 0 112.828 2.828L13.657 10l3.757 3.757a2 2 0 11-2.828 2.828L10.829 12l-3.757 3.757a2 2 0 11-2.828-2.828L7.171 10 3.414 6.243a2 2 0 112.828-2.828L10.829 8l3.757-3.757z"
+                  ></path>
+                </svg>
+              </button>
             </div>
           </form>
         </div>
