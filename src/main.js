@@ -25,6 +25,6 @@ app.use(router)
 app.use(i18n)
 
 axios.defaults.withCredentials = true
-axios.defaults.baseURL = 'https://api-direct-vendor.toolbrothers.space/'
+axios.defaults.baseURL = 'http://localhost:8000/'
 
 app.mount('#app')

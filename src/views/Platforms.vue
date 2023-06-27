@@ -320,47 +320,120 @@ onMounted(() => {
                         </button>
                     </div>
                     <!--Modal body-->
-                    <div class="p-4">
-                        <div class="mb-6">
-                            <label for="base-input"
-                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Platform name</label>
-                            <input v-model="selectedPlatform.name" type="text" id="base-input"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                        </div>
-                        <div class="relative mb-4 flex w-full items-center space-x-1" v-for="field, idx in selectedPlatformFields" :key="idx">
-                            <input type="text" id="base-input"
-                                v-model="field.name"
-                                class="w-3/4 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-sm focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <select data-te-select-init @change="changeSelectedType(field.name, $event.target.value)"
-                                class="w-1/4 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-sm focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                <option :value="type.value" v-for="type, id in types" :key="id"
-                                    :selected="field.type == type.value">{{
-                                        type.text }}</option>
-                            </select>
-                            <div class="text-red-600 cursor-pointer" @click="deleteField(field)">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor" class="h-6 w-6">
-                                    <path clip-rule="evenodd" fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm3 10.5a.75.75 0 000-1.5H9a.75.75 0 000 1.5h6z"></path>
-                                </svg>
+                    <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
+                        <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="myTab"
+                            data-tabs-toggle="#myTabContent" role="tablist">
+                            <li class="mr-2" role="presentation">
+                                <button class="inline-block p-4 border-b-2 rounded-t-lg" id="profile-tab"
+                                    data-tabs-target="#profile" type="button" role="tab" aria-controls="profile"
+                                    aria-selected="false">EN</button>
+                            </li>
+                            <li class="mr-2" role="presentation">
+                                <button
+                                    class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
+                                    id="dashboard-tab" data-tabs-target="#dashboard" type="button" role="tab"
+                                    aria-controls="dashboard" aria-selected="false">DE</button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div id="myTabContent">
+                        <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="profile" role="tabpanel"
+                            aria-labelledby="profile-tab">
+                            <div class="p-4">
+                                <div class="mb-6">
+                                    <label for="base-input"
+                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Platform
+                                        name</label>
+                                    <input v-model="selectedPlatform.name" type="text" id="base-input"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                </div>
+                                <div class="relative mb-4 flex w-full items-center space-x-1"
+                                    v-for="field, idx in selectedPlatformFields" :key="idx">
+                                    <input type="text" id="base-input" v-model="field.name"
+                                        class="w-3/4 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-sm focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    <select data-te-select-init
+                                        @change="changeSelectedType(field.name, $event.target.value)"
+                                        class="w-1/4 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-sm focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <option :value="type.value" v-for="type, id in types" :key="id"
+                                            :selected="field.type == type.value">{{
+                                                type.text }}</option>
+                                    </select>
+                                    <div class="text-red-600 cursor-pointer" @click="deleteField(field)">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor" class="h-6 w-6">
+                                            <path clip-rule="evenodd" fill-rule="evenodd"
+                                                d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm3 10.5a.75.75 0 000-1.5H9a.75.75 0 000 1.5h6z">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="mt-9 flex">
+                                    <input v-model="selectedPlatform.status" id="checkbox-activate-create-platform"
+                                        type="checkbox" value=""
+                                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                                    <label for="checkbox-activate-create-platform"
+                                        class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Activate</label>
+                                </div>
+                                <div class="mt-9 cursor-pointer flex items-center w-max" @click="pushField">
+                                    <svg class="w-8 h-8 mr-1" fill="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path clip-rule="evenodd" fill-rule="evenodd"
+                                            d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 9a.75.75 0 00-1.5 0v2.25H9a.75.75 0 000 1.5h2.25V15a.75.75 0 001.5 0v-2.25H15a.75.75 0 000-1.5h-2.25V9z">
+                                        </path>
+                                    </svg>
+                                    <span class="text-xs font-bold text-gray-400">Add a field</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="mt-9 flex">
-                            <input v-model="selectedPlatform.status" id="checkbox-activate-create-platform" type="checkbox"
-                                value=""
-                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
-                            <label for="checkbox-activate-create-platform"
-                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Activate</label>
-                        </div>
-                        <div class="mt-9 cursor-pointer flex items-center w-max" @click="pushField">
-                            <svg class="w-8 h-8 mr-1" fill="currentColor" viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path clip-rule="evenodd" fill-rule="evenodd"
-                                    d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 9a.75.75 0 00-1.5 0v2.25H9a.75.75 0 000 1.5h2.25V15a.75.75 0 001.5 0v-2.25H15a.75.75 0 000-1.5h-2.25V9z">
-                                </path>
-                            </svg>
-                            <span class="text-xs font-bold text-gray-400">Add a field</span>
+                        <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="dashboard" role="tabpanel"
+                            aria-labelledby="dashboard-tab">
+                            <div class="p-4">
+                                <div class="mb-6">
+                                    <label for="base-input"
+                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name der Plattform</label>
+                                    <input v-model="selectedPlatform.name" type="text" id="base-input"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                </div>
+                                <div class="relative mb-4 flex w-full items-center space-x-1"
+                                    v-for="field, idx in selectedPlatformFields" :key="idx">
+                                    <input type="text" id="base-input" v-model="field.name"
+                                        class="w-3/4 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-sm focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    <select data-te-select-init
+                                        @change="changeSelectedType(field.name, $event.target.value)"
+                                        class="w-1/4 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-sm focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <option :value="type.value" v-for="type, id in types" :key="id"
+                                            :selected="field.type == type.value">{{
+                                                type.text }}</option>
+                                    </select>
+                                    <div class="text-red-600 cursor-pointer" @click="deleteField(field)">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor" class="h-6 w-6">
+                                            <path clip-rule="evenodd" fill-rule="evenodd"
+                                                d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm3 10.5a.75.75 0 000-1.5H9a.75.75 0 000 1.5h6z">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="mt-9 flex">
+                                    <input v-model="selectedPlatform.status" id="checkbox-activate-create-platform"
+                                        type="checkbox" value=""
+                                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                                    <label for="checkbox-activate-create-platform"
+                                        class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">aktivieren Sie</label>
+                                </div>
+                                <div class="mt-9 cursor-pointer flex items-center w-max" @click="pushField">
+                                    <svg class="w-8 h-8 mr-1" fill="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path clip-rule="evenodd" fill-rule="evenodd"
+                                            d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 9a.75.75 0 00-1.5 0v2.25H9a.75.75 0 000 1.5h2.25V15a.75.75 0 001.5 0v-2.25H15a.75.75 0 000-1.5h-2.25V9z">
+                                        </path>
+                                    </svg>
+                                    <span class="text-xs font-bold text-gray-400">Fügen Sie ein Feld hinzu</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
                     <!--Modal footer-->
                     <div class="items-center p-6 border-t border-gray-200 rounded-b dark:border-gray-700">
                         <ButtonComponent @click="updatePlatform()" text="Save Platform"
@@ -418,8 +491,7 @@ onMounted(() => {
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                         </div>
                         <div class="relative mb-4 flex w-full" v-for="field, idx in selectedPlatformFields" :key="idx">
-                            <input type="text" id="base-input"
-                                v-model="field.name"
+                            <input type="text" id="base-input" v-model="field.name"
                                 class="w-3/4 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-sm focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <select data-te-select-init @change="changeSelectedType(field.name, $event.target.value)"
                                 class="w-1/4 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-sm focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">

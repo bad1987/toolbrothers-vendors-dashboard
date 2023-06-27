@@ -97,13 +97,13 @@
                   </button>
                   <ul id="dropdown-layouts" class="hidden py-2 space-y-2">
                     <li v-if="userRef.user && userRef.user.platform != null">
-                      <RouterLink to="/platform-settings" class="flex items-center p-2 text-base text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700">{{$t("Platform settings")}}</RouterLink>
-                    </li>
-                    <li>
-                      <RouterLink to="/payment-method" class="flex items-center p-2 text-base text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700">{{$t("payment_method")}}</RouterLink>
+                      <RouterLink to="/platform-settings" class="flex items-center p-2 text-base text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700">{{ userRef.platform.name }}</RouterLink>
                     </li>
                     <li v-if="userRef.user && userRef.user.platform == null">
                       <RouterLink to="/api" class="flex items-center p-2 text-base text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700">{{$t("settings")}} API </RouterLink>
+                    </li>
+                    <li>
+                      <RouterLink to="/payment-method" class="flex items-center p-2 text-base text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700">{{$t("payment_method")}}</RouterLink>
                     </li>
                   </ul>
                 </li>
