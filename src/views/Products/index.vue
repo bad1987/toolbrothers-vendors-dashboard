@@ -43,48 +43,6 @@ onMounted(() => {
   fetchProducts();
 });
 
-// const fetchProducts = async () => {
-//   isLoading.value = true;
-
-//   var params = new URLSearchParams();
-//   params.append("skip", actualSkip.value);
-//   params.append("limit", actuaLimit.value);
-//   if (selectedStatuses.value)
-//     selectedStatuses.value.forEach((status) => {
-//       params.append("statuses", status);
-//     });
-
-//   axios
-//     .get("/products/list", {
-//       params,
-//     })
-//     .then((resp) => {
-//       products.value = resp.data.products;
-//       totalProducts.value = resp.data.total;
-//       skeletonCnt.value = 0;
-
-//       initFlowbite();
-//     })
-//     .catch((err) => {
-//       if (err.response) {
-//         let status = err.response.status;
-//         if (status) {
-//           if (status == 403) {
-//             console.log(err.response.status);
-//             router.push("/error/403");
-//           } else if (status == 401) {
-//             router.push("/login");
-//           }
-//         }
-//       }
-//       skeletonCnt.value = 0;
-//     })
-//     .finally(() => {
-//       isLoading.value = false;
-//       initTE({ Modal, Ripple });
-//     });
-// };
-
 async function updateProduct(obj = null) {
   isLoading.value = true;
   axios
@@ -141,21 +99,22 @@ function handleInput(e) {
     // Attendre 2 secondes avant de lancer la recherche
     const timer = setTimeout(() => {
       fetchProducts(searchTerm.value);
-    }, 2000);
+    }, 1000);
 
     // Annuler le timer précédent si l'utilisateur modifie rapidement le terme de recherche
     return () => clearTimeout(timer);
   });
 }
+
 function handleEnter() {
   // Annuler le timer pour lancer la recherche immédiatement
-  e.preventDefault();
-  clearTimeout(timer);
+  //clearTimeout(timer);
   fetchProducts(searchTerm.value);
 }
 
 function clearSearchTerm() {
   searchTerm.value = "";
+  fetchProducts();
 }
 
 const fetchProducts = () => {
@@ -300,12 +259,11 @@ onUpdated(() => {
                 id="simple-search"
                 class="block w-full p-2 pl-10 pr-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                 placeholder="Search"
-                required=""
               />
-              <button
+              <span
                 v-if="searchTerm"
                 @click="clearSearchTerm"
-                class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-500 focus:outline-none"
+                class="absolute inset-y-0 cursor-pointer right-0 flex items-center pr-3 text-gray-400 hover:text-gray-500 focus:outline-none"
               >
                 <svg
                   aria-hidden="true"
@@ -318,7 +276,7 @@ onUpdated(() => {
                     d="M6 8a2 2 0 114 0v4a2 2 0 11-4 0V8zM14.586 4.586a2 2 0 112.828 2.828L13.657 10l3.757 3.757a2 2 0 11-2.828 2.828L10.829 12l-3.757 3.757a2 2 0 11-2.828-2.828L7.171 10 3.414 6.243a2 2 0 112.828-2.828L10.829 8l3.757-3.757z"
                   ></path>
                 </svg>
-              </button>
+              </span>
             </div>
           </form>
         </div>
