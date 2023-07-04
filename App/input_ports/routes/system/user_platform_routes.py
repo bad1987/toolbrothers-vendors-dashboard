@@ -4,7 +4,7 @@ from App.Http.Schema.PlatformSchema import PlatformTypeSchema, PlatformSchemaOut
 from App.core.auth.Acls.RoleChecker import Role_checker
 from App.core.auth.auth import is_authenticated
 from App.core.dependencies.db_dependencies import get_db
-from App.output_ports.models.Models import Platform, User, User_Platform
+from App.output_ports.models.Models import Platform, Platform_Data, User, User_Platform
 from sqlalchemy.orm import Session
 import json
 
@@ -17,34 +17,39 @@ route = APIRouter(prefix='/users', tags=['Users Platforms'], include_in_schema=F
 @route.get("/platform")
 def get_platform_list(request: Request, db: Session = Depends(get_db), _user: dict = Depends(is_authenticated)):
     platform = _user.platform
+    platform_data = db.query(Platform_Data).filter(Platform_Data.platform_id == platform.id).filter(Platform_Data.language == _user.default_language.value).first()
 
-    if platform is None or platform.status is False:
+    if platform is None or platform_data is None or platform.status is False:
         raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="You are not able to access this product"
+                detail="You are not able to access this section"
             )
 
     vals = db.query(User_Platform).filter(User_Platform.user_id == _user.id).first()
 
     fields = []
     values = []
+    name_list = []
 
-    for key, value in json.loads(platform.fields).items():
+    for key, value in json.loads(platform_data.fields).items():
         fields.append(PlatformTypeSchema(
             name=key,
             type=value
         ))
+        name_list.append(key)
+
+    
 
     if vals is not None:
         for key, value in json.loads(vals.values).items():
             values.append(PlatformFieldValuesSchema(
-                name=key,
-                value=value
+                name=name_list[int(key)],
+                value=value,
             ))
 
     return UserPlatformSchema(
         id=platform.id,
-        name=platform.name,
+        name=platform_data.name,
         fields=fields,
         status=platform.status,
         values=values
@@ -53,26 +58,25 @@ def get_platform_list(request: Request, db: Session = Depends(get_db), _user: di
 @route.put("/platform")
 def update_platform(request: Request, model: UserPlatformSchema, db: Session = Depends(get_db), _user: dict = Depends(is_authenticated)):
     platform = _user.platform
-    vals = db.query(User_Platform).filter(User_Platform.user_id == _user.id).first()
-
-    if vals is None:
-        vals = User_Platform(
-            user_id=_user.id,
-            platform_id=platform.id,
-            values=json.dumps({})
-        )
-        db.add(vals)
-        db.commit()
-        db.refresh(vals)
+    user_platform = db.query(User_Platform).filter(User_Platform.user_id == _user.id).first()
+    datas = db.query(Platform_Data).filter(Platform_Data.platform_id == platform.id).first()
 
     values = {}
+    model_values = model.values
 
-    for val in model.values:
-        values[val.name] = val.value
+    for index, key in enumerate(json.loads(datas.fields)):
+        values[index] = model_values[index].value
 
-    vals.values = json.dumps(values)
+    if user_platform == None:
+        db.add(User_Platform(
+            values = json.dumps(values),
+            user_id = _user.id,
+            platform_id = platform.id,
+        ))
+    else:
+        user_platform.values = json.dumps(values)
+    
 
     db.commit()
-    db.refresh(vals)
 
     return model

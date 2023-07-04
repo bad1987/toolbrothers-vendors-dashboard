@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import random, string, re
 from typing import List, Optional
 from fastapi import HTTPException, status
-import jwt
+import jwt, json
 
 from sqlalchemy import and_
 from App.Enums.LanguageEnum import LanguageEnum
@@ -17,7 +17,7 @@ from sqlalchemy.orm import Session
 from App.input_ports.schemas.UserSchema import PermissionSchema, UserCreateSchema
 from App.input_ports.schemas.UserSchema import PermissionSchema, UserSchema
 from App.output_ports.models.CscartModels import Cscart_payments, CscartCompanies
-from App.output_ports.models.Models import Payment_method, Payment_method_vendor, Permission, Platform, Platform_settings, User, User_Permission
+from App.output_ports.models.Models import Payment_method, Payment_method_vendor, Permission, Platform, Platform_Data, Platform_settings, User, User_Permission, User_Platform
 from passlib.handlers.sha2_crypt import sha512_crypt as crypto
 
 
@@ -41,8 +41,8 @@ class UserRepository(IUserRepository):
         return result
 
     def get_platform_simple_list(self) -> List[PlatformSimpleSchema]:
-        result = self.db.query(Platform).all()
-        result = [PlatformSimpleSchema(**{'id': p.id, 'name': p.name}) for p in result]
+        result = self.db.query(Platform_Data).all()
+        result = [PlatformSimpleSchema(**{'id': p.id, 'name': p.name, 'language': p.language}) for p in result]
 
         return result
 
@@ -148,7 +148,7 @@ class UserRepository(IUserRepository):
                 detail="This user cannot be activated, unknown company"
             )
 
-        else: user_to_update.status = model.status.value
+        elif model.status: user_to_update.status = model.status.value
 
         if model.permissions != None:
             user_to_update.permissions.clear()
@@ -158,8 +158,23 @@ class UserRepository(IUserRepository):
 
             user_to_update.permissions.extend(permissions)
 
-        if (model.platform_id != None and user_to_update.platform_id != model.platform_id):
-            user_to_update.platform_id = model.platform_id
+        if model.platform_id:
+            user_platform = self.db.query(User_Platform).filter(and_(User_Platform.user_id == id, User_Platform.platform_id == model.platform_id))
+
+            datas = self.db.query(Platform_Data).filter(Platform_Data.platform_id == model.platform_id).first()
+            values = {}
+
+            for index, key in enumerate(json.loads(datas.fields)):
+                values[index] = ''
+
+            if user_platform == None:
+                self.db.add(User_Platform(
+                    values = json.dumps(values),
+                    user_id = user_to_update.id,
+                    platform_id = model.platform_id,
+                ))
+            else:
+                user_platform.values = json.dumps(values)
 
         self.db.commit()
         self.db.refresh(user_to_update)

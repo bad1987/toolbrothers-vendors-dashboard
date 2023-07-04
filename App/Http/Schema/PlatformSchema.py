@@ -9,12 +9,14 @@ class PlatformTypeSchema(BaseModel):
 class PlatformSimpleSchema(BaseModel):
     id: int
     name: str
+    language: str
 
 class PlatformSchemaOut(BaseModel):
     id: Optional[int]
     name: str
     fields: Optional[List[PlatformTypeSchema]]
     status: Optional[bool]
+    language: Optional[str]
 
 class PlatformFieldValuesSchema(BaseModel):
     name: str
@@ -36,3 +38,18 @@ class UserPlatformSchema(BaseModel):
 class UserPlatformSchemaIn(BaseModel):
     id: int
     values: List[PlatformFieldValuesSchema]
+
+## Admin platform schema
+
+class AdminPlatformSchema(BaseModel):
+    id: Optional[int]
+    name: str
+    fields: Optional[List[PlatformTypeSchema]]
+    status: Optional[bool]
+    language: str
+
+class AdminPlatformListSchema(BaseModel):
+    platforms: List[AdminPlatformSchema]
+    languages: List[str]
+
+## User Platform schema

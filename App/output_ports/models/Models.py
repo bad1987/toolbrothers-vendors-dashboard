@@ -78,10 +78,19 @@ class Platform(Base):
     __tablename__ = "platforms"
     
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(255), unique=True, index=True, nullable=False)
-    fields = Column(Text, nullable=True)
-    status = Column(Boolean, nullable=False, default=True)
     users = relationship("User", back_populates="platform")
+    status = Column(Boolean, nullable=False, default=True)
+    platform_datas = relationship("Platform_Data", back_populates="platform")
+
+class Platform_Data(Base):
+    __tablename__ = "platform_datas"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    platform_id = Column(Integer, ForeignKey("platforms.id", ondelete="CASCADE"), nullable=False)
+    name = Column(String(255), nullable=False)
+    fields = Column(Text, nullable=True)
+    language = Column(String(10), nullable=False, server_default="de")
+    platform = relationship("Platform", back_populates="platform_datas")
 
 class User_Platform(Base):
     __tablename__ = "user_platforms"

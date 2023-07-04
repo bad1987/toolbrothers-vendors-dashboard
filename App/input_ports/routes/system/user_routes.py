@@ -1,6 +1,7 @@
 import json
 from typing import Dict
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from sqlalchemy import and_
 from sqlalchemy.orm import Session
 from App.Enums.UserEnums import UserStatusEnum
 from App.Enums.UserRoleEnum import ModelNameEnum
@@ -12,6 +13,7 @@ from App.core.auth.middlewares.AuthorizationMiddleware import TokenMiddleware
 from App.core.dependencies.db_dependencies import get_db, get_db_cscart
 from App.core.use_cases.user_use_case import UserUsecase
 from App.input_ports.schemas.UserSchema import PermissionReturnModel, UserCreateSchema, UserListSchema, UserSchema
+from App.output_ports.models.Models import Platform_Data
 
 
 s_user_route = APIRouter(prefix='/admin', tags=['Users system'], include_in_schema=False)
@@ -40,7 +42,12 @@ def get_user(request: Request, db: Session = Depends(get_db)):
     user_usecase = UserUsecase(db)
     user = user_usecase.get_user(request=request)
 
+    platform_data = db.query(Platform_Data).filter(Platform_Data.language == user.default_language.value).filter(Platform_Data.platform_id == user.platform.id).first() if user and user.platform else None
+
     user = UserSchema.from_user(user) if user else None
+
+    if user:
+        user.platform = PlatformSimpleSchema(**{'id': platform_data.platform.id, 'name': platform_data.name, 'language': user.default_language.value}) if (platform_data and platform_data.platform.status) else None
 
     return user
 

@@ -58,7 +58,6 @@ class UserUsecase:
                     status_code=status.HTTP_403_FORBIDDEN,
                     detail=f"This account is not active, please contact admins"
                 )
-
         return _user
     
     def create_user(self, model: UserCreateSchema) -> UserSchema:
@@ -122,6 +121,7 @@ class UserUsecase:
             user = self.user_repository.update_user(model=model, id=id)
             return user
         except Exception as e:
+            print(traceback.format_exc())
             if isinstance(e, HTTPException) and (e.status_code == 404 or e.status_code == 400):
                 raise e
             raise HTTPException(
