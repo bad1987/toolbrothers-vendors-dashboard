@@ -68,6 +68,12 @@ function changeStatus(event) {
     })
 }
 
+function changeSelectedType(idx, event) {
+    props.newPlatform.forEach(platform => {
+        platform.fields[idx].type = event.target.value
+    })
+}
+
 
 </script>
 
@@ -139,7 +145,7 @@ function changeStatus(event) {
                                 v-for="field, id in platform.fields" :key="id">
                                 <input type="text" id="base-input" v-model="field.name"
                                     class="w-3/4 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-sm focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                <select data-te-select-init v-model="field.type"
+                                <select data-te-select-init v-model="field.type"  @change="changeSelectedType(id, $event)"
                                     class="w-1/4 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-sm focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                     <option :value="type.value" v-for="type, id in types" :key="id"
                                         :selected="field.type == type.value">{{
