@@ -36,6 +36,10 @@ const filteredUsers = computed(() => {
   );
 });
 
+const filteredPlatforms = computed(() => {
+  return platforms.value.filter((platform) => platform.language == userRef.value.user.default_language)
+})
+
 const router = useRouter();
 const route = useRoute();
 
@@ -973,7 +977,7 @@ const sendpassword = (user_id) => {
                     <option value="">Default</option>
                     <option
                       :value="platform.id"
-                      v-for="platform in platforms"
+                      v-for="platform in filteredPlatforms"
                       :selected="platform.id == selectedUser.platform_id"
                     >
                       {{ platform.name }}
