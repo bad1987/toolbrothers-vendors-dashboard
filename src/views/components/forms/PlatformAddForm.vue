@@ -3,6 +3,10 @@ import { ref, watch, onMounted, defineProps, onUpdated } from 'vue'
 import { Modal, initTE, Ripple } from 'tw-elements'
 import ButtonComponent from '@/views/components/ButtonComponent.vue'
 import { initFlowbite } from 'flowbite';
+import { useI18n } from "vue-i18n";
+
+
+const { t, locale } = useI18n();
 
 const props = defineProps({
     types: {
@@ -105,7 +109,7 @@ function changeSelectedType(idx, event) {
                     <!--Modal title-->
                     <h5 class="text-xl font-medium leading-normal text-neutral-800 dark:text-neutral-200"
                         id="add-platform-modalScrollableLabel">
-                        Add Platform
+                        {{ $t('add_platform') }}
                     </h5>
                     <!--Close button-->
                     <button type="button" id="add-platform-close"
@@ -136,8 +140,7 @@ function changeSelectedType(idx, event) {
                         <div class="p-4">
                             <div class="mb-6">
                                 <label for="base-input"
-                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Platform
-                                    name</label>
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ $t('platform_name') }}</label>
                                 <input v-model="platform.name" type="text" id="base-input"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             </div>
@@ -174,7 +177,7 @@ function changeSelectedType(idx, event) {
                                         d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 9a.75.75 0 00-1.5 0v2.25H9a.75.75 0 000 1.5h2.25V15a.75.75 0 001.5 0v-2.25H15a.75.75 0 000-1.5h-2.25V9z">
                                     </path>
                                 </svg>
-                                <span class="text-xs font-bold text-gray-400">Add a field</span>
+                                <span class="text-xs font-bold text-gray-400">{{ $t('add_field') }}</span>
                             </div>
                         </div>
                     </div>

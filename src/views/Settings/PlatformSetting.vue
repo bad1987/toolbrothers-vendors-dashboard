@@ -90,13 +90,13 @@ function getValue(name) {
                 <div class="items-center justify-between lg:flex">
                     <div class="mb-4 lg:mb-0">
                         <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">
-                            Your platform settings
+                            {{ $t('your_platform') }}
                             <span class="px-2 py-1 text-sm text-white bg-green-500 rounded-md">{{
                                 $t("mb_active")
                             }}</span>
                         </h3>
                         <span class="text-base font-normal text-gray-500 dark:text-gray-400">
-                            This is the settings of your platform ({{ platform.name }})
+                            {{ $t('this_your_platform') }} ({{ platform.name }})
                         </span>
                     </div>
                 </div>
@@ -115,7 +115,7 @@ function getValue(name) {
                 <button 
                     type="submit"
                     id="submit"
-                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mt-3">Update settings</button>
+                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mt-3">{{ $t('update_settings') }}</button>
             </form>
 
         </div>

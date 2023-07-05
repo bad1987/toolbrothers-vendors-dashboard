@@ -77,8 +77,17 @@ const en = {
     "mb_permissions": "Permissions",
     "mb_edit_user": "Edit user",
     "mb_select_a_platform": "Select a platform",
-    "mb_default": "Default"
+    "mb_default": "Default",
 
+    "manage_platforms": "Manage platforms",
+    "platforms": "Platforms",
+    "add_platform": "Add new platform",
+    "your_platform": "Your platform settings",
+    "this_your_platform": "This is the settings of your platform",
+    "update_settings": "Update settings",
+    "platform_name": "Platform name",
+    "add_field": "Add a field",
+    "save_platform": "Save platform"
 }
 
 export default en

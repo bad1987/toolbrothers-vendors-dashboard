@@ -33,8 +33,7 @@ const de = {
   "mb_disable": "Deaktivieren",
   "mb_info_disable_payment_method": "Durch diese Aktion wird diese Zahlungsmethode auf Ihrer Plattform deaktiviert",
   "mb_confirm": "Bestätigen",
-  "mb_cancel": "Stornieren",
-
+  "mb_cancel": "Nein, abbrechen",
   "mb_config_plenty_market": "Plenty Markets API-Konfiguration",
   "mb_plenty_market_des": "Diese Einstellungen ermöglichen es uns, Bestellungen an Ihre Plattform zu senden",
   "md_plenty_id": "Viel Ausweis",
@@ -47,7 +46,6 @@ const de = {
   "md_shipping": "Versandprofil-ID: MwSt",
   "md_export_product": "Produktlink exportieren",
   "md_save": "Speichern",
-
   "mb_home": "Heim",
   "mb_users": "Benutzer",
   "mb_list": "Aufführen",
@@ -57,7 +55,7 @@ const de = {
   "mb_add_user": "Neuen Benutzer hinzufügen",
   "mb_import": "Importieren",
   "mb_edit": "Bearbeiten",
-  "mb_active": "Aktiv",
+  "mb_deactivate": "Deaktivieren",
   "mb_affiliate": "Affiliate",
   "mb_inactive": "Inaktiv",
   "mb_delete_user": "Benutzer löschen",
@@ -71,14 +69,22 @@ const de = {
   "mb_ad_user": "Benutzer hinzufügen",
   "mb_alert": "Sind Sie sicher, dass Sie diesen Benutzer löschen möchten?",
   "mb_sure": "Ja, ich bin mir sicher",
-  "mb_cancel": "Nein, abbrechen",
   "mb_are_you_sure": "Sind Sie sicher, dass Sie mit dem Importieren von Anbietern beginnen möchten?",
   "mb_yes_im": "Ja, ich bin mir sicher",
   "mb_no_cancel": "Nein, abbrechen",
   "mb_permissions": "Berechtigungen",
   "mb_edit_user": "Benutzer bearbeiten",
   "mb_select_a_platform": "Wählen Sie eine Plattform aus",
-  "mb_default": "Standard"
+  "mb_default": "Standard",
+  "manage_platforms": "Plattformen verwalten",
+  "platforms": "Plattformen",
+  "add_platform": "Neue Plattform hinzufügen",
+  "your_platform": "Ihre Plattformeinstellungen",
+  "this_your_platform": "Dies sind die Einstellungen Ihrer Plattform",
+  "update_settings": "Update Einstellungen",
+  "platform_name": "Plattformname",
+  "add_field": "Fügen Sie ein Feld hinzu",
+  "save_platform": "Plattform speichern"
 }
 export default de
 

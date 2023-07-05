@@ -4,12 +4,11 @@ import { ref, onMounted, onBeforeMount, computed, reactive } from "vue";
 import { acl } from "../router/acl";
 import { useLoaderStore } from "@/stores/statestore";
 import { initTE, Modal, Ripple, Dropdown, Select } from "tw-elements"
-import ButtonComponent from "./components/ButtonComponent.vue";
 import VueBasicAlert from "vue-basic-alert";
 import { initFlowbite } from "flowbite";
 import PlatformAddForm from "./components/forms/PlatformAddForm.vue";
 import PlatformEditForm from "./components/forms/PlatformEditForm.vue";
-import { s } from "plotly.js-dist";
+import { useI18n } from "vue-i18n";
 
 const platforms = ref([])
 const loading = ref(false)
@@ -21,6 +20,7 @@ const selectedPlatformFields = ref([]);
 const alert = ref(null);
 const languages = ref([]);
 const isLoading = computed(() => loadStore.isLoading);
+const { t, locale } = useI18n();
 
 const platformList = computed(() => {
     return platforms.value.filter((platform) => platform.language == userRef.value.user.default_language);
@@ -149,9 +149,9 @@ onMounted(() => {
             <div class="items-center justify-between lg:flex">
                 <div class="mb-4 lg:mb-0">
                     <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">
-                        {{ $t("Platforms") }}
+                        {{ $t("platforms") }}
                     </h3>
-                    <span class="text-base font-normal text-gray-500 dark:text-gray-400">Manage platforms
+                    <span class="text-base font-normal text-gray-500 dark:text-gray-400">{{ $t('manage_platforms') }}
                     </span>
                 </div>
 
@@ -166,7 +166,7 @@ onMounted(() => {
                                 d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
                                 clip-rule="evenodd"></path>
                         </svg>
-                        Add new platform
+                        {{ $t('add_platform') }}
                     </button>
                 </div>
 
@@ -246,7 +246,7 @@ onMounted(() => {
                                                         d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
                                                         clip-rule="evenodd"></path>
                                                 </svg>
-                                                Edit
+                                                {{ $t('mb_edit') }}
                                             </button>
                                             <button @click="deletePlatform(platform.id)" type="button"
                                                 class="inline-flex items-center px-3 py-1 text-sm font-medium text-center text-white bg-red-400 rounded-lg hover:bg-red-600 focus:ring-4 focus:ring-red-300 dark:focus:ring-red-900">
