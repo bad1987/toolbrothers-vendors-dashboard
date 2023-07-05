@@ -42,7 +42,7 @@ class UserRepository(IUserRepository):
 
     def get_platform_simple_list(self) -> List[PlatformSimpleSchema]:
         result = self.db.query(Platform_Data).all()
-        result = [PlatformSimpleSchema(**{'id': p.id, 'name': p.name, 'language': p.language}) for p in result]
+        result = [PlatformSimpleSchema(**{'id': p.platform_id, 'name': p.name, 'language': p.language}) for p in result]
 
         return result
 
@@ -162,6 +162,7 @@ class UserRepository(IUserRepository):
             user_platform = self.db.query(User_Platform).filter(and_(User_Platform.user_id == id, User_Platform.platform_id == model.platform_id))
 
             datas = self.db.query(Platform_Data).filter(Platform_Data.platform_id == model.platform_id).first()
+            print(datas)
             values = {}
 
             for index, key in enumerate(json.loads(datas.fields)):
