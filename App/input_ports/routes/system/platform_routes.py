@@ -77,7 +77,7 @@ def update_platform(id: int, request: Request, model: List[AdminPlatformSchema],
             for field in selected_model.fields:
                 key, value = field.name, field.type
                 fields[key] = value.value
-                value[key] = ''
+                values[key] = ''
 
             if selected_model.name != None and selected_model.name != '':
                 data.name = selected_model.name
@@ -105,7 +105,7 @@ def delete_platform(id: int, request: Request, db: Session = Depends(get_db), _u
 
     for data in platform_datas:
         db.delete(data)
-        
+
     db.delete(platform)
     db.commit()
 
