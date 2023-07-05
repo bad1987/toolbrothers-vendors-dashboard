@@ -26,7 +26,7 @@ class User(Base):
     parent_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
 
     permissions = relationship("Permission", secondary='user_permissions')
-    platform_id = Column(Integer, ForeignKey("platforms.id", ondelete="CASCADE"), nullable=True)
+    platform_id = Column(Integer, ForeignKey("platforms.id", ondelete="SET NULL"), nullable=True)
     platform = relationship("Platform", back_populates="users")
 
 class Payment_method(Base):
