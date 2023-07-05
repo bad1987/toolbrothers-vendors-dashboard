@@ -97,6 +97,15 @@ def update_platform(id: int, request: Request, model: List[AdminPlatformSchema],
 @route.delete("/platforms/{id}")
 def delete_platform(id: int, request: Request, db: Session = Depends(get_db), _user: dict = Depends(is_authenticated)):
     platform = db.query(Platform).filter(Platform.id == id).first()
+
+    if platform == None:
+        return {}
+
+    platform_datas = db.query(Platform_Data).filter(Platform_Data.platform_id == platform.id).all()
+
+    for data in platform_datas:
+        db.delete(data)
+        
     db.delete(platform)
     db.commit()
 

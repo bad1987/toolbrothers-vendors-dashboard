@@ -85,12 +85,12 @@ class Platform(Base):
 class Platform_Data(Base):
     __tablename__ = "platform_datas"
     
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, unique=True)
     platform_id = Column(Integer, ForeignKey("platforms.id", ondelete="CASCADE"), nullable=False)
     name = Column(String(255), nullable=False)
     fields = Column(Text, nullable=True)
     language = Column(String(10), nullable=False, server_default="de")
-    platform = relationship("Platform", back_populates="platform_datas")
+    platform = relationship("Platform", back_populates="platform_datas", cascade="all,delete")
 
 class User_Platform(Base):
     __tablename__ = "user_platforms"
