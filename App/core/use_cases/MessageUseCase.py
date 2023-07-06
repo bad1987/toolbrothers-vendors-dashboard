@@ -21,11 +21,11 @@ class MessageUseCase:
         self.db_cscart = db_cscart
         self.db_local = db_local
         
-    def get_all_message_by_vendor(self, request: Request, skip: int = 0, limit: int = 10):
+    def get_all_message_by_vendor(self, request: Request, skip: int = 0, limit: int = 10, statuses = []):
         _user = get_current_user_from_cookie(request=request, db=self.db_local)
         model_permissions = ModelPermissions(_user)
         
-        return self.message_repository.get_all_message_by_vendor(request, skip, limit)
+        return self.message_repository.get_all_message_by_vendor(request, skip, limit, statuses)
     
     def get_all_message_with_thread(self, request: Request, thread_id: int, db_cscart: Session):
         _user = get_current_user_from_cookie(request=request, db=self.db_local)

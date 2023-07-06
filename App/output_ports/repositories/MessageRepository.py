@@ -22,8 +22,12 @@ class MessageRepository(ImessageRepository):
         self.db_local = db_local
         self.db_cscart = db_cscart
         
-    def get_all_message_by_vendor(self, request: Request, skip: int = 0, limit: int = 10):
+    def get_all_message_by_vendor(self, request: Request, skip: int = 0, limit: int = 10, statuses = []):
         _user = get_current_user_from_cookie(request, db=self.db_local)
+        messages = []
+        total = 0
+        images = []
+
         if not _user:
             return JSONResponse(status_code=status.HTTP_403_FORBIDDEN, content='Access denied')
         parent = self.db_local.query(User).filter(User.id == _user.parent_id).first()
@@ -32,13 +36,6 @@ class MessageRepository(ImessageRepository):
             .join(CscartUsers, CscartUsers.user_id == Cscart_vendor_communications.user_id)\
             .filter(Cscart_vendor_communications.company_id == _user.company_id)\
             .order_by(Cscart_vendor_communications.last_updated.desc())\
-                        
-            total = query.count()
-            messages = query.offset(skip).limit(limit)\
-                .add_columns(CscartUsers)\
-                .all()
-            
-            return {"messages": messages, "total": total}
         
         else:
             query = self.db_cscart.query(Cscart_vendor_communications)\
@@ -46,12 +43,21 @@ class MessageRepository(ImessageRepository):
                 .filter(Cscart_vendor_communications.company_id == parent.company_id)\
                 .order_by(Cscart_vendor_communications.last_updated.desc())\
                         
-            total = query.count()
-            messages = query.offset(skip).limit(limit)\
-                .add_columns(CscartUsers)\
-                .all()
+
+        if len(statuses):
+            query = query.filter(Cscart_vendor_communications.status.in_(statuses))
+
+        total = query.count()
+        messages = query.offset(skip).limit(limit)\
+            .add_columns(CscartUsers)\
+            .all()
+
+        # Get product images
+        for message in messages:
+            if message[0].object_type == 'P':
+                ...
             
-            return {"messages": messages, "total": total}
+        return {"messages": messages, "total": total}
     
     def get_all_message_with_thread(self, request: Request, thread_id: int):
         _user = get_current_user_from_cookie(request, db=self.db_local)
@@ -67,7 +73,7 @@ class MessageRepository(ImessageRepository):
                 .join(CscartUsers, CscartUsers.user_id == Cscart_vendor_communication_messages.user_id)\
                 .filter(Cscart_vendor_communication_messages.thread_id == thread_id)\
                 .filter(Cscart_vendor_communications.company_id == _user.company_id)\
-                .add_columns(CscartUsers)\
+                .add_columns(CscartUsers, Cscart_vendor_communications.status)\
                 .all()
         
             return query
