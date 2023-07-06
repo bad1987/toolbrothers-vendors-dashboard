@@ -55,11 +55,6 @@ const getChatByThread = () => {
         return chat
       })
     })
-    .then(() => {
-      initFlowbite()
-
-      document.getElementById("end").scrollIntoView()
-    })
     .catch(err => {
       if (err.response) {
         isSuccess.value = false
@@ -76,6 +71,9 @@ const getChatByThread = () => {
 
       }
       skeletonCnt.value = 0;
+    }).finally(() => {
+      initFlowbite()
+      document.getElementById("end").scrollIntoView()
     })
 };
 
@@ -108,6 +106,7 @@ const handlerSubmit = (e) => {
 }
 
 onMounted(() => {
+  initFlowbite()
 })
 
 
