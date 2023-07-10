@@ -98,23 +98,12 @@ function handleInput(e) {
   watchEffect(() => {
     // Attendre 2 secondes avant de lancer la recherche
     const timer = setTimeout(() => {
-      fetchProducts(searchTerm.value);
-    }, 1000);
+      fetchProducts();
+    }, 2000);
 
     // Annuler le timer précédent si l'utilisateur modifie rapidement le terme de recherche
     return () => clearTimeout(timer);
   });
-}
-
-function handleEnter() {
-  // Annuler le timer pour lancer la recherche immédiatement
-  //clearTimeout(timer);
-  fetchProducts(searchTerm.value);
-}
-
-function clearSearchTerm() {
-  searchTerm.value = "";
-  fetchProducts();
 }
 
 const fetchProducts = () => {
