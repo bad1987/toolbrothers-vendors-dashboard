@@ -23,6 +23,7 @@ class PlentyMarketRepository(IPlentyMarketRepository):
         
     def get_plenty_market_information_by_vendor (self, request: Request):
         user = LoginController.get_current_user_from_cookie(request, self.db_local)
+        print(user)
         setting = self.db_local.query(Platform_settings).filter(Platform_settings.user_id == user.id).all()
         
         return setting
